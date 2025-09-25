@@ -31,7 +31,7 @@ func TestWriteIssues_Single(t *testing.T) {
 	var buf bytes.Buffer
 	format.WriteIssues(issues, &buf)
 
-	want := "main.tf:1:1: resource name must be \"this\" (core.naming.require_this)\n"
+	want := "main.tf:0:1: resource name must be \"this\" (core.naming.require_this)\n"
 	if got := buf.String(); got != want {
 		t.Fatalf("mismatch:\n got: %q\nwant: %q", got, want)
 	}
@@ -47,8 +47,8 @@ func TestWriteIssues_Multiple(t *testing.T) {
 	format.WriteIssues(issues, &buf)
 
 	want := "" +
-		"a.tf:5:7: m1 (r1)\n" + // 4+1 = 5
-		"b.tf:10:2: m2 (r2)\n" // 9+1 = 10
+		"a.tf:4:7: m1 (r1)\n" + // 4+1 = 5
+		"b.tf:9:2: m2 (r2)\n" // 9+1 = 10
 	if got := buf.String(); got != want {
 		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
 	}

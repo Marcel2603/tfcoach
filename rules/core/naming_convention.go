@@ -1,0 +1,58 @@
+package core
+
+import (
+	"regexp"
+
+	"github.com/Marcel2603/tfcoach/internal/engine"
+	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
+)
+
+const (
+	namingConventionId      = rulePrefix + ".naming_convention"
+	namingConventionMessage = `terraform names should only contain lowercase alphanumeric characters and underscores`
+)
+
+var nameFormatRegex = regexp.MustCompile(`^[a-z0-9_]+$`)
+
+type NamingConvention struct {
+}
+
+func NamingConventionRule() NamingConvention {
+	return NamingConvention{}
+}
+
+func (NamingConvention) ID() string {
+	return namingConventionId
+}
+
+func (NamingConvention) Apply(file string, f *hcl.File) []engine.Issue {
+	body, ok := f.Body.(*hclsyntax.Body)
+	if !ok {
+		return nil
+	}
+	var out []engine.Issue
+	for _, blk := range body.Blocks {
+		name := nameOf(blk)
+		if name != "" && !nameFormatRegex.MatchString(name) {
+			out = append(out, engine.Issue{
+				File:    file,
+				Range:   blk.Range(),
+				Message: namingConventionMessage,
+				RuleID:  namingConventionId,
+			})
+		}
+	}
+	return out
+}
+
+func nameOf(block *hclsyntax.Block) string {
+	// <block_type> "<label1>" "<label2>"
+	if len(block.Labels) == 0 {
+		return ""
+	}
+	if block.Type == "resource" || block.Type == "data" {
+		return block.Labels[1]
+	}
+	return block.Labels[0]
+}

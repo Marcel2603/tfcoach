@@ -1,6 +1,6 @@
 # RuleIDs
 
-`package.name`
+`package.category.name`
 
 # Output
 
