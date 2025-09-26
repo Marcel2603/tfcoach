@@ -7,14 +7,14 @@ By taking part, you are expected to adhere to this code. If you encounter
 an unacceptable behavior, please report it to us
 [tbd](mailto:tbd).
 
-More details [here](./CODE_OF_CONDUCT.md).
+More details [here](CODE_OF_CONDUCT.md).
 
 ## Issues
 
 Issues are created [here](https://github.com/Marcel2603/ldap-password-change/issues/new).
 
 :warning: IF you discover a security issue, please read
-following [guide](./SECURITY.md). **DO NOT** create a public
+following [guide](SECURITY.md). **DO NOT** create a public
 issue.
 
 ## Submitting Pull Requests
