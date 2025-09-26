@@ -54,28 +54,6 @@ Exit codes:
 - `1`: error running the linter
 
 ---
-<!--- planned for later
-## Configuration
-
-tfcoach looks for `.tfcoach.yml` in the current directory:
-
-```yaml
-rules:
-  core.naming.require_this:
-    enabled: true
-    severity: error
-  core.terraform.require_version:
-    enabled: true
-    severity: error
-  core.terraform.require_providers_pinned:
-    enabled: false
-```
-
-- `enabled`: turn a rule on or off
-- `severity`: informational only, does not change exit code yet (`error|warn|info`)
-
----
--->
 
 ## Development
 
