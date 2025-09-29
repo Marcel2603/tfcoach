@@ -5,6 +5,5 @@ nav:
   - Ideas: rule-ideas.md
   - rules
   - development
-  - Security: security.md
-  - License: license.md
+  - about
   - ...
