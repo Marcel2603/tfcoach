@@ -4,6 +4,7 @@ Rules implement:
 ```go
 type Rule interface {
   ID() string
+  META() engine.RuleMeta
   Apply(file string, f *hcl.File) []engine.Issue
 }
 ```

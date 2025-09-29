@@ -39,6 +39,19 @@ func TestNameFormat_FailedResource(t *testing.T) {
 	}
 }
 
+func TestNameFormat_ShouldIssueSameID(t *testing.T) {
+	f := testutil.ParseToHcl(t, "bad.tf", `
+		resource "test_resource" "UpperCasE" {}
+	`)
+
+	rule := core.NamingConventionRule()
+	issues := rule.Apply("bad.tf", f)
+
+	if issues[0].RuleID != rule.ID() {
+		t.Fatal("rule id mismatch")
+	}
+}
+
 func TestNameFormat_FailedVariables(t *testing.T) {
 	f := testutil.ParseToHcl(t, "bad.tf", `
 		variable "UpperCasE" {}

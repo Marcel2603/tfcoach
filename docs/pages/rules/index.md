@@ -1,5 +1,5 @@
 # Rules
 ## Core
-| Rule ID | Summary |
-|--------|---------|
-| core.naming_convention |  |\n
+| ID | Rule | Summary |
+|------|--------|---------|
+| core.naming_convention | NamingConvention | terraform names should only contain lowercase alphanumeric characters and underscores |\n

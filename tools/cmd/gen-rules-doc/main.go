@@ -11,9 +11,10 @@ import (
 func main() {
 	fmt.Println("# Rules")
 	fmt.Println("## Core")
-	fmt.Println("| Rule ID | Summary |")
-	fmt.Println("|--------|---------|")
+	fmt.Println("| ID | Rule | Summary |")
+	fmt.Println("|------|--------|---------|")
 	for _, r := range core.All() {
-		fmt.Printf("| %s |  |\\n", r.ID())
+		meta := r.META()
+		fmt.Printf("| %s | %s | %s |\\n", r.ID(), meta.Title, meta.Description)
 	}
 }

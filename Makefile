@@ -30,5 +30,5 @@ build:
 clean:
 	rm -f $(COVERFILE) $(HTMLFILE)
 
-docs-rules:
+doc-rules:
 	@go run ./tools/cmd/gen-rules-doc/main.go > docs/pages/rules/index.md

@@ -8,25 +8,34 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
-const (
-	namingConventionId      = rulePrefix + ".naming_convention"
-	namingConventionMessage = `terraform names should only contain lowercase alphanumeric characters and underscores`
-)
-
 var nameFormatRegex = regexp.MustCompile(`^[a-z0-9_]+$`)
 
 type NamingConvention struct {
+	id      string
+	message string
 }
 
 func NamingConventionRule() NamingConvention {
-	return NamingConvention{}
+	return NamingConvention{
+		id:      rulePrefix + ".naming_convention",
+		message: "terraform names should only contain lowercase alphanumeric characters and underscores",
+	}
 }
 
-func (NamingConvention) ID() string {
-	return namingConventionId
+func (n NamingConvention) ID() string {
+	return n.id
 }
 
-func (NamingConvention) Apply(file string, f *hcl.File) []engine.Issue {
+func (n NamingConvention) META() engine.RuleMeta {
+	return engine.RuleMeta{
+		Title:       "NamingConvention",
+		Description: n.message,
+		Severity:    "HIGH",
+		DocsURL:     "tbd",
+	}
+}
+
+func (n NamingConvention) Apply(file string, f *hcl.File) []engine.Issue {
 	body, ok := f.Body.(*hclsyntax.Body)
 	if !ok {
 		return nil
@@ -38,8 +47,8 @@ func (NamingConvention) Apply(file string, f *hcl.File) []engine.Issue {
 			out = append(out, engine.Issue{
 				File:    file,
 				Range:   blk.Range(),
-				Message: namingConventionMessage,
-				RuleID:  namingConventionId,
+				Message: n.message,
+				RuleID:  n.id,
 			})
 		}
 	}
