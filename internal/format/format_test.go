@@ -53,3 +53,19 @@ func TestWriteIssues_Multiple(t *testing.T) {
 		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
 	}
 }
+
+func TestWriteSummary(t *testing.T) {
+	issues := []engine.Issue{
+		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "r1"},
+		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "r2"},
+	}
+
+	var buf bytes.Buffer
+	format.WriteSummary(issues, &buf)
+
+	want := "Summary:\n" + " Issues: 2\n"
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	}
+}

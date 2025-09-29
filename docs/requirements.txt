@@ -1,0 +1,5 @@
+mkdocs
+mkdocs-material
+mkdocs-git-revision-date-localized-plugin
+mkdocs-autolinks-plugin
+mkdocs-awesome-pages-plugin

@@ -10,7 +10,7 @@ COVERFILE   := coverage.out
 HTMLFILE    := coverage.html
 GOFLAGS     := -race -shuffle=on
 
-.PHONY: test cover cover-html clean
+.PHONY: test cover cover-html build clean docs-rules
 
 test:
 	go test $(GOFLAGS) ./... -cover
@@ -24,5 +24,11 @@ cover-html: cover
 	go tool cover -html=$(COVERFILE) -o $(HTMLFILE)
 	@echo "Wrote $(HTMLFILE)"
 
+build:
+	 go build .
+
 clean:
 	rm -f $(COVERFILE) $(HTMLFILE)
+
+docs-rules:
+	@go run ./tools/cmd/gen-rules-doc/main.go > docs/pages/rules/index.md

@@ -13,3 +13,7 @@ func WriteIssues(issues []engine.Issue, w io.Writer) {
 			issue.File, issue.Range.Start.Line, issue.Range.Start.Column, issue.Message, issue.RuleID)
 	}
 }
+
+func WriteSummary(issues []engine.Issue, w io.Writer) {
+	fmt.Fprintf(w, "Summary:\n Issues: %d\n", len(issues))
+}

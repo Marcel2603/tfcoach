@@ -19,6 +19,7 @@ func Lint(path string, src engine.Source, rules []engine.Rule, w io.Writer) int 
 
 	if len(issues) > 0 {
 		format.WriteIssues(issues, w)
+		format.WriteSummary(issues, w)
 		return 2
 	}
 	return 0

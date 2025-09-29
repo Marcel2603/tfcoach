@@ -1,0 +1,10 @@
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Usage: usage.md
+  - Ideas: rule-ideas.md
+  - rules
+  - development
+  - Security: security.md
+  - License: license.md
+  - ...

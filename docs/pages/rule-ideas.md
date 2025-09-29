@@ -1,4 +1,9 @@
+## Ideas
+
+This page contains ideas about up-coming rules.
+
 # Core
+
 - Required Provider in terraform block
 - naming
   - plural for lists

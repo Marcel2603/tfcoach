@@ -87,4 +87,4 @@ go run ./cmd/tfcoach lint examples
 
 ## License
 
-tfcoach is licensed under the Apache License 2.0. See the [LICENSE](.github/LICENSE) file for details.
+tfcoach is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
