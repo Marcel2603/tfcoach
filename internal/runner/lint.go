@@ -13,7 +13,7 @@ func Lint(path string, src engine.Source, rules []engine.Rule, w io.Writer) int 
 	eng.RegisterMany(rules)
 	issues, err := eng.Run(path)
 	if err != nil {
-		fmt.Fprintf(w, "error: %v\n", err)
+		_, _ = fmt.Fprintf(w, "error: %v\n", err)
 		return 1
 	}
 

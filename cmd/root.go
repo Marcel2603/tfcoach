@@ -13,7 +13,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "tfcoach",
 	Short: "Tiny Terraform coach",
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, _ []string) error {
 		return cmd.Help()
 	},
 }

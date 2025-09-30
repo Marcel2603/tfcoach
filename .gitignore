@@ -3,3 +3,4 @@ coverage*
 tfcoach
 *.exe
 .DS_STORE
+docs/site

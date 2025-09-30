@@ -14,7 +14,7 @@ var (
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number",
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		_, _ = fmt.Fprintf(cmd.OutOrStdout(), "tfcoach %s (%s)\n", BuildVersion, BuildCommit)
 	},
 }

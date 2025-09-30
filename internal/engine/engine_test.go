@@ -10,7 +10,7 @@ import (
 func TestEngine_WithStubRule(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{"a.tf": `x`}}
 	e := engine.New(src)
-	e.Register(testutil.AlwaysFlag{Id: "t.id", Message: "m"})
+	e.Register(testutil.AlwaysFlag{RuleID: "t.id", Message: "m"})
 	issues, err := e.Run(".")
 	if err != nil {
 		t.Fatal(err)
@@ -23,8 +23,8 @@ func TestEngine_WithStubRule(t *testing.T) {
 func TestEngine_WithManyStubRule(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{"a.tf": `x`}}
 	e := engine.New(src)
-	e.RegisterMany([]engine.Rule{testutil.AlwaysFlag{Id: "t.id", Message: "m"},
-		testutil.AlwaysFlag{Id: "t.id", Message: "2", Match: "x"}})
+	e.RegisterMany([]engine.Rule{testutil.AlwaysFlag{RuleID: "t.id", Message: "m"},
+		testutil.AlwaysFlag{RuleID: "t.id", Message: "2", Match: "x"}})
 	issues, err := e.Run(".")
 	if err != nil {
 		t.Fatal(err)

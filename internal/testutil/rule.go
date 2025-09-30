@@ -9,12 +9,12 @@ import (
 )
 
 type AlwaysFlag struct {
-	Id      string
+	RuleID  string
 	Message string
 	Match   string
 }
 
-func (r AlwaysFlag) ID() string { return r.Id }
+func (r AlwaysFlag) ID() string { return r.RuleID }
 
 func (r AlwaysFlag) META() engine.RuleMeta {
 	return engine.RuleMeta{
@@ -40,7 +40,7 @@ func (r AlwaysFlag) Apply(file string, f *hcl.File) []engine.Issue {
 			File:    file,
 			Range:   body.Range(),
 			Message: r.Message,
-			RuleID:  r.Id,
+			RuleID:  r.RuleID,
 		}}
 	}
 	return nil

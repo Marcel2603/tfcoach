@@ -32,3 +32,10 @@ clean:
 
 doc-rules:
 	@go run ./tools/cmd/gen-rules-doc/main.go > docs/pages/rules/index.md
+
+format:
+	@gofmt -l -s -w .
+
+lint: format
+	@which revive > /dev/null || go install github.com/mgechev/revive@latest
+	@revive -config config.toml -formatter friendly ./...
