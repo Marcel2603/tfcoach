@@ -14,13 +14,13 @@ func Lint(path string, src engine.Source, rules []engine.Rule, w io.Writer) int 
 	issues, err := eng.Run(path)
 	if err != nil {
 		_, _ = fmt.Fprintf(w, "error: %v\n", err)
-		return 1
+		return 2
 	}
 
 	if len(issues) > 0 {
 		format.WriteIssues(issues, w)
 		format.WriteSummary(issues, w)
-		return 2
+		return 1
 	}
 	return 0
 }

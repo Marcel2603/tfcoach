@@ -30,8 +30,8 @@ func TestRunLint_Issues(t *testing.T) {
 	}}
 	var out bytes.Buffer
 	code := runner.Lint(".", src, rules, &out)
-	if code != 2 {
-		t.Fatalf("want 2, got %d", code)
+	if code != 1 {
+		t.Fatalf("want 1, got %d", code)
 	}
 	if !strings.Contains(out.String(), "failed") {
 		t.Fatalf("missing message")
