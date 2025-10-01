@@ -9,7 +9,7 @@ const (
 )
 
 var (
-	rules = []engine.Rule{NamingConventionRule()}
+	rules = []engine.Rule{NamingConventionRule(), FileNamingRule()}
 )
 
 func All() []engine.Rule {

@@ -2,6 +2,7 @@ package core
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/hashicorp/hcl/v2"
@@ -31,7 +32,7 @@ func (n NamingConvention) META() engine.RuleMeta {
 		Title:       "NamingConvention",
 		Description: n.message,
 		Severity:    "HIGH",
-		DocsURL:     "tbd",
+		DocsURL:     strings.ReplaceAll(n.id, ".", "/"),
 	}
 }
 
