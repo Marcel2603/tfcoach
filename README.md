@@ -42,7 +42,7 @@ tfcoach lint .
 
 ### Example output
 
-```
+```shell
 main.tf:12:3: resource name must be "this" (core.naming.require_this)
 versions.tf:1:1: terraform block must declare "required_version" (core.terraform.require_version)
 ```

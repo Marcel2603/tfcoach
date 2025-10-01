@@ -1,6 +1,7 @@
 # Writing rules
 
 Rules implement:
+
 ```go
 type Rule interface {
   ID() string

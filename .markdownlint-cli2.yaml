@@ -1,0 +1,5 @@
+ignores:
+  - docs/pages/rules/index.md
+config:
+  MD013:
+    line_length: 120

@@ -3,19 +3,23 @@
 Enforce the naming convention.
 
 ## Why
+
 Consistent naming improves module reuse and keeps downstream references simple.
 
 ## Triggers
+
 - Any block whose not following the naming convention `a-z0-9_`.
 
 ## Example
 
-**Bad**
+### Bad
+
 ```hcl
 resource "aws_s3_bucket" "Foo" {}
 ```
 
-**Good**
+### Good
+
 ```hcl
 resource "aws_s3_bucket" "foo" {}
 ```
