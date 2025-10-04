@@ -19,7 +19,7 @@ type NamingConvention struct {
 func NamingConventionRule() NamingConvention {
 	return NamingConvention{
 		id:      rulePrefix + ".naming_convention",
-		message: "terraform names should only contain lowercase alphanumeric characters and underscores",
+		message: "terraform names should only contain lowercase alphanumeric characters and underscores.",
 	}
 }
 
@@ -29,7 +29,7 @@ func (n NamingConvention) ID() string {
 
 func (n NamingConvention) META() engine.RuleMeta {
 	return engine.RuleMeta{
-		Title:       "NamingConvention",
+		Title:       "Naming Convention",
 		Description: n.message,
 		Severity:    "HIGH",
 		DocsURL:     strings.ReplaceAll(n.id, ".", "/"),

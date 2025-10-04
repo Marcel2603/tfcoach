@@ -8,15 +8,15 @@ PKGS        := $(shell go list ./...)
 COVERMODE   := atomic
 COVERFILE   := coverage.out
 HTMLFILE    := coverage.html
-GOFLAGS     := -race -shuffle=on
+GOFLAGS     := -race -shuffle=on -tags=test -covermode=$(COVERMODE) -coverprofile=$(COVERFILE)
 
 .PHONY: test cover cover-html build clean docs-rules
 
 test:
-	go test $(GOFLAGS) ./... -cover
+	go test $(GOFLAGS) $(PKGS) -cover
 
 cover:
-	go test $(GOFLAGS) ./... -covermode=$(COVERMODE) -coverprofile=$(COVERFILE)
+	go test $(GOFLAGS) $(PKGS)
 	@echo
 	@go tool cover -func=$(COVERFILE) | tail -n1
 
@@ -28,7 +28,7 @@ build:
 	 go build .
 
 clean:
-	rm -f $(COVERFILE) $(HTMLFILE)
+	rm -fv $(COVERFILE) $(HTMLFILE)
 
 doc-rules:
 	@go run ./tools/cmd/gen-rules-doc/main.go > docs/pages/rules/index.md

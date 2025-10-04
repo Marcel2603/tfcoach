@@ -2,11 +2,28 @@ package core_test
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
+	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
 	"github.com/Marcel2603/tfcoach/rules/core"
 )
+
+func TestFileNaming_ExpectedMeta(t *testing.T) {
+	rule := core.FileNamingRule()
+
+	expectedMETA := engine.RuleMeta{
+		Title:       "File Naming",
+		Description: "File naming should follow a strict convention.",
+		Severity:    "HIGH",
+		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
+	}
+
+	if rule.META() != expectedMETA {
+		t.Fatalf("meta mismatch; got %s, wanted %s", rule.META(), expectedMETA)
+	}
+}
 
 func TestFileNaming_ShouldIssueSameID(t *testing.T) {
 	f := testutil.ParseToHcl(t, "bad.tf", `

@@ -1,11 +1,28 @@
 package core_test
 
 import (
+	"strings"
 	"testing"
 
+	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
 	"github.com/Marcel2603/tfcoach/rules/core"
 )
+
+func TestNameFormat_ExpectedMETA(t *testing.T) {
+	rule := core.NamingConventionRule()
+
+	expectedMETA := engine.RuleMeta{
+		Title:       "Naming Convention",
+		Description: "terraform names should only contain lowercase alphanumeric characters and underscores.",
+		Severity:    "HIGH",
+		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
+	}
+
+	if rule.META() != expectedMETA {
+		t.Fatalf("meta mismatch; got %s, wanted %s", rule.META(), expectedMETA)
+	}
+}
 
 func TestNameFormat_AllGood(t *testing.T) {
 	f := testutil.ParseToHcl(t, "good.tf", `
