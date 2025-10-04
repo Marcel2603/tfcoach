@@ -1,0 +1,114 @@
+name: "✨ New Rule Proposal"
+description: Suggest a new linting rule for tfcoach
+labels: ["rule", "enhancement"]
+title: "rule(<category>): <short description>"
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🧩 New Rule Proposal
+        Please describe the rule you'd like to add to **tfcoach**.
+        Provide examples, rationale, and any autofix ideas if relevant.
+
+  - type: input
+    id: rule_id
+    attributes:
+      label: Rule ID
+      description: >
+        Suggested unique identifier, e.g. `core.naming.require_this` or `aws.security.no_public_s3`.
+      placeholder: "core.naming.require_this"
+    validations:
+      required: true
+
+  - type: input
+    id: category
+    attributes:
+      label: Category
+      description: >
+        General category for this rule (e.g., naming, security, style, terraform, aws, etc.)
+      placeholder: "naming"
+    validations:
+      required: true
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why is this rule needed?
+      description: >
+        Explain the reasoning behind this rule and the problem it solves.
+        (e.g., prevents ambiguous resource names, enforces best practices, avoids security risk, etc.)
+      placeholder: |
+        This rule enforces consistent resource naming so that all single-instance resources
+        use the name "this", improving module readability and reusability.
+    validations:
+      required: true
+
+  - type: textarea
+    id: bad_example
+    attributes:
+      label: ❌ Bad code example
+      description: >
+        Provide a minimal Terraform snippet that **violates** this rule.
+      placeholder: |
+        ```hcl
+        resource "aws_s3_bucket" "mybucket" {
+          bucket = "example"
+        }
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: good_example
+    attributes:
+      label: ✅ Compliant code example
+      description: >
+        Show how the same code should look **when it complies** with the rule.
+      placeholder: |
+        ```hcl
+        resource "aws_s3_bucket" "this" {
+          bucket = "example"
+        }
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    id: rule_behavior
+    attributes:
+      label: Expected behavior
+      description: >
+        Describe what the linter should report (and optionally fix) when it finds non-compliant code.
+      placeholder: |
+        The linter should raise an error if a resource name differs from "this".
+        The autofix should rename the label to "this".
+    validations:
+      required: true
+
+  - type: input
+    id: severity
+    attributes:
+      label: Severity
+      description: >
+        Suggested severity level (`info`, `warn`, `error`).
+      placeholder: "error"
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References / Docs
+      description: >
+        Include any links to Terraform best practices, AWS docs, or security guides supporting the rule.
+      placeholder: |
+        - https://developer.hashicorp.com/terraform/language/modules/syntax
+        - https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I verified that this rule doesn't already exist in `core/` or `aws/`.
+        - label: I included both compliant and non-compliant examples.
+        - label: I explained why this rule improves code quality or security.
