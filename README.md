@@ -1,5 +1,11 @@
 # tfcoach
 
+⚠️ Disclaimer
+
+> This project is currently under heavy development and not yet feature-complete.
+> Functionality, APIs, and behavior may change without notice. Use at your own risk — contributions and feedback are
+> welcome!
+
 A lightweight linter for Terraform code.  
 tfcoach helps teams enforce consistent conventions and avoid common pitfalls by running simple, composable rules against
 `.tf` files.
@@ -50,8 +56,8 @@ versions.tf:1:1: terraform block must declare "required_version" (core.terraform
 Exit codes:
 
 - `0`: no issues found
-- `2`: issues found
-- `1`: error running the linter
+- `1`: issues found
+- `2`: error running the linter
 
 ---
 
