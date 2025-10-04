@@ -1,3 +1,5 @@
+//go:build tools
+
 package main
 
 import (
@@ -13,6 +15,6 @@ func main() {
 	fmt.Println("|------|--------|---------|")
 	for _, r := range core.All() {
 		meta := r.META()
-		fmt.Printf("| [%s](%s) | %s | %s |\n", r.ID(), meta.DocsURL, meta.Title, meta.Description)
+		fmt.Printf("| [%s](%s.md) | %s | %s |\n", r.ID(), meta.DocsURL, meta.Title, meta.Description)
 	}
 }
