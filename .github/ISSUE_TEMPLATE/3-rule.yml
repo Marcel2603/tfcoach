@@ -16,18 +16,8 @@ body:
     attributes:
       label: Rule ID
       description: >
-        Suggested unique identifier, e.g. `core.naming.require_this` or `aws.security.no_public_s3`.
-      placeholder: "core.naming.require_this"
-    validations:
-      required: true
-
-  - type: input
-    id: category
-    attributes:
-      label: Category
-      description: >
-        General category for this rule (e.g., naming, security, style, terraform, aws, etc.)
-      placeholder: "naming"
+        Suggested unique identifier, e.g. `core.require_this` or `aws.security.no_public_s3`.
+      placeholder: "core.require_this"
     validations:
       required: true
 
