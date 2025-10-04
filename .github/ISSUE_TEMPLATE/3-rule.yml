@@ -1,4 +1,4 @@
-name: "✨ New Rule Proposal"
+name: "New Rule Proposal"
 description: Suggest a new linting rule for tfcoach
 labels: ["rule", "enhancement"]
 title: "rule(<category>): <short description>"
@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## 🧩 New Rule Proposal
+        ## New Rule Proposal
         Please describe the rule you'd like to add to **tfcoach**.
         Provide examples, rationale, and any autofix ideas if relevant.
 
@@ -47,7 +47,7 @@ body:
   - type: textarea
     id: bad_example
     attributes:
-      label: ❌ Bad code example
+      label: Bad code example
       description: >
         Provide a minimal Terraform snippet that **violates** this rule.
       placeholder: |
@@ -62,7 +62,7 @@ body:
   - type: textarea
     id: good_example
     attributes:
-      label: ✅ Compliant code example
+      label: Compliant code example
       description: >
         Show how the same code should look **when it complies** with the rule.
       placeholder: |
