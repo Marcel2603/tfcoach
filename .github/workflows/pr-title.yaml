@@ -1,0 +1,32 @@
+name: Conventional PR Title
+
+on:
+  pull_request_target:          # runs in the base repo context
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  pull-requests: read
+  statuses: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v6
+        with:
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            docs
+            chore
+            test
+            build
+            ci
+          requireScope: true
+          wip: true
+          subjectPattern: ^(?!.*\.$).+$
+          subjectPatternError: "Subject must not end with a period."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
