@@ -52,9 +52,4 @@ changelog:
       - "^test:"
 
 release:
-  mode: append
-  footer: >-
-
-    ---
-
-    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+  mode: keep-existing

@@ -1,5 +1,6 @@
 ignores:
   - docs/pages/rules/index.md
+  - CHANGELOG.md
 config:
   MD013:
     line_length: 120

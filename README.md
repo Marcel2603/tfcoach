@@ -23,6 +23,18 @@ tfcoach helps teams enforce consistent conventions and avoid common pitfalls by 
 
 ## Installation
 
+### From release
+
+Download the latest binary from the [Releases](https://github.com/Marcel2603/tfcoach/releases) page and place it in your
+`$PATH`.
+
+### From docker
+
+```bash
+docker pull ghcr.io/marcel2603/tfcoach/tfcoach:latest
+docker run -v $PWD:/app ghcr.io/marcel2603/tfcoach/tfcoach:latest lint .
+```
+
 ### From source
 
 ```bash
@@ -30,11 +42,6 @@ go install github.com/Marcel2603/tfcoach@latest
 ```
 
 This will install `tfcoach` into your `$GOPATH/bin` or `$GOBIN`.
-
-### From release
-
-Download the latest binary from the [Releases](https://github.com/Marcel2603/tfcoach/releases) page and place it in your
-`$PATH`.
 
 ---
 
