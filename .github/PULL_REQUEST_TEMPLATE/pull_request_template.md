@@ -31,10 +31,11 @@ Please explain step-by-step how to review this PR.
 
 Example:
 
-- Starting ldap
-- create user xy
-- change password to
-- ...
+- Create these terraform files
+```hcl
+
+```
+- Run lint against it
 
 ## Additional Information
 
