@@ -35,7 +35,7 @@ Example:
 ```hcl
 
 ```
-- Run lint against it
+- Run tfcoach lint against it
 
 ## Additional Information
 

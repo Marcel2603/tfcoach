@@ -54,10 +54,7 @@ decide to join our team and receive **push access**.
   and [submit your pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork)
   to the repo's default branch (`main`).
 
--
-    *
-*[Resolve any merge conflicts](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/resolving-a-merge-conflict-on-github)
-** that occur.
+- **[Resolve any merge conflicts](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/resolving-a-merge-conflict-on-github)** that occur.
 
 - **Promptly address any CI failures**. If your pull request fails to build or pass tests, please push another commit to
   fix it.

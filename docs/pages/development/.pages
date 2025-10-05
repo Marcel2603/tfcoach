@@ -1,5 +1,5 @@
 title: Development
 nav:
-  - Conventions: conventions.md
-  - Contributing: contributing.md
+  - index.md
+  - Rule Conventions: rule-conventions.md
   - tools
