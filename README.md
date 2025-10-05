@@ -82,7 +82,7 @@ make cover-html
 Run the CLI locally:
 
 ```bash
-go run ./cmd/tfcoach lint examples
+go run main.go lint examples
 ```
 
 ---
