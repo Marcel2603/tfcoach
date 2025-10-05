@@ -39,12 +39,12 @@ func (e *Engine) Run(root string) ([]Issue, error) {
 	fileDoneChan := make(chan struct{})
 	var wg sync.WaitGroup
 	for _, path := range files {
-		addTask(&wg, func() {
+		wg.Go(func() {
 			e.processFile(path, issuesChan)
 			fileDoneChan <- struct{}{}
 		})
 	}
-	addTask(&wg, func() {
+	wg.Go(func() {
 		closeAfterSignalCount(len(files), fileDoneChan)
 		close(issuesChan)
 	})
@@ -100,7 +100,7 @@ func (e *Engine) processFile(path string, issuesChan chan<- Issue) {
 	var fileWg sync.WaitGroup
 	ruleDoneChan := make(chan struct{})
 	for _, rule := range e.rules {
-		addTask(&fileWg, func() {
+		fileWg.Go(func() {
 			for _, issue := range rule.Apply(path, hclFile) {
 				issuesChan <- issue
 			}
@@ -108,26 +108,20 @@ func (e *Engine) processFile(path string, issuesChan chan<- Issue) {
 		})
 	}
 
-	addTask(&fileWg, func() {
+	fileWg.Go(func() {
 		closeAfterSignalCount(len(e.rules), ruleDoneChan)
 	})
 
 	fileWg.Wait()
 }
 
-func addTask(wg *sync.WaitGroup, fn func()) {
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		fn()
-	}()
-}
-
 func closeAfterSignalCount(target int, signalChannel chan struct{}) {
 	defer close(signalChannel)
+
 	if target == 0 {
 		return
 	}
+
 	signalCount := 0
 	for {
 		select {
