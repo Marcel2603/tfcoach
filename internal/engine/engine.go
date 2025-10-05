@@ -8,6 +8,8 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
+const issuesChanBufSize = 3 // TODO later: choose appropriate buffer size (balance performance vs resource usage)
+
 type Engine struct {
 	src   Source
 	rules []Rule
@@ -33,7 +35,7 @@ func (e *Engine) Run(root string) ([]Issue, error) {
 		return nil, err
 	}
 
-	issuesChan := make(chan Issue, 3) // TODO: what buffer size?
+	issuesChan := make(chan Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
 	var wg sync.WaitGroup
 	for _, path := range files {
