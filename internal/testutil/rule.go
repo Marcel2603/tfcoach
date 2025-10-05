@@ -47,3 +47,27 @@ func (r AlwaysFlag) Apply(file string, f *hcl.File) []engine.Issue {
 	}
 	return nil
 }
+
+type NeverFlag struct {
+	RuleID  string
+	Message string
+}
+
+func (r NeverFlag) ID() string { return r.RuleID }
+
+func (r NeverFlag) META() engine.RuleMeta {
+	return engine.RuleMeta{
+		Title:       "NeverFlag",
+		Description: r.Message,
+		Severity:    "HIGH",
+		DocsURL:     "tbd",
+	}
+}
+
+func (r NeverFlag) Apply(_ string, f *hcl.File) []engine.Issue {
+	body, _ := f.Body.(*hclsyntax.Body)
+	if body == nil {
+		return nil
+	}
+	return []engine.Issue{}
+}

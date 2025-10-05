@@ -2,10 +2,13 @@ package engine
 
 import (
 	"sort"
+	"sync"
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
+
+const issuesChanBufSize = 3 // TODO later: choose appropriate buffer size (balance performance vs resource usage)
 
 type Engine struct {
 	src   Source
@@ -32,32 +35,25 @@ func (e *Engine) Run(root string) ([]Issue, error) {
 		return nil, err
 	}
 
-	var issues []Issue
-	for _, file := range files {
-		bytes, err := e.src.ReadFile(file)
-		if err != nil {
-			issues = append(issues, Issue{
-				File:    file,
-				Message: "read error: " + err.Error(),
-				RuleID:  "io",
-			})
-			continue
-		}
-
-		hclFile, diagnostics := hclsyntax.ParseConfig(bytes, file, hcl.InitialPos)
-		if diagnostics.HasErrors() {
-			issues = append(issues, Issue{
-				File:    file,
-				Message: "parse error: " + diagnostics.Error(),
-				RuleID:  "parser",
-			})
-			continue
-		}
-
-		for _, rule := range e.rules {
-			issues = append(issues, rule.Apply(file, hclFile)...)
-		}
+	issuesChan := make(chan Issue, issuesChanBufSize)
+	fileDoneChan := make(chan struct{})
+	var wg sync.WaitGroup
+	for _, path := range files {
+		wg.Go(func() {
+			e.processFile(path, issuesChan)
+			fileDoneChan <- struct{}{}
+		})
 	}
+	wg.Go(func() {
+		closeAfterSignalCount(len(files), fileDoneChan)
+		close(issuesChan)
+	})
+
+	var issues []Issue
+	for issue := range issuesChan {
+		issues = append(issues, issue)
+	}
+	wg.Wait()
 
 	// sort for deterministic output
 	sort.SliceStable(issues, func(i, j int) bool {
@@ -78,4 +74,62 @@ func (e *Engine) Run(root string) ([]Issue, error) {
 	})
 
 	return issues, nil
+}
+
+func (e *Engine) processFile(path string, issuesChan chan<- Issue) {
+	bytes, err := e.src.ReadFile(path)
+	if err != nil {
+		issuesChan <- Issue{
+			File:    path,
+			Message: "read error: " + err.Error(),
+			RuleID:  "io",
+		}
+		return
+	}
+
+	hclFile, diagnostics := hclsyntax.ParseConfig(bytes, path, hcl.InitialPos)
+	if diagnostics.HasErrors() {
+		issuesChan <- Issue{
+			File:    path,
+			Message: "parse error: " + diagnostics.Error(),
+			RuleID:  "parser",
+		}
+		return
+	}
+
+	var fileWg sync.WaitGroup
+	ruleDoneChan := make(chan struct{})
+	for _, rule := range e.rules {
+		fileWg.Go(func() {
+			for _, issue := range rule.Apply(path, hclFile) {
+				issuesChan <- issue
+			}
+			ruleDoneChan <- struct{}{}
+		})
+	}
+
+	fileWg.Go(func() {
+		closeAfterSignalCount(len(e.rules), ruleDoneChan)
+	})
+
+	fileWg.Wait()
+}
+
+func closeAfterSignalCount(target int, signalChannel chan struct{}) {
+	defer close(signalChannel)
+
+	if target == 0 {
+		return
+	}
+
+	signalCount := 0
+	for {
+		select {
+		case <-signalChannel:
+			signalCount++
+			if signalCount >= target {
+				return
+			}
+		}
+	}
 }
