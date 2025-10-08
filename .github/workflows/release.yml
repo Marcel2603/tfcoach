@@ -17,5 +17,5 @@ jobs:
       - uses: ./.github/actions/release
         env:
           APP_ID: ${{ secrets.RELEASE_APP_ID }}
-          PRIVATE_KEY: ${{ secrets.RELEASE_APP_PRIVATE_KEY_BASE64 }}
+          PRIVATE_KEY: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
