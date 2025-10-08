@@ -8,7 +8,7 @@ in the correct files
 Consistent file-structure across multiple projects. Keeps scalability and
 error analysis simple.
 
-Example "I want to see resources that i load from external (data-resources). I
+Example "I want to see resources that I load from external (data-resources). I
 can just open data.tf"
 
 ### Mapping TF-Type to File
@@ -33,3 +33,7 @@ In generell, the "terraform"-Block is allowed to be in following files:
 |--------------|----------------------------------|------------------------------|
 | backend.tf   | cloud, backend                   |                              |
 | terraform.tf | required_provider ,provider_meta | required_version,experiments |
+
+## References
+
+- <https://developer.hashicorp.com/terraform/language/style#file-names>
