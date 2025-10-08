@@ -90,7 +90,7 @@ func (r *RequiredProviderMustBeDeclared) Finish() []types.Issue {
 			issues = append(issues, types.Issue{
 				File:    detectedBlock.file,
 				Range:   detectedBlock.blockRange,
-				Message: fmt.Sprintf("Block %s requires provider %s which is not declared.", detectedBlock.file, requiredProvider),
+				Message: fmt.Sprintf("Block %s requires provider %s which is not declared.", detectedBlock.resourceName, requiredProvider),
 				RuleID:  r.id,
 			})
 		}

@@ -38,15 +38,31 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 
 	issuesChan := make(chan types.Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
+	ruleFinishDoneChan := make(chan struct{})
 	var wg sync.WaitGroup
+
 	for _, path := range files {
 		wg.Go(func() {
 			e.processFile(path, issuesChan)
 			fileDoneChan <- struct{}{}
 		})
 	}
+
 	wg.Go(func() {
+		// wait for all files to have been processed before triggering rule finish
 		closeAfterSignalCount(len(files), fileDoneChan)
+		for _, rule := range e.rules {
+			wg.Go(func() {
+				for _, issue := range rule.Finish() {
+					issuesChan <- issue
+				}
+				ruleFinishDoneChan <- struct{}{}
+			})
+		}
+	})
+
+	wg.Go(func() {
+		closeAfterSignalCount(len(e.rules), ruleFinishDoneChan)
 		close(issuesChan)
 	})
 
@@ -99,18 +115,18 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue) {
 	}
 
 	var fileWg sync.WaitGroup
-	ruleDoneChan := make(chan struct{})
+	ruleApplyDoneChan := make(chan struct{})
 	for _, rule := range e.rules {
 		fileWg.Go(func() {
 			for _, issue := range rule.Apply(path, hclFile) {
 				issuesChan <- issue
 			}
-			ruleDoneChan <- struct{}{}
+			ruleApplyDoneChan <- struct{}{}
 		})
 	}
 
 	fileWg.Go(func() {
-		closeAfterSignalCount(len(e.rules), ruleDoneChan)
+		closeAfterSignalCount(len(e.rules), ruleApplyDoneChan)
 	})
 
 	fileWg.Wait()
