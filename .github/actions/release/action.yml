@@ -1,0 +1,67 @@
+name: "Release"
+description: "Builds and releases this project"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/create-github-app-token@v2
+      id: app-token
+      with:
+        app-id: ${{ env.APP_ID }}
+        private-key: ${{ env.PRIVATE_KEY }}
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ steps.app-token.outputs.token }}
+        persist-credentials: false
+
+    - name: Get GitHub App User ID
+      id: get-user-id
+      shell: bash
+      run: echo "user-id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+    - shell: bash
+      run: |
+        git config --global user.name '${{ steps.app-token.outputs.app-slug }}[bot]'
+        git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com'
+
+    - name: Install git-cliff
+      uses: taiki-e/install-action@git-cliff
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: "1.25.x"
+        cache: true
+        cache-dependency-path: |
+          go.sum
+
+    - name: Install GoReleaser
+      uses: goreleaser/goreleaser-action@v6
+      with:
+        install-only: true
+        version: "~> v2"
+
+    - name: Set up QEMU (for multi-arch Docker builds)
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ env.GITHUB_TOKEN }}
+
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v4
+      env:
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+      with:
+        extra_plugins: |
+          "@semantic-release/exec"
+          "@semantic-release/git"

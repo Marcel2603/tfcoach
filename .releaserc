@@ -1,0 +1,27 @@
+{
+  "preset": "angular",
+  "branches": [
+    "main"
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    [
+      "@semantic-release/exec",
+      {
+        "verifyConditionsCmd": "bash .github/scripts/verify.sh",
+        "generateNotesCmd": "git-cliff -o CHANGELOG.md --tag ${nextRelease.version} > /dev/null && cat CHANGELOG.md",
+        "publishCmd": "bash .github/scripts/publish.sh ${nextRelease.version} ${branch.name} ${commits.length} ${Date.now()}",
+        "failCmd": "bash .github/scripts/rollback_release.sh ${nextRelease.version} ${env.GITHUB_REPOSITORY} ${env.GITHUB_TOKEN}"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "CHANGELOG.md"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]"
+      }
+    ]
+  ]
+}
