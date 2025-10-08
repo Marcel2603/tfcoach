@@ -3,7 +3,7 @@
 
 [remote.github]
 owner = "Marcel2603"
-repo = "test-release"
+repo = "tfcoach"
 
 [changelog]
 header = """
@@ -64,7 +64,7 @@ footer = """
 trim = true
 postprocessors = [
     # Replace the placeholder `<REPO>` with a URL.
-    { pattern = '<REPO>', replace = "https://github.com/marcel2603/test-release" }, # replace repository URL
+    { pattern = '<REPO>', replace = "https://github.com/marcel2603/tfcoach" }, # replace repository URL
 ]
 
 [git]
