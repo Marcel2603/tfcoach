@@ -1,7 +1,7 @@
 package core
 
 import (
-	"github.com/Marcel2603/tfcoach/internal/engine"
+	"github.com/Marcel2603/tfcoach/internal/types"
 )
 
 const (
@@ -9,9 +9,9 @@ const (
 )
 
 var (
-	rules = []engine.Rule{NamingConventionRule(), FileNamingRule()}
+	rules = []types.Rule{NamingConventionRule(), FileNamingRule()}
 )
 
-func All() []engine.Rule {
+func All() []types.Rule {
 	return rules
 }

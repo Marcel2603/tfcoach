@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Marcel2603/tfcoach/internal/engine"
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
@@ -27,8 +27,8 @@ func (n NamingConvention) ID() string {
 	return n.id
 }
 
-func (n NamingConvention) META() engine.RuleMeta {
-	return engine.RuleMeta{
+func (n NamingConvention) META() types.RuleMeta {
+	return types.RuleMeta{
 		Title:       "Naming Convention",
 		Description: n.message,
 		Severity:    "HIGH",
@@ -36,16 +36,16 @@ func (n NamingConvention) META() engine.RuleMeta {
 	}
 }
 
-func (n NamingConvention) Apply(file string, f *hcl.File) []engine.Issue {
+func (n NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
 	body, ok := f.Body.(*hclsyntax.Body)
 	if !ok {
 		return nil
 	}
-	var out []engine.Issue
+	var out []types.Issue
 	for _, blk := range body.Blocks {
 		name := nameOf(blk)
 		if name != "" && !nameFormatRegex.MatchString(name) {
-			out = append(out, engine.Issue{
+			out = append(out, types.Issue{
 				File:    file,
 				Range:   blk.Range(),
 				Message: n.message,

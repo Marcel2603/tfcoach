@@ -4,6 +4,7 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
@@ -12,30 +13,30 @@ const issuesChanBufSize = 3 // TODO later: choose appropriate buffer size (balan
 
 type Engine struct {
 	src   Source
-	rules []Rule
+	rules []types.Rule
 }
 
 func New(src Source) *Engine {
-	return &Engine{src: src, rules: []Rule{}}
+	return &Engine{src: src, rules: []types.Rule{}}
 }
 
-func (e *Engine) Register(r Rule) {
+func (e *Engine) Register(r types.Rule) {
 	e.rules = append(e.rules, r)
 }
 
-func (e *Engine) RegisterMany(r []Rule) {
+func (e *Engine) RegisterMany(r []types.Rule) {
 	for _, rule := range r {
 		e.Register(rule)
 	}
 }
 
-func (e *Engine) Run(root string) ([]Issue, error) {
+func (e *Engine) Run(root string) ([]types.Issue, error) {
 	files, err := e.src.List(root)
 	if err != nil {
 		return nil, err
 	}
 
-	issuesChan := make(chan Issue, issuesChanBufSize)
+	issuesChan := make(chan types.Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
 	var wg sync.WaitGroup
 	for _, path := range files {
@@ -49,7 +50,7 @@ func (e *Engine) Run(root string) ([]Issue, error) {
 		close(issuesChan)
 	})
 
-	var issues []Issue
+	var issues []types.Issue
 	for issue := range issuesChan {
 		issues = append(issues, issue)
 	}
@@ -76,10 +77,10 @@ func (e *Engine) Run(root string) ([]Issue, error) {
 	return issues, nil
 }
 
-func (e *Engine) processFile(path string, issuesChan chan<- Issue) {
+func (e *Engine) processFile(path string, issuesChan chan<- types.Issue) {
 	bytes, err := e.src.ReadFile(path)
 	if err != nil {
-		issuesChan <- Issue{
+		issuesChan <- types.Issue{
 			File:    path,
 			Message: "read error: " + err.Error(),
 			RuleID:  "io",
@@ -89,7 +90,7 @@ func (e *Engine) processFile(path string, issuesChan chan<- Issue) {
 
 	hclFile, diagnostics := hclsyntax.ParseConfig(bytes, path, hcl.InitialPos)
 	if diagnostics.HasErrors() {
-		issuesChan <- Issue{
+		issuesChan <- types.Issue{
 			File:    path,
 			Message: "parse error: " + diagnostics.Error(),
 			RuleID:  "parser",

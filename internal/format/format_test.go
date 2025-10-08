@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/format"
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 )
 
@@ -19,7 +19,7 @@ func rng(file string, line0, col int) hcl.Range {
 }
 
 func TestWriteIssues_Single(t *testing.T) {
-	issues := []engine.Issue{
+	issues := []types.Issue{
 		{
 			File:    "main.tf",
 			Range:   rng("main.tf", 0, 1), // prints as line 1 due to +1
@@ -38,7 +38,7 @@ func TestWriteIssues_Single(t *testing.T) {
 }
 
 func TestWriteIssues_Multiple(t *testing.T) {
-	issues := []engine.Issue{
+	issues := []types.Issue{
 		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "r1"},
 		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "r2"},
 	}
@@ -55,7 +55,7 @@ func TestWriteIssues_Multiple(t *testing.T) {
 }
 
 func TestWriteSummary(t *testing.T) {
-	issues := []engine.Issue{
+	issues := []types.Issue{
 		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "r1"},
 		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "r2"},
 	}

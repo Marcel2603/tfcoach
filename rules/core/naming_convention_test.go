@@ -4,15 +4,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
 )
 
 func TestNameFormat_ExpectedMETA(t *testing.T) {
 	rule := core.NamingConventionRule()
 
-	expectedMETA := engine.RuleMeta{
+	expectedMETA := types.RuleMeta{
 		Title:       "Naming Convention",
 		Description: "terraform names should only contain lowercase alphanumeric characters and underscores.",
 		Severity:    "HIGH",

@@ -13,4 +13,4 @@ type Rule interface {
 Parse with `hclsyntax.ParseConfig`, iterate `body.Blocks`, or use the optional AST walker for nested/expr-heavy checks.
 Return issues with precise `hcl.Range`. Keep rules single-purpose and fast.
 
-The ID follows this patter `package.name`
+The ID follows this pattern: `package.name`

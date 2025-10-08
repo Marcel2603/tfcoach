@@ -5,14 +5,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/runner"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
+	"github.com/Marcel2603/tfcoach/internal/types"
 )
 
 func TestRunLint_NoIssues(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{"ok.tf": `# nothing`}}
-	var rules []engine.Rule // no rules -> no issues
+	var rules []types.Rule // no rules -> no issues
 	var out bytes.Buffer
 	code := runner.Lint(".", src, rules, &out)
 	if code != 0 {
@@ -25,7 +25,7 @@ func TestRunLint_NoIssues(t *testing.T) {
 
 func TestRunLint_Issues(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{"bad.tf": `resource "x" "y" {}`}}
-	rules := []engine.Rule{testutil.AlwaysFlag{
+	rules := []types.Rule{testutil.AlwaysFlag{
 		RuleID: "test.always.flag", Message: "failed", Match: "", // always emits
 	}}
 	var out bytes.Buffer

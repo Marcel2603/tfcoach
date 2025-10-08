@@ -7,6 +7,7 @@ import (
 
 	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
+	"github.com/Marcel2603/tfcoach/internal/types"
 )
 
 func TestEngine_WithStubRule(t *testing.T) {
@@ -25,7 +26,7 @@ func TestEngine_WithStubRule(t *testing.T) {
 func TestEngine_WithMultipleStubRules(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{"a.tf": `terraform {}`}}
 	e := engine.New(src)
-	e.RegisterMany([]engine.Rule{
+	e.RegisterMany([]types.Rule{
 		testutil.AlwaysFlag{RuleID: "t.id1", Message: "m1"},
 		testutil.NeverFlag{RuleID: "t.x", Message: "x"},
 		testutil.AlwaysFlag{RuleID: "t.id2", Message: "m2"},
@@ -47,7 +48,7 @@ func TestEngine_WithMultipleStubRules(t *testing.T) {
 func TestEngine_WithHclParsingError(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{"a.tf": `x`}}
 	e := engine.New(src)
-	e.RegisterMany([]engine.Rule{
+	e.RegisterMany([]types.Rule{
 		testutil.AlwaysFlag{RuleID: "t.id1", Message: "m1"},
 		testutil.AlwaysFlag{RuleID: "t.id2", Message: "m2"},
 		testutil.AlwaysFlag{RuleID: "t.id3", Message: "m3"},
@@ -72,7 +73,7 @@ func TestEngine_WithMultipleFilesAndManyStubRules(t *testing.T) {
 		"c.tf": `terraform {}`,
 	}}
 	e := engine.New(src)
-	var rules []engine.Rule
+	var rules []types.Rule
 	for i := range 100 {
 		rules = append(rules, testutil.AlwaysFlag{RuleID: strconv.Itoa(i), Message: "m"})
 	}

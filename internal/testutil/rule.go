@@ -5,7 +5,7 @@ package testutil
 import (
 	"strings"
 
-	"github.com/Marcel2603/tfcoach/internal/engine"
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
@@ -18,8 +18,8 @@ type AlwaysFlag struct {
 
 func (r AlwaysFlag) ID() string { return r.RuleID }
 
-func (r AlwaysFlag) META() engine.RuleMeta {
-	return engine.RuleMeta{
+func (r AlwaysFlag) META() types.RuleMeta {
+	return types.RuleMeta{
 		Title:       "AlwaysFlag",
 		Description: r.Message,
 		Severity:    "HIGH",
@@ -27,7 +27,7 @@ func (r AlwaysFlag) META() engine.RuleMeta {
 	}
 }
 
-func (r AlwaysFlag) Apply(file string, f *hcl.File) []engine.Issue {
+func (r AlwaysFlag) Apply(file string, f *hcl.File) []types.Issue {
 	body, _ := f.Body.(*hclsyntax.Body)
 	if body == nil {
 		return nil
@@ -38,7 +38,7 @@ func (r AlwaysFlag) Apply(file string, f *hcl.File) []engine.Issue {
 		src += b.DefRange().String()
 	}
 	if r.Match == "" || strings.Contains(src, r.Match) {
-		return []engine.Issue{{
+		return []types.Issue{{
 			File:    file,
 			Range:   body.Range(),
 			Message: r.Message,
@@ -55,8 +55,8 @@ type NeverFlag struct {
 
 func (r NeverFlag) ID() string { return r.RuleID }
 
-func (r NeverFlag) META() engine.RuleMeta {
-	return engine.RuleMeta{
+func (r NeverFlag) META() types.RuleMeta {
+	return types.RuleMeta{
 		Title:       "NeverFlag",
 		Description: r.Message,
 		Severity:    "HIGH",
@@ -64,10 +64,10 @@ func (r NeverFlag) META() engine.RuleMeta {
 	}
 }
 
-func (r NeverFlag) Apply(_ string, f *hcl.File) []engine.Issue {
+func (r NeverFlag) Apply(_ string, f *hcl.File) []types.Issue {
 	body, _ := f.Body.(*hclsyntax.Body)
 	if body == nil {
 		return nil
 	}
-	return []engine.Issue{}
+	return []types.Issue{}
 }
