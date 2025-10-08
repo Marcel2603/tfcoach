@@ -16,18 +16,18 @@ type NamingConvention struct {
 	message string
 }
 
-func NamingConventionRule() NamingConvention {
-	return NamingConvention{
+func NamingConventionRule() *NamingConvention {
+	return &NamingConvention{
 		id:      rulePrefix + ".naming_convention",
 		message: "terraform names should only contain lowercase alphanumeric characters and underscores.",
 	}
 }
 
-func (n NamingConvention) ID() string {
+func (n *NamingConvention) ID() string {
 	return n.id
 }
 
-func (n NamingConvention) META() types.RuleMeta {
+func (n *NamingConvention) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "Naming Convention",
 		Description: n.message,
@@ -36,7 +36,7 @@ func (n NamingConvention) META() types.RuleMeta {
 	}
 }
 
-func (n NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
+func (n *NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
 	body, ok := f.Body.(*hclsyntax.Body)
 	if !ok {
 		return nil
@@ -56,7 +56,7 @@ func (n NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
 	return out
 }
 
-func (n NamingConvention) Finish() []types.Issue {
+func (n *NamingConvention) Finish() []types.Issue {
 	return make([]types.Issue, 0)
 }
 

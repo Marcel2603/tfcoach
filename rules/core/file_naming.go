@@ -34,17 +34,17 @@ var (
 	defaultTerraformFilename = "terraform.tf"
 )
 
-func FileNamingRule() FileNaming {
-	return FileNaming{
+func FileNamingRule() *FileNaming {
+	return &FileNaming{
 		id: rulePrefix + ".file_naming",
 	}
 }
 
-func (r FileNaming) ID() string {
+func (r *FileNaming) ID() string {
 	return r.id
 }
 
-func (r FileNaming) META() types.RuleMeta {
+func (r *FileNaming) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "File Naming",
 		Description: "File naming should follow a strict convention.",
@@ -53,7 +53,7 @@ func (r FileNaming) META() types.RuleMeta {
 	}
 }
 
-func (r FileNaming) Apply(file string, f *hcl.File) []types.Issue {
+func (r *FileNaming) Apply(file string, f *hcl.File) []types.Issue {
 	body, ok := f.Body.(*hclsyntax.Body)
 	if !ok {
 		return nil
@@ -79,11 +79,11 @@ func (r FileNaming) Apply(file string, f *hcl.File) []types.Issue {
 	return out
 }
 
-func (r FileNaming) Finish() []types.Issue {
+func (r *FileNaming) Finish() []types.Issue {
 	return make([]types.Issue, 0)
 }
 
-func (r FileNaming) createIssue(file string, compliantFile string, hclType string, hclDataType string, hclRange hcl.Range) types.Issue {
+func (r *FileNaming) createIssue(file string, compliantFile string, hclType string, hclDataType string, hclRange hcl.Range) types.Issue {
 	return types.Issue{
 		File:    file,
 		Range:   hclRange,

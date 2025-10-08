@@ -9,7 +9,7 @@ const (
 )
 
 var (
-	rules = []types.Rule{NamingConventionRule(), FileNamingRule()}
+	rules = []types.Rule{NamingConventionRule(), FileNamingRule(), RequiredProviderMustBeDeclaredRule()}
 )
 
 func All() []types.Rule {
