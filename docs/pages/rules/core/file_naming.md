@@ -13,11 +13,25 @@ can just open data.tf"
 
 ### Mapping TF-Type to File
 
-| Type      | Filename     |
-|-----------|--------------|
-| output    | outputs.tf   |
-| variable  | variables.tf |
-| locals    | locals.tf    |
-| provider  | providers.tf |
-| terraform | terraform.tf |
-| data      | data.tf      |
+| Type     | Filename     |
+|----------|--------------|
+| output   | outputs.tf   |
+| variable | variables.tf |
+| locals   | locals.tf    |
+| provider | providers.tf |
+| data     | data.tf      |
+
+#### Mapping of Terraform Block
+
+The Terraform Block is separated in different files based on Blocks and Attributes.
+In generell, the "terraform"-Block is allowed to be in following files:
+
+- backend.tf
+- providers.tf
+- terraform.tf
+
+| Filename     | Blocks                           | Attributes                   |
+|--------------|----------------------------------|------------------------------|
+| backend.tf   | cloud, backend                   |                              |
+| providers.tf | required_provider, provider_meta |                              |
+| terraform.tf |                                  | required_version,experiments |
