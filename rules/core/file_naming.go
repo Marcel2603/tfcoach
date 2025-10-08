@@ -28,8 +28,8 @@ var (
 	terraformBlkTypeToFile = map[string]string{
 		"backend":            "backend.tf",
 		"cloud":              "backend.tf",
-		"required_providers": "providers.tf",
-		"provider_meta":      "providers.tf",
+		"required_providers": "terraform.tf",
+		"provider_meta":      "terraform.tf",
 	}
 	defaultTerraformFilename = "terraform.tf"
 )

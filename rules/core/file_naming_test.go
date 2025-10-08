@@ -204,14 +204,15 @@ func TestFileNaming_ShouldFailOnMisconfiguredTerraformBlocks(t *testing.T) {
 			"terraformBlockInNonComplaintFile",
 			"main.tf",
 			terraformInNonComplaintFile,
-			[]string{`Block "terraform" should be inside of [backend.tf providers.tf terraform.tf].`,
+			[]string{`Block "terraform" should be inside of [backend.tf terraform.tf].`,
 				`Attribute "required_version" should be inside of terraform.tf.`},
 		},
 		{
 			"terraformProviderVersionInTerraform.tf",
-			"terraform.tf",
+			"providers.tf",
 			terraformProviderVersion,
-			[]string{`Block "required_providers" should be inside of providers.tf.`},
+			[]string{`Block "terraform" should be inside of [backend.tf terraform.tf].`,
+				`Block "required_providers" should be inside of terraform.tf.`},
 		},
 	}
 

@@ -27,11 +27,9 @@ The Terraform Block is separated in different files based on Blocks and Attribut
 In generell, the "terraform"-Block is allowed to be in following files:
 
 - backend.tf
-- providers.tf
 - terraform.tf
 
 | Filename     | Blocks                           | Attributes                   |
 |--------------|----------------------------------|------------------------------|
 | backend.tf   | cloud, backend                   |                              |
-| providers.tf | required_provider, provider_meta |                              |
-| terraform.tf |                                  | required_version,experiments |
+| terraform.tf | required_provider ,provider_meta | required_version,experiments |
