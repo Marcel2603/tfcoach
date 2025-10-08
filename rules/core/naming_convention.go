@@ -56,6 +56,10 @@ func (n NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
 	return out
 }
 
+func (n NamingConvention) Finish() []types.Issue {
+	return make([]types.Issue, 0)
+}
+
 func nameOf(block *hclsyntax.Block) string {
 	// <block_type> "<label1>" "<label2>"
 	if len(block.Labels) == 0 {

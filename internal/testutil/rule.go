@@ -48,6 +48,10 @@ func (r AlwaysFlag) Apply(file string, f *hcl.File) []types.Issue {
 	return nil
 }
 
+func (r AlwaysFlag) Finish() []types.Issue {
+	return make([]types.Issue, 0)
+}
+
 type NeverFlag struct {
 	RuleID  string
 	Message string
@@ -70,4 +74,8 @@ func (r NeverFlag) Apply(_ string, f *hcl.File) []types.Issue {
 		return nil
 	}
 	return []types.Issue{}
+}
+
+func (r NeverFlag) Finish() []types.Issue {
+	return make([]types.Issue, 0)
 }

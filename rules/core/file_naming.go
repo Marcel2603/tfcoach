@@ -79,6 +79,10 @@ func (r FileNaming) Apply(file string, f *hcl.File) []types.Issue {
 	return out
 }
 
+func (r FileNaming) Finish() []types.Issue {
+	return make([]types.Issue, 0)
+}
+
 func (r FileNaming) createIssue(file string, compliantFile string, hclType string, hclDataType string, hclRange hcl.Range) types.Issue {
 	return types.Issue{
 		File:    file,
