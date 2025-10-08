@@ -2,6 +2,7 @@ package core_test
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"testing"
 
@@ -159,6 +160,75 @@ func TestFileNaming_ShouldFailOnFileWithMultipleIssues(t *testing.T) {
 	issues := rule.Apply(filename, testutil.ParseToHcl(t, filename, resource))
 	if len(issues) != 6 {
 		t.Fatalf("Uncorrect number of issues; expected one; got %d: %#v", len(issues), issues)
+	}
+
+}
+
+func TestFileNaming_ShouldFailOnMisconfiguredTerraformBlocks(t *testing.T) {
+	rule := core.FileNamingRule()
+
+	terraformWithBackend := `
+	terraform {
+		backend "s3" {}
+		cloud {
+		}
+	}`
+
+	terraformInNonComplaintFile := `
+		terraform {
+			required_version = "0.12.0"
+		}`
+	terraformProviderVersion := `
+		terraform {
+			required_providers {
+				pro {
+					  version = "<version-constraint>"
+					  source  = "<provider-address>"
+					}
+			}
+		}`
+
+	cases := []struct {
+		name     string
+		filename string
+		resource string
+		issues   []string
+	}{
+		{"terraformWithBackendInTerraform.tf",
+			"terraform.tf",
+			terraformWithBackend,
+			[]string{`Block "backend" should be inside of backend.tf.`,
+				`Block "cloud" should be inside of backend.tf.`},
+		},
+		{
+			"terraformBlockInNonComplaintFile",
+			"main.tf",
+			terraformInNonComplaintFile,
+			[]string{`Block "terraform" should be inside of [backend.tf providers.tf terraform.tf].`,
+				`Attribute "required_version" should be inside of terraform.tf.`},
+		},
+		{
+			"terraformProviderVersionInTerraform.tf",
+			"terraform.tf",
+			terraformProviderVersion,
+			[]string{`Block "required_providers" should be inside of providers.tf.`},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			filename := tt.filename
+			resource := tt.resource
+			issues := rule.Apply(filename, testutil.ParseToHcl(t, filename, resource))
+			if len(issues) != len(tt.issues) {
+				t.Fatalf("Issues found; expected %d; got %d: %#v", len(tt.issues), len(issues), issues)
+			}
+			for _, issue := range issues {
+				if !slices.Contains(tt.issues, issue.Message) {
+					t.Fatalf("Found unexpected Issue %s", issue.Message)
+				}
+			}
+		})
 	}
 
 }
