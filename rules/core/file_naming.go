@@ -2,10 +2,13 @@ package core
 
 import (
 	"fmt"
+	"maps"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/Marcel2603/tfcoach/internal/engine"
+	"github.com/Marcel2603/tfcoach/internal/utils"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
@@ -14,15 +17,22 @@ type FileNaming struct {
 	id string
 }
 
-var typeToFile = map[string]string{
-	"output":    "outputs.tf",
-	"variable":  "variables.tf",
-	"locals":    "locals.tf",
-	"provider":  "providers.tf",
-	"terraform": "terraform.tf",
-	//"backend": "backend.tf
-	"data": "data.tf",
-}
+var (
+	generalTypeToFile = map[string]string{
+		"output":   "outputs.tf",
+		"variable": "variables.tf",
+		"locals":   "locals.tf",
+		"provider": "providers.tf",
+		"data":     "data.tf",
+	}
+	terraformBlkTypeToFile = map[string]string{
+		"backend":            "backend.tf",
+		"cloud":              "backend.tf",
+		"required_providers": "terraform.tf",
+		"provider_meta":      "terraform.tf",
+	}
+	defaultTerraformFilename = "terraform.tf"
+)
 
 func FileNamingRule() FileNaming {
 	return FileNaming{
@@ -52,20 +62,61 @@ func (r FileNaming) Apply(file string, f *hcl.File) []engine.Issue {
 	for _, blk := range body.Blocks {
 		blkType := blk.Type
 		fileName := path.Base(file)
-		if compliantFile, ok := typeToFile[blkType]; ok {
+
+		if blkType == "terraform" {
+			issues := r.analyzeTerraformType(file, fileName, blk)
+			if len(issues) > 0 {
+				out = append(out, issues...)
+			}
+			continue
+		}
+		if compliantFile, ok := generalTypeToFile[blkType]; ok {
 			if fileName != compliantFile {
-				out = append(out, r.createIssue(file, compliantFile, blkType, blk.Range()))
+				out = append(out, r.createIssue(file, compliantFile, blkType, "Block", blk.Range()))
 			}
 		}
 	}
 	return out
 }
 
-func (r FileNaming) createIssue(file string, compliantFile string, hclType string, hclRange hcl.Range) engine.Issue {
+func (r FileNaming) createIssue(file string, compliantFile string, hclType string, hclDataType string, hclRange hcl.Range) engine.Issue {
 	return engine.Issue{
 		File:    file,
 		Range:   hclRange,
-		Message: fmt.Sprintf("All %s should be inside of %s.", hclType, compliantFile),
+		Message: fmt.Sprintf(`%s "%s" should be inside of %s.`, hclDataType, hclType, compliantFile),
 		RuleID:  r.id,
 	}
+}
+
+func (r FileNaming) analyzeTerraformType(file string, fileName string, terraformBlk *hclsyntax.Block) []engine.Issue {
+	var issues []engine.Issue
+	issues = append(issues, r.analyzeAllowedFilenamesForTerraformBlock(file, fileName, terraformBlk)...)
+	for _, blk := range terraformBlk.Body.Blocks {
+		typeFile, ok := terraformBlkTypeToFile[blk.Type]
+		compliantFilename := defaultTerraformFilename
+		if ok {
+			compliantFilename = typeFile
+		}
+		if fileName != compliantFilename {
+			issues = append(issues, r.createIssue(file, compliantFilename, blk.Type, "Block", blk.Range()))
+		}
+	}
+
+	for _, attr := range terraformBlk.Body.Attributes {
+		if fileName != defaultTerraformFilename {
+			issues = append(issues, r.createIssue(file, defaultTerraformFilename, attr.Name, "Attribute", attr.Range()))
+		}
+	}
+
+	return issues
+}
+
+func (r FileNaming) analyzeAllowedFilenamesForTerraformBlock(file string, fileName string, terraformBlk *hclsyntax.Block) []engine.Issue {
+	files := slices.Collect(maps.Values(terraformBlkTypeToFile))
+	files = utils.SortAndDeduplicate(append(files, defaultTerraformFilename))
+	var issues []engine.Issue
+	if !slices.Contains(files, fileName) {
+		issues = append(issues, r.createIssue(file, fmt.Sprintf("%+v", files), terraformBlk.Type, "Block", terraformBlk.Range()))
+	}
+	return issues
 }
