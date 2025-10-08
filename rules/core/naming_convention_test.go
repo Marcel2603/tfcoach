@@ -113,3 +113,12 @@ func TestNameFormat_FailedModules(t *testing.T) {
 		t.Fatalf("expected 4 issues; got %d: %#v", len(issues), issues)
 	}
 }
+
+func TestNameFormat_FinishShouldDoNothing(t *testing.T) {
+	rule := core.NamingConventionRule()
+
+	issues := rule.Finish()
+	if len(issues) != 0 {
+		t.Fatalf("Issues found; expected none; got %d: %#v", len(issues), issues)
+	}
+}

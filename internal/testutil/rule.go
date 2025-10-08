@@ -16,9 +16,9 @@ type AlwaysFlag struct {
 	Match   string
 }
 
-func (r AlwaysFlag) ID() string { return r.RuleID }
+func (r *AlwaysFlag) ID() string { return r.RuleID }
 
-func (r AlwaysFlag) META() types.RuleMeta {
+func (r *AlwaysFlag) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "AlwaysFlag",
 		Description: r.Message,
@@ -27,7 +27,7 @@ func (r AlwaysFlag) META() types.RuleMeta {
 	}
 }
 
-func (r AlwaysFlag) Apply(file string, f *hcl.File) []types.Issue {
+func (r *AlwaysFlag) Apply(file string, f *hcl.File) []types.Issue {
 	body, _ := f.Body.(*hclsyntax.Body)
 	if body == nil {
 		return nil
@@ -48,7 +48,7 @@ func (r AlwaysFlag) Apply(file string, f *hcl.File) []types.Issue {
 	return nil
 }
 
-func (r AlwaysFlag) Finish() []types.Issue {
+func (r *AlwaysFlag) Finish() []types.Issue {
 	return make([]types.Issue, 0)
 }
 
@@ -57,9 +57,9 @@ type NeverFlag struct {
 	Message string
 }
 
-func (r NeverFlag) ID() string { return r.RuleID }
+func (r *NeverFlag) ID() string { return r.RuleID }
 
-func (r NeverFlag) META() types.RuleMeta {
+func (r *NeverFlag) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "NeverFlag",
 		Description: r.Message,
@@ -68,7 +68,7 @@ func (r NeverFlag) META() types.RuleMeta {
 	}
 }
 
-func (r NeverFlag) Apply(_ string, f *hcl.File) []types.Issue {
+func (r *NeverFlag) Apply(_ string, f *hcl.File) []types.Issue {
 	body, _ := f.Body.(*hclsyntax.Body)
 	if body == nil {
 		return nil
@@ -76,6 +76,39 @@ func (r NeverFlag) Apply(_ string, f *hcl.File) []types.Issue {
 	return []types.Issue{}
 }
 
-func (r NeverFlag) Finish() []types.Issue {
+func (r *NeverFlag) Finish() []types.Issue {
 	return make([]types.Issue, 0)
+}
+
+type FlagOnFinish struct {
+	RuleID  string
+	Message string
+}
+
+func (r *FlagOnFinish) ID() string { return r.RuleID }
+
+func (r *FlagOnFinish) META() types.RuleMeta {
+	return types.RuleMeta{
+		Title:       "FlagOnFinish",
+		Description: r.Message,
+		Severity:    "HIGH",
+		DocsURL:     "tbd",
+	}
+}
+
+func (r *FlagOnFinish) Apply(_ string, f *hcl.File) []types.Issue {
+	body, _ := f.Body.(*hclsyntax.Body)
+	if body == nil {
+		return nil
+	}
+	return []types.Issue{}
+}
+
+func (r *FlagOnFinish) Finish() []types.Issue {
+	return []types.Issue{{
+		File:    "somefile.tf",
+		Range:   hcl.Range{Filename: "somefile.tf", Start: hcl.Pos{Line: 1, Column: 2, Byte: 3}, End: hcl.Pos{Line: 4, Column: 5, Byte: 6}},
+		Message: r.Message,
+		RuleID:  r.RuleID,
+	}}
 }

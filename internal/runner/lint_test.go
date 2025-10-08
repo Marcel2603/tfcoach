@@ -25,7 +25,7 @@ func TestRunLint_NoIssues(t *testing.T) {
 
 func TestRunLint_Issues(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{"bad.tf": `resource "x" "y" {}`}}
-	rules := []types.Rule{testutil.AlwaysFlag{
+	rules := []types.Rule{&testutil.AlwaysFlag{
 		RuleID: "test.always.flag", Message: "failed", Match: "", // always emits
 	}}
 	var out bytes.Buffer
