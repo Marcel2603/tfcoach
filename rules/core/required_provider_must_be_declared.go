@@ -59,24 +59,18 @@ func (r *RequiredProviderMustBeDeclared) Apply(file string, f *hcl.File) []types
 		if blkType == "resource" || blkType == "data" {
 			name := blk.Labels[0]
 			provider := strings.Split(name, "_")
-			r.requiredProviders.Lock()
-			r.requiredProviders.m[provider[0]] = append(r.requiredProviders.m[provider[0]], DetectedBlock{
-				file:         file,
-				resourceName: name,
-				blockRange:   blk.Range(),
-			})
-			r.requiredProviders.Unlock()
+			r.addBlockToRequiredProvider(provider[0], file, name, blk.Range())
 		} else if blkType == "terraform" {
 			for _, child := range blk.Body.Blocks {
 				if child.Type != "required_providers" {
 					continue
 				}
-				for _, provider := range child.Body.Attributes {
-					r.foundProviders = append(r.foundProviders, provider.Name)
-				}
+				r.addFoundProviders(child.Body)
 			}
 		}
 	}
+
+	// only report issues after all files have been checked
 	return make([]types.Issue, 0)
 }
 
@@ -96,4 +90,19 @@ func (r *RequiredProviderMustBeDeclared) Finish() []types.Issue {
 		}
 	}
 	return issues
+}
+
+func (r *RequiredProviderMustBeDeclared) addBlockToRequiredProvider(provider string, file string, resourceName string, blockRange hcl.Range) {
+	r.requiredProviders.Lock()
+	r.requiredProviders.m[provider] = append(
+		r.requiredProviders.m[provider],
+		DetectedBlock{file, resourceName, blockRange},
+	)
+	r.requiredProviders.Unlock()
+}
+
+func (r *RequiredProviderMustBeDeclared) addFoundProviders(requiredProvidersBody *hclsyntax.Body) {
+	for _, provider := range requiredProvidersBody.Attributes {
+		r.foundProviders = append(r.foundProviders, provider.Name)
+	}
 }
