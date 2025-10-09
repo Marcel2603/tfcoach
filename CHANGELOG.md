@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.3.0](https://github.com/Marcel2603/tfcoach/compare/v0.2.0..0.3.0) - 2025-10-09
+
+### Features
+
+- *(app)* Add new rule 'required_provider_must_be_declared' ([#9](https://github.com/marcel2603/tfcoach/issues/9)) - ([22d4b37](https://github.com/Marcel2603/tfcoach/commit/22d4b377579c0306ca599358d48258e642f3bd26))
+
+### Bug Fixes
+
+- *(rules)* Add terraform block handling in core.file_naming ([#11](https://github.com/marcel2603/tfcoach/issues/11)) - ([56c0cff](https://github.com/Marcel2603/tfcoach/commit/56c0cff00fce2b180b357c470a29d54d4a0431f0))
+
+### Documentation
+
+- *(CHANGELOG)* Adjust changelog after git-cliff change - ([a5a2f94](https://github.com/Marcel2603/tfcoach/commit/a5a2f946838bc83b0906f353079a071f8ecb2a36))
+- *(issues)* Fixing typos - ([e4bc08a](https://github.com/Marcel2603/tfcoach/commit/e4bc08a21dc8f11caf1de1656f872cc1bfb69f46))
+- *(repo)* Adding first simple CODEOWNERS file - ([10d594e](https://github.com/Marcel2603/tfcoach/commit/10d594e79325e255546f70ceb9991010917a5564))
+- Fix typos - ([1989ccf](https://github.com/Marcel2603/tfcoach/commit/1989ccf835a155cd03b9792f05b6b9360f8c01b8))
+
+### Miscellaneous Tasks
+
+- *(release)* Switch to git cliff ([#5](https://github.com/marcel2603/tfcoach/issues/5)) - ([48254d2](https://github.com/Marcel2603/tfcoach/commit/48254d20ad4214e998a13c0a9825e089f7394d95))
+
+## New Contributors ❤️
+
+* @Erkenbend made their first contribution in [#9](https://github.com/Marcel2603/tfcoach/pull/9)
 ## [0.2.0](https://github.com/Marcel2603/tfcoach/compare/v0.1.0..v0.2.0) - 2025-10-05
 
 ### Features
