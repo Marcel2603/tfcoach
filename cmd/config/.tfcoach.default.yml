@@ -1,0 +1,10 @@
+foo: bar
+rules:
+  foo:
+    enabled: true
+    spec:
+      hello: world
+  bar:
+    enabled: false
+    spec:
+      foo: bar
