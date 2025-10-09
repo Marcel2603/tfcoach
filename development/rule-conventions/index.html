@@ -420,6 +420,8 @@
       
         
       
+        
+      
     
     
     
@@ -489,6 +491,29 @@
   
   <span class="md-ellipsis">
     core.naming_convention
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../rules/core/required_provider_must_be_declared/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    core.required_provider_must_be_declared
     
   </span>
   
@@ -899,13 +924,16 @@
 <p>Rules implement:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">type</span><span class="w"> </span><span class="nx">Rule</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nx">ID</span><span class="p">()</span><span class="w"> </span><span class="kt">string</span>
-<span class="w">  </span><span class="nx">META</span><span class="p">()</span><span class="w"> </span><span class="nx">engine</span><span class="p">.</span><span class="nx">RuleMeta</span>
-<span class="w">  </span><span class="nx">Apply</span><span class="p">(</span><span class="nx">file</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">*</span><span class="nx">hcl</span><span class="p">.</span><span class="nx">File</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="nx">engine</span><span class="p">.</span><span class="nx">Issue</span>
+<span class="w">  </span><span class="nx">META</span><span class="p">()</span><span class="w"> </span><span class="nx">RuleMeta</span>
+<span class="w">  </span><span class="nx">Apply</span><span class="p">(</span><span class="nx">file</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">f</span><span class="w"> </span><span class="o">*</span><span class="nx">hcl</span><span class="p">.</span><span class="nx">File</span><span class="p">)</span><span class="w"> </span><span class="p">[]</span><span class="nx">Issue</span>
+<span class="w">  </span><span class="nx">Finish</span><span class="p">()</span><span class="w"> </span><span class="p">[]</span><span class="nx">Issue</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>Parse with <code>hclsyntax.ParseConfig</code>, iterate <code>body.Blocks</code>, or use the optional AST walker for nested/expr-heavy checks.
 Return issues with precise <code>hcl.Range</code>. Keep rules single-purpose and fast.</p>
-<p>The ID follows this patter <code>package.name</code></p>
+<p>Depending on what the rule needs to assert, you may report issues for each file independently (in <code>Apply</code>) or collect
+information and report after all files have been checked (in <code>Finish</code>).</p>
+<p>The ID follows this pattern: <code>package.name</code></p>
 
 
 
@@ -926,7 +954,7 @@ Return issues with precise <code>hcl.Range</code>. Keep rules single-purpose and
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 8, 2025 21:41:04 UTC">October 8, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 9, 2025 12:45:56 UTC">October 9, 2025</span>
   </span>
 
     
