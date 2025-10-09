@@ -4,15 +4,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
 )
 
 func TestNameFormat_ExpectedMETA(t *testing.T) {
 	rule := core.NamingConventionRule()
 
-	expectedMETA := engine.RuleMeta{
+	expectedMETA := types.RuleMeta{
 		Title:       "Naming Convention",
 		Description: "terraform names should only contain lowercase alphanumeric characters and underscores.",
 		Severity:    "HIGH",
@@ -111,5 +111,14 @@ func TestNameFormat_FailedModules(t *testing.T) {
 
 	if len(issues) != 3 {
 		t.Fatalf("expected 4 issues; got %d: %#v", len(issues), issues)
+	}
+}
+
+func TestNameFormat_FinishShouldDoNothing(t *testing.T) {
+	rule := core.NamingConventionRule()
+
+	issues := rule.Finish()
+	if len(issues) != 0 {
+		t.Fatalf("Issues found; expected none; got %d: %#v", len(issues), issues)
 	}
 }

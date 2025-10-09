@@ -6,9 +6,10 @@ import (
 
 	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/format"
+	"github.com/Marcel2603/tfcoach/internal/types"
 )
 
-func Lint(path string, src engine.Source, rules []engine.Rule, w io.Writer) int {
+func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer) int {
 	eng := engine.New(src)
 	eng.RegisterMany(rules)
 	issues, err := eng.Run(path)

@@ -6,15 +6,15 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
 )
 
 func TestFileNaming_ExpectedMeta(t *testing.T) {
 	rule := core.FileNamingRule()
 
-	expectedMETA := engine.RuleMeta{
+	expectedMETA := types.RuleMeta{
 		Title:       "File Naming",
 		Description: "File naming should follow a strict convention.",
 		Severity:    "HIGH",
@@ -129,7 +129,7 @@ func TestFileNaming_ShouldFailOnWrongFiles(t *testing.T) {
 			resource := tt.resource
 			issues := rule.Apply(filename, testutil.ParseToHcl(t, filename, resource))
 			if len(issues) != 1 {
-				t.Fatalf("Uncorrect number of issues; expected one; got %d: %#v", len(issues), issues)
+				t.Fatalf("Incorrect number of issues; expected one; got %d: %#v", len(issues), issues)
 			}
 		})
 	}
@@ -159,9 +159,17 @@ func TestFileNaming_ShouldFailOnFileWithMultipleIssues(t *testing.T) {
 	fmt.Println(resource)
 	issues := rule.Apply(filename, testutil.ParseToHcl(t, filename, resource))
 	if len(issues) != 6 {
-		t.Fatalf("Uncorrect number of issues; expected one; got %d: %#v", len(issues), issues)
+		t.Fatalf("Incorrect number of issues; expected one; got %d: %#v", len(issues), issues)
 	}
+}
 
+func TestFileNaming_FinishShouldDoNothing(t *testing.T) {
+	rule := core.FileNamingRule()
+
+	issues := rule.Finish()
+	if len(issues) != 0 {
+		t.Fatalf("Issues found; expected none; got %d: %#v", len(issues), issues)
+	}
 }
 
 func TestFileNaming_ShouldFailOnMisconfiguredTerraformBlocks(t *testing.T) {

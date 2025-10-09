@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Marcel2603/tfcoach/internal/engine"
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/internal/utils"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -34,18 +34,18 @@ var (
 	defaultTerraformFilename = "terraform.tf"
 )
 
-func FileNamingRule() FileNaming {
-	return FileNaming{
+func FileNamingRule() *FileNaming {
+	return &FileNaming{
 		id: rulePrefix + ".file_naming",
 	}
 }
 
-func (r FileNaming) ID() string {
+func (r *FileNaming) ID() string {
 	return r.id
 }
 
-func (r FileNaming) META() engine.RuleMeta {
-	return engine.RuleMeta{
+func (r *FileNaming) META() types.RuleMeta {
+	return types.RuleMeta{
 		Title:       "File Naming",
 		Description: "File naming should follow a strict convention.",
 		Severity:    "HIGH",
@@ -53,12 +53,12 @@ func (r FileNaming) META() engine.RuleMeta {
 	}
 }
 
-func (r FileNaming) Apply(file string, f *hcl.File) []engine.Issue {
+func (r *FileNaming) Apply(file string, f *hcl.File) []types.Issue {
 	body, ok := f.Body.(*hclsyntax.Body)
 	if !ok {
 		return nil
 	}
-	var out []engine.Issue
+	var out []types.Issue
 	for _, blk := range body.Blocks {
 		blkType := blk.Type
 		fileName := path.Base(file)
@@ -79,8 +79,12 @@ func (r FileNaming) Apply(file string, f *hcl.File) []engine.Issue {
 	return out
 }
 
-func (r FileNaming) createIssue(file string, compliantFile string, hclType string, hclDataType string, hclRange hcl.Range) engine.Issue {
-	return engine.Issue{
+func (r *FileNaming) Finish() []types.Issue {
+	return []types.Issue{}
+}
+
+func (r *FileNaming) createIssue(file string, compliantFile string, hclType string, hclDataType string, hclRange hcl.Range) types.Issue {
+	return types.Issue{
 		File:    file,
 		Range:   hclRange,
 		Message: fmt.Sprintf(`%s "%s" should be inside of %s.`, hclDataType, hclType, compliantFile),
@@ -88,8 +92,8 @@ func (r FileNaming) createIssue(file string, compliantFile string, hclType strin
 	}
 }
 
-func (r FileNaming) analyzeTerraformType(file string, fileName string, terraformBlk *hclsyntax.Block) []engine.Issue {
-	var issues []engine.Issue
+func (r *FileNaming) analyzeTerraformType(file string, fileName string, terraformBlk *hclsyntax.Block) []types.Issue {
+	var issues []types.Issue
 	issues = append(issues, r.analyzeAllowedFilenamesForTerraformBlock(file, fileName, terraformBlk)...)
 	for _, blk := range terraformBlk.Body.Blocks {
 		typeFile, ok := terraformBlkTypeToFile[blk.Type]
@@ -111,10 +115,10 @@ func (r FileNaming) analyzeTerraformType(file string, fileName string, terraform
 	return issues
 }
 
-func (r FileNaming) analyzeAllowedFilenamesForTerraformBlock(file string, fileName string, terraformBlk *hclsyntax.Block) []engine.Issue {
+func (r *FileNaming) analyzeAllowedFilenamesForTerraformBlock(file string, fileName string, terraformBlk *hclsyntax.Block) []types.Issue {
 	files := slices.Collect(maps.Values(terraformBlkTypeToFile))
 	files = utils.SortAndDeduplicate(append(files, defaultTerraformFilename))
-	var issues []engine.Issue
+	var issues []types.Issue
 	if !slices.Contains(files, fileName) {
 		issues = append(issues, r.createIssue(file, fmt.Sprintf("%+v", files), terraformBlk.Type, "Block", terraformBlk.Range()))
 	}

@@ -1,4 +1,4 @@
-package engine
+package types
 
 import "github.com/hashicorp/hcl/v2"
 
@@ -20,4 +20,5 @@ type Rule interface {
 	ID() string
 	META() RuleMeta
 	Apply(file string, f *hcl.File) []Issue
+	Finish() []Issue
 }

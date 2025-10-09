@@ -4,6 +4,7 @@ import (
 	"sort"
 	"sync"
 
+	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
@@ -12,47 +13,60 @@ const issuesChanBufSize = 3 // TODO later: choose appropriate buffer size (balan
 
 type Engine struct {
 	src   Source
-	rules []Rule
+	rules []types.Rule
 }
 
 func New(src Source) *Engine {
-	return &Engine{src: src, rules: []Rule{}}
+	return &Engine{src: src, rules: []types.Rule{}}
 }
 
-func (e *Engine) Register(r Rule) {
+func (e *Engine) Register(r types.Rule) {
 	e.rules = append(e.rules, r)
 }
 
-func (e *Engine) RegisterMany(r []Rule) {
+func (e *Engine) RegisterMany(r []types.Rule) {
 	for _, rule := range r {
 		e.Register(rule)
 	}
 }
 
-func (e *Engine) Run(root string) ([]Issue, error) {
+func (e *Engine) Run(root string) ([]types.Issue, error) {
 	files, err := e.src.List(root)
 	if err != nil {
 		return nil, err
 	}
 
-	issuesChan := make(chan Issue, issuesChanBufSize)
+	issuesChan := make(chan types.Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
+	ruleFinishDoneChan := make(chan struct{})
 	var wg sync.WaitGroup
+
 	for _, path := range files {
 		wg.Go(func() {
 			e.processFile(path, issuesChan)
 			fileDoneChan <- struct{}{}
 		})
 	}
+
 	wg.Go(func() {
+		// wait for all files to have been processed before triggering rule finish
 		closeAfterSignalCount(len(files), fileDoneChan)
+		for _, rule := range e.rules {
+			wg.Go(func() {
+				for _, issue := range rule.Finish() {
+					issuesChan <- issue
+				}
+				ruleFinishDoneChan <- struct{}{}
+			})
+		}
+	})
+
+	wg.Go(func() {
+		closeAfterSignalCount(len(e.rules), ruleFinishDoneChan)
 		close(issuesChan)
 	})
 
-	var issues []Issue
-	for issue := range issuesChan {
-		issues = append(issues, issue)
-	}
+	issues := collectAllFromChannel(issuesChan)
 	wg.Wait()
 
 	// sort for deterministic output
@@ -76,10 +90,10 @@ func (e *Engine) Run(root string) ([]Issue, error) {
 	return issues, nil
 }
 
-func (e *Engine) processFile(path string, issuesChan chan<- Issue) {
+func (e *Engine) processFile(path string, issuesChan chan<- types.Issue) {
 	bytes, err := e.src.ReadFile(path)
 	if err != nil {
-		issuesChan <- Issue{
+		issuesChan <- types.Issue{
 			File:    path,
 			Message: "read error: " + err.Error(),
 			RuleID:  "io",
@@ -89,7 +103,7 @@ func (e *Engine) processFile(path string, issuesChan chan<- Issue) {
 
 	hclFile, diagnostics := hclsyntax.ParseConfig(bytes, path, hcl.InitialPos)
 	if diagnostics.HasErrors() {
-		issuesChan <- Issue{
+		issuesChan <- types.Issue{
 			File:    path,
 			Message: "parse error: " + diagnostics.Error(),
 			RuleID:  "parser",
@@ -98,18 +112,18 @@ func (e *Engine) processFile(path string, issuesChan chan<- Issue) {
 	}
 
 	var fileWg sync.WaitGroup
-	ruleDoneChan := make(chan struct{})
+	ruleApplyDoneChan := make(chan struct{})
 	for _, rule := range e.rules {
 		fileWg.Go(func() {
 			for _, issue := range rule.Apply(path, hclFile) {
 				issuesChan <- issue
 			}
-			ruleDoneChan <- struct{}{}
+			ruleApplyDoneChan <- struct{}{}
 		})
 	}
 
 	fileWg.Go(func() {
-		closeAfterSignalCount(len(e.rules), ruleDoneChan)
+		closeAfterSignalCount(len(e.rules), ruleApplyDoneChan)
 	})
 
 	fileWg.Wait()
@@ -132,4 +146,12 @@ func closeAfterSignalCount(target int, signalChannel chan struct{}) {
 			}
 		}
 	}
+}
+
+func collectAllFromChannel(issuesChan <-chan types.Issue) []types.Issue {
+	var issues []types.Issue
+	for issue := range issuesChan {
+		issues = append(issues, issue)
+	}
+	return issues
 }
