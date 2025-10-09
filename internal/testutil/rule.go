@@ -49,7 +49,7 @@ func (r *AlwaysFlag) Apply(file string, f *hcl.File) []types.Issue {
 }
 
 func (r *AlwaysFlag) Finish() []types.Issue {
-	return make([]types.Issue, 0)
+	return []types.Issue{}
 }
 
 type NeverFlag struct {
@@ -77,7 +77,7 @@ func (r *NeverFlag) Apply(_ string, f *hcl.File) []types.Issue {
 }
 
 func (r *NeverFlag) Finish() []types.Issue {
-	return make([]types.Issue, 0)
+	return []types.Issue{}
 }
 
 type FlagOnFinish struct {

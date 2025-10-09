@@ -57,7 +57,7 @@ func (n *NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
 }
 
 func (n *NamingConvention) Finish() []types.Issue {
-	return make([]types.Issue, 0)
+	return []types.Issue{}
 }
 
 func nameOf(block *hclsyntax.Block) string {

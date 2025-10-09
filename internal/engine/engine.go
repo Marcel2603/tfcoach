@@ -66,10 +66,7 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		close(issuesChan)
 	})
 
-	var issues []types.Issue
-	for issue := range issuesChan {
-		issues = append(issues, issue)
-	}
+	issues := collectAllFromChannel(issuesChan)
 	wg.Wait()
 
 	// sort for deterministic output
@@ -149,4 +146,12 @@ func closeAfterSignalCount(target int, signalChannel chan struct{}) {
 			}
 		}
 	}
+}
+
+func collectAllFromChannel(issuesChan <-chan types.Issue) []types.Issue {
+	var issues []types.Issue
+	for issue := range issuesChan {
+		issues = append(issues, issue)
+	}
+	return issues
 }
