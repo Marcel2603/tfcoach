@@ -92,7 +92,7 @@ func (r *FileNaming) createIssue(file string, compliantFile string, hclType stri
 	}
 }
 
-func (r FileNaming) analyzeTerraformType(file string, fileName string, terraformBlk *hclsyntax.Block) []types.Issue {
+func (r *FileNaming) analyzeTerraformType(file string, fileName string, terraformBlk *hclsyntax.Block) []types.Issue {
 	var issues []types.Issue
 	issues = append(issues, r.analyzeAllowedFilenamesForTerraformBlock(file, fileName, terraformBlk)...)
 	for _, blk := range terraformBlk.Body.Blocks {
@@ -115,7 +115,7 @@ func (r FileNaming) analyzeTerraformType(file string, fileName string, terraform
 	return issues
 }
 
-func (r FileNaming) analyzeAllowedFilenamesForTerraformBlock(file string, fileName string, terraformBlk *hclsyntax.Block) []types.Issue {
+func (r *FileNaming) analyzeAllowedFilenamesForTerraformBlock(file string, fileName string, terraformBlk *hclsyntax.Block) []types.Issue {
 	files := slices.Collect(maps.Values(terraformBlkTypeToFile))
 	files = utils.SortAndDeduplicate(append(files, defaultTerraformFilename))
 	var issues []types.Issue
