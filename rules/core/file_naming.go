@@ -79,7 +79,7 @@ func (r *FileNaming) Apply(file string, f *hcl.File) []types.Issue {
 	return out
 }
 
-func (r *FileNaming) Finish() []types.Issue {
+func (*FileNaming) Finish() []types.Issue {
 	return []types.Issue{}
 }
 

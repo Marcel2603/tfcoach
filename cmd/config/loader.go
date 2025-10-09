@@ -23,7 +23,7 @@ func init() {
 	loadConfig()
 }
 
-func GetConfigByRuleId(ruleID string) RuleConfiguration {
+func GetConfigByRuleID(ruleID string) RuleConfiguration {
 	ruleConfiguration, ok := Configuration.Rules[ruleID]
 
 	if ok {
@@ -47,8 +47,7 @@ func loadConfig() {
 
 	var envData config
 	loadConfigFromEnv(&envData)
-
-	mergo.Merge(defaultData, envData, mergo.WithOverride)
+	mergo.Merge(&defaultData, envData, mergo.WithOverride)
 	Configuration = defaultData
 }
 
@@ -60,7 +59,7 @@ func loadCustomConfigFromFile(configPath string) (config, error) {
 		return appData, err
 	}
 	if extension == ".tfcoach" || extension == ".json" {
-		loadConfigFromYaml(configData, &appData)
+		loadConfigFromJSON(configData, &appData)
 		return appData, nil
 	}
 	if extension == ".yaml" || extension == ".yml" {
@@ -72,7 +71,7 @@ func loadCustomConfigFromFile(configPath string) (config, error) {
 }
 
 func loadConfigFromEnv(mapData *config) {
-	err := envconfig.Process("", mapData)
+	err := envconfig.Process("tfcoach", mapData)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 		return
@@ -87,7 +86,7 @@ func loadConfigFromYaml(data []byte, mapData *config) {
 	}
 }
 
-func loadConfigFromJson(data []byte, mapData *config) {
+func loadConfigFromJSON(data []byte, mapData *config) {
 	err := json.Unmarshal(data, &mapData)
 	if err != nil {
 		log.Fatalf("error: %v", err)
