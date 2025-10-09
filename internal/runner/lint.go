@@ -9,7 +9,7 @@ import (
 	"github.com/Marcel2603/tfcoach/internal/types"
 )
 
-func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer) int {
+func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer, outputFormat string) int {
 	eng := engine.New(src)
 	eng.RegisterMany(rules)
 	issues, err := eng.Run(path)
@@ -19,8 +19,11 @@ func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer) int {
 	}
 
 	if len(issues) > 0 {
-		format.WriteIssues(issues, w)
-		format.WriteSummary(issues, w)
+		writeErr := format.WriteResults(issues, w, outputFormat)
+		if writeErr != nil {
+			fmt.Printf("error writing results: %v\n", writeErr)
+			return 2
+		}
 		return 1
 	}
 	return 0
