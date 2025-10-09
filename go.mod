@@ -3,8 +3,11 @@ module github.com/Marcel2603/tfcoach
 go 1.25.1
 
 require (
+	dario.cat/mergo v1.0.2
 	github.com/hashicorp/hcl/v2 v2.24.0
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/spf13/cobra v1.10.1
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
