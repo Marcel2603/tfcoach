@@ -7,4 +7,6 @@ tfcoach
 .DS_STORE
 docs/site
 
-.tfcoach*
+.tfcoach
+.tfcoach.y*ml
+.tfcoach.json
