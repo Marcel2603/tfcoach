@@ -34,3 +34,7 @@ resource "aws_s3_bucket" "this" {}
 ```
 
 Note that the provider declaration and the resource usage do not need to be in the same file.
+
+## Configuration
+
+There is currently no configuration flags for that rule, beside the option to enable or disable the rule
