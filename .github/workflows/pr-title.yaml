@@ -1,11 +1,8 @@
 name: Conventional PR Title
 
 on:
-#  pull_request_target:          # runs in the base repo context
-#    types: [opened, edited, synchronize, reopened, ready_for_review]
-  push:
-    branches:
-      - disabled
+  pull_request_target:          # runs in the base repo context
+    types: [opened, edited, synchronize, reopened, ready_for_review]
 
 permissions:
   pull-requests: read

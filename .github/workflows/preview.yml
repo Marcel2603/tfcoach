@@ -1,14 +1,9 @@
 name: Deploy PR previews
 concurrency: preview-${{ github.ref }}
 on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - closed
-    paths:
-      - docs/**
+  push:
+    branches:
+      - disabled
 
 permissions:
   contents: write
