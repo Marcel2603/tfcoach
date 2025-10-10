@@ -37,7 +37,7 @@ func rng(file string, line0, col int) hcl.Range {
 
 func TestWriteResults_TextSingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "text")
+	err := format.WriteResults(issues1, &buf, "raw")
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -54,7 +54,7 @@ Summary:
 
 func TestWriteResults_TextMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "text")
+	err := format.WriteResults(issues2, &buf, "raw")
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}

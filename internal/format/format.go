@@ -15,7 +15,7 @@ type jsonOutput struct {
 
 func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error {
 	switch outputFormat {
-	case "text":
+	case "raw":
 		writeTextIssues(issues, w)
 		writeTextSummary(issues, w)
 	case "json":
