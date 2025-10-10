@@ -78,25 +78,17 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 	}
 
 	want := `{
-  "IssueCount": 1,
-  "Issues": [
+  "issue_count": 1,
+  "issues": [
 	{
-	  "RuleID": "core.naming.require_this",
-      "Message": "resource name must be \"this\"",
-	  "File": "main.tf",
-	  "Range": {
-		"Filename": "main.tf",
-		"Start": {
-		  "Line": 0,
-		  "Column": 1,
-		  "Byte": 0
-		},
-		"End": {
-		  "Line": 0,
-		  "Column": 1,
-		  "Byte": 0
-		}
-	  }
+	  "file": "main.tf",
+	  "line": 0,
+	  "column": 1,
+	  "message": "resource name must be \"this\"",
+	  "rule_id": "core.naming.require_this",
+	  "severity": "UNKNOWN",
+	  "category": "",
+	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/about:blank.md"
 	}
   ]
 }
@@ -126,43 +118,27 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 	}
 
 	want := `{
-  "IssueCount": 2,
-  "Issues": [
+  "issue_count": 2,
+  "issues": [
 	{
-	  "File": "a.tf",
-	  "Range": {
-		"Filename": "a.tf",
-		"Start": {
-		  "Line": 4,
-		  "Column": 7,
-		  "Byte": 0
-		},
-		"End": {
-		  "Line": 4,
-		  "Column": 7,
-		  "Byte": 0
-		}
-	  },
-	  "Message": "m1",
-	  "RuleID": "r1"
+	  "file": "a.tf",
+	  "line": 4,
+	  "column": 7,
+	  "message": "m1",
+	  "rule_id": "r1",
+	  "severity": "UNKNOWN",
+	  "category": "",
+	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/about:blank.md"
 	},
 	{
-	  "File": "b.tf",
-	  "Range": {
-		"Filename": "b.tf",
-		"Start": {
-		  "Line": 9,
-		  "Column": 2,
-		  "Byte": 0
-		},
-		"End": {
-		  "Line": 9,
-		  "Column": 2,
-		  "Byte": 0
-		}
-	  },
-	  "Message": "m2",
-	  "RuleID": "r2"
+	  "file": "b.tf",
+	  "line": 9,
+	  "column": 2,
+	  "message": "m2",
+	  "rule_id": "r2",
+	  "severity": "UNKNOWN",
+	  "category": "",
+	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/about:blank.md"
 	}
   ]
 }`
