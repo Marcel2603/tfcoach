@@ -34,6 +34,10 @@ In generell, the "terraform"-Block is allowed to be in following files:
 | backend.tf   | cloud, backend                   |                              |
 | terraform.tf | required_provider ,provider_meta | required_version,experiments |
 
+## Configuration
+
+There is currently no configuration flags for that rule, beside the option to enable or disable the rule
+
 ## References
 
 - <https://developer.hashicorp.com/terraform/language/style#file-names>

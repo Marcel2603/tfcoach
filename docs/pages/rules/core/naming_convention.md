@@ -23,3 +23,7 @@ resource "aws_s3_bucket" "Foo" {}
 ```hcl
 resource "aws_s3_bucket" "foo" {}
 ```
+
+## Configuration
+
+There is currently no configuration flags for that rule, beside the option to enable or disable the rule

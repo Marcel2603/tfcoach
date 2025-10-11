@@ -6,3 +6,7 @@ tfcoach
 *.exe
 .DS_STORE
 docs/site
+
+.tfcoach
+.tfcoach.y*ml
+.tfcoach.json

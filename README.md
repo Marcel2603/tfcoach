@@ -66,6 +66,16 @@ Exit codes:
 - `1`: issues found
 - `2`: error running the linter
 
+### Configuration
+
+The behavoíour of tfcoach can be configured by environment variables or by one of these files:
+
+- .tfcoach (json syntax)
+- .tfcoach.json
+- .tfcoach.y[a]ml
+
+More about the configuration [here](link to mkdocs)
+
 ---
 
 ## Development
