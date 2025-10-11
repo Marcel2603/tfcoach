@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
+	"slices"
+	"strings"
 
 	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/runner"
@@ -10,13 +13,22 @@ import (
 )
 
 var (
-	lintPath string
+	format string
 )
+
+// TODO later: pretty, educational
+var supportedOutputFormats = []string{"json", "raw"}
 
 var lintCmd = &cobra.Command{
 	Use:   "lint [path]",
 	Short: "Lint Terraform files",
 	Args:  cobra.ArbitraryArgs,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		if slices.Contains(supportedOutputFormats, format) {
+			return nil
+		}
+		return fmt.Errorf("invalid --format: %s (want %s)", format, strings.Join(supportedOutputFormats, "|"))
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		target := "."
 		if len(args) > 0 {
@@ -24,7 +36,7 @@ var lintCmd = &cobra.Command{
 		}
 
 		src := engine.FileSystem{SkipDirs: []string{".git", ".terraform"}}
-		code := runner.Lint(target, src, core.All(), cmd.OutOrStdout())
+		code := runner.Lint(target, src, core.All(), cmd.OutOrStdout(), format)
 		os.Exit(code)
 		return nil
 	},
@@ -32,5 +44,7 @@ var lintCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(lintCmd)
-	lintCmd.Flags().StringVarP(&lintPath, "path", "p", ".", "Path to scan (default: current dir)")
+
+	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
+	lintCmd.Flags().StringVarP(&format, "format", "f", "raw", formatUsageHelp)
 }
