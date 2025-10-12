@@ -16,8 +16,8 @@ tfcoach helps teams enforce consistent conventions and avoid common pitfalls by 
 
 - Command-line interface built with Cobra
 - Best-Practice Rules
-- Fast: parses each file once, applies multiple rules
-- CI-friendly exit codes
+- Fast: parses each file once, applies multiple rules in parallel
+- CI-friendly output and exit codes
 
 ---
 
@@ -60,6 +60,8 @@ main.tf:12:3: resource name must be "this" (core.naming.require_this)
 versions.tf:1:1: terraform block must declare "required_version" (core.terraform.require_version)
 ```
 
+Alternative CI-friendly output format available with `--format json` (see `tfcoach lint --help` for all options).
+
 Exit codes:
 
 - `0`: no issues found
@@ -99,12 +101,12 @@ go run main.go lint examples
 
 ## Roadmap
 
-- [ ] JSON output (`--format json`) for machine parsing
+- [ ] Alternative output formats (See option `--format`) → #13
 - [ ] Baseline support to adopt gradually in large codebases
 - [ ] Additional rule packs (AWS, GCP, Azure)
 - [ ] Auto-fix for selected rules
 - [ ] Pluggable rule engine
-- [ ] Configurable via `.tfcoach.yml`
+- [ ] Configurable via `.tfcoach.yml` → #15
 
 ---
 
