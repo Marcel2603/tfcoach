@@ -16,13 +16,13 @@ var (
 		{
 			File:    "main.tf",
 			Range:   rng("main.tf", 0, 1), // prints as line 1 due to +1
-			Message: `resource name must be "this"`,
-			RuleID:  "core.naming.require_this",
+			Message: `Block "a" should be inside of "b.tf"`,
+			RuleID:  "core.file_naming",
 		},
 	}
 	issues2 = []types.Issue{
-		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "r1"},
-		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "r2"},
+		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "core.something_something"},
+		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "core.naming_convention"},
 	}
 )
 
@@ -42,7 +42,7 @@ func TestWriteResults_TextSingle(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `main.tf:0:1: resource name must be "this" (core.naming.require_this)
+	want := `main.tf:0:1: Block "a" should be inside of "b.tf" (core.file_naming)
 Summary:
  Issues: 1
 `
@@ -59,8 +59,8 @@ func TestWriteResults_TextMultiple(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `a.tf:4:7: m1 (r1)
-b.tf:9:2: m2 (r2)
+	want := `a.tf:4:7: m1 (core.something_something)
+b.tf:9:2: m2 (core.naming_convention)
 Summary:
  Issues: 2
 `
@@ -84,11 +84,11 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 	  "file": "main.tf",
 	  "line": 0,
 	  "column": 1,
-	  "message": "resource name must be \"this\"",
-	  "rule_id": "core.naming.require_this",
-	  "severity": "UNKNOWN",
+	  "message": "Block \"a\" should be inside of \"b.tf\"",
+	  "rule_id": "core.file_naming",
+	  "severity": "HIGH",
 	  "category": "",
-	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/about:blank.md"
+	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/core/file_naming.md"
 	}
   ]
 }
@@ -125,20 +125,20 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 	  "line": 4,
 	  "column": 7,
 	  "message": "m1",
-	  "rule_id": "r1",
+	  "rule_id": "core.something_something",
 	  "severity": "UNKNOWN",
 	  "category": "",
-	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/about:blank.md"
+	  "docs_url": "about:blank"
 	},
 	{
 	  "file": "b.tf",
 	  "line": 9,
 	  "column": 2,
 	  "message": "m2",
-	  "rule_id": "r2",
-	  "severity": "UNKNOWN",
+	  "rule_id": "core.naming_convention",
+	  "severity": "HIGH",
 	  "category": "",
-	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/about:blank.md"
+	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/core/naming_convention.md"
 	}
   ]
 }`

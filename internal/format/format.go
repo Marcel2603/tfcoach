@@ -7,7 +7,6 @@ import (
 
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
-	"github.com/hashicorp/hcl/v2"
 )
 
 const ruleDocsFormat = "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/%s.md"
@@ -26,29 +25,6 @@ type issueOutput struct {
 type jsonOutput struct {
 	IssueCount int           `json:"issue_count"`
 	Issues     []issueOutput `json:"issues"`
-}
-
-type placeholderRule struct{}
-
-func (r *placeholderRule) ID() string {
-	return ""
-}
-
-func (r *placeholderRule) META() types.RuleMeta {
-	return types.RuleMeta{
-		Title:       "",
-		Description: "",
-		Severity:    "UNKNOWN",
-		DocsURL:     "about:blank",
-	}
-}
-
-func (r *placeholderRule) Apply(_ string, _ *hcl.File) []types.Issue {
-	return []types.Issue{}
-}
-
-func (r *placeholderRule) Finish() []types.Issue {
-	return []types.Issue{}
 }
 
 func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error {
@@ -99,10 +75,15 @@ func toIssueOutputs(issues []types.Issue) []issueOutput {
 
 	for _, issue := range issues {
 		rule, err := core.FindById(issue.RuleID)
+		var severity, docsUrl string
 		if err != nil {
-			rule = &placeholderRule{}
+			severity = "UNKNOWN"
+			docsUrl = "about:blank"
+		} else {
+			rulesMeta := rule.META()
+			severity = rulesMeta.Severity
+			docsUrl = fmt.Sprintf(ruleDocsFormat, rulesMeta.DocsURL)
 		}
-		ruleMeta := rule.META()
 
 		result = append(result, issueOutput{
 			File:     issue.File,
@@ -110,10 +91,11 @@ func toIssueOutputs(issues []types.Issue) []issueOutput {
 			Column:   issue.Range.Start.Column,
 			Message:  issue.Message,
 			RuleId:   issue.RuleID,
-			Severity: ruleMeta.Severity,
+			Severity: severity,
 			//Category: "?",  // TODO later: implement rule category
-			DocsUrl: fmt.Sprintf(ruleDocsFormat, ruleMeta.DocsURL),
+			DocsUrl: docsUrl,
 		})
 	}
+
 	return result
 }

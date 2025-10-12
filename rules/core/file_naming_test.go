@@ -1,7 +1,6 @@
 package core_test
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 	"testing"
@@ -156,7 +155,6 @@ func TestFileNaming_ShouldFailOnFileWithMultipleIssues(t *testing.T) {
 	
 	variable "test" {}
 	`
-	fmt.Println(resource)
 	issues := rule.Apply(filename, testutil.ParseToHcl(t, filename, resource))
 	if len(issues) != 6 {
 		t.Fatalf("Incorrect number of issues; expected one; got %d: %#v", len(issues), issues)
