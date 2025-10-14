@@ -12,23 +12,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ship the default config with the app
-//
-//go:embed .tfcoach.default.yml
-var yamlDefaultData []byte
+var (
+	// ship the default config with the app
+	//
+	//go:embed .tfcoach.default.yml
+	yamlDefaultData []byte
 
-var Configuration config
-
-// load config automatically
-func init() {
-	err := loadConfig()
-	if err != nil {
-		panic("Could not load config: " + err.Error())
-	}
-}
+	configuration = mustLoadConfig()
+)
 
 func GetConfigByRuleID(ruleID string) RuleConfiguration {
-	ruleConfiguration, ok := Configuration.Rules[ruleID]
+	ruleConfiguration, ok := configuration.Rules[ruleID]
 
 	if ok {
 		return ruleConfiguration
@@ -36,11 +30,19 @@ func GetConfigByRuleID(ruleID string) RuleConfiguration {
 	return RuleConfiguration{Enabled: true}
 }
 
-func loadConfig() error {
+func mustLoadConfig() config {
+	configData, err := loadConfig()
+	if err != nil {
+		panic("Could not load config: " + err.Error())
+	}
+	return configData
+}
+
+func loadConfig() (config, error) {
 	var configData config
 	err := loadConfigFromYaml(yamlDefaultData, &configData)
 	if err != nil {
-		return err
+		return config{}, err
 	}
 
 	customConfigPath, found := getCustomConfigPath()
@@ -48,11 +50,11 @@ func loadConfig() error {
 	if found {
 		appData, err = loadCustomConfigFromFile(customConfigPath)
 		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Could not load config from custom config file %s: %s", customConfigPath, err.Error())
+			_, _ = fmt.Fprintf(os.Stderr, "Could not load config from custom config file %s: %s\n", customConfigPath, err.Error())
 		} else {
 			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverride)
 			if mergeErr != nil {
-				return mergeErr
+				return config{}, mergeErr
 			}
 		}
 	}
@@ -60,15 +62,14 @@ func loadConfig() error {
 	var envData config
 	err = loadConfigFromEnv(&envData)
 	if err != nil {
-		return err
+		return config{}, err
 	}
 	mergeErr := mergo.Merge(&configData, envData, mergo.WithOverride)
 	if mergeErr != nil {
-		return mergeErr
+		return config{}, mergeErr
 	}
 
-	Configuration = configData
-	return nil
+	return configData, nil
 }
 
 func loadCustomConfigFromFile(configPath string) (config, error) {

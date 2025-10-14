@@ -14,23 +14,47 @@ func resetYamlDefaultData() {
 }
 
 func TestLoadDefaultConfig(t *testing.T) {
-	err := loadConfig()
+	configData, err := loadConfig()
 	if err != nil {
 		t.Errorf("loadConfig() error = %v", err)
 	}
-	if len(Configuration.Rules) != 0 {
-		t.Errorf("Expected 0 rules, got %d", len(Configuration.Rules))
+
+	if len(configData.Rules) != 0 {
+		t.Errorf("Expected 0 rules, got %d", len(configData.Rules))
 	}
+}
+
+func TestMustLoadConfig(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("mustLoadConfig() did panic on default config")
+		}
+	}()
+
+	_ = mustLoadConfig()
 }
 
 func TestLoadDefaultConfig_Invalid(t *testing.T) {
 	defer resetYamlDefaultData()
 	yamlDefaultData = []byte(`rules: {::: {"enabled": false}}`)
 
-	err := loadConfig()
+	_, err := loadConfig()
 	if err == nil {
 		t.Errorf("expected error, got none")
 	}
+}
+
+func TestMustLoadConfig_Invalid(t *testing.T) {
+	defer resetYamlDefaultData()
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("mustLoadConfig() did not panic on invalid default config")
+		}
+	}()
+
+	yamlDefaultData = []byte(`rules: {::: {"enabled": false}}`)
+
+	_ = mustLoadConfig()
 }
 
 func TestLoadConfig_OverriddenByFile(t *testing.T) {
@@ -68,12 +92,13 @@ func TestLoadConfig_OverriddenByFile(t *testing.T) {
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.content, 0644)
-			err := loadConfig()
+			configData, err := loadConfig()
 			if err != nil {
 				t.Errorf("loadConfig() error = %v", err)
 			}
-			if reflect.DeepEqual(Configuration, tt.expected) {
-				t.Errorf("Expected %v, got %v", tt.expected, Configuration)
+
+			if reflect.DeepEqual(configData, tt.expected) {
+				t.Errorf("Expected %v, got %v", tt.expected, configData)
 			}
 		})
 	}
@@ -111,12 +136,13 @@ func TestLoadConfig_InvalidOverride(t *testing.T) {
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.content, 0644)
-			err := loadConfig()
+			configData, err := loadConfig()
 			if err != nil {
 				t.Errorf("loadConfig() error = %v", err)
 			}
-			if reflect.DeepEqual(Configuration, expected) {
-				t.Errorf("Expected %v, got %v", expected, Configuration)
+
+			if reflect.DeepEqual(configData, expected) {
+				t.Errorf("Expected %v, got %v", expected, configData)
 			}
 		})
 	}
@@ -143,10 +169,12 @@ func TestGetConfigByRuleId(t *testing.T) {
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, ".tfcoach.json"), content, 0644)
-			err := loadConfig()
+			configData, err := loadConfig()
 			if err != nil {
 				t.Errorf("loadConfig() error = %v", err)
 			}
+
+			configuration = configData
 			ruleConfig := GetConfigByRuleID(tt.ruleID)
 			if ruleConfig.Enabled != tt.expected.Enabled {
 				t.Errorf("Expected %+v, got %+v", tt.expected, ruleConfig)
