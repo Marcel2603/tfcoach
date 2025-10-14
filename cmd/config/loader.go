@@ -3,7 +3,7 @@ package config
 import (
 	_ "embed"
 	"encoding/json"
-	"log"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -16,11 +16,15 @@ import (
 //
 //go:embed .tfcoach.default.yml
 var yamlDefaultData []byte
+
 var Configuration config
 
 // load config automatically
 func init() {
-	loadConfig()
+	err := loadConfig()
+	if err != nil {
+		panic("Could not load config: " + err.Error())
+	}
 }
 
 func GetConfigByRuleID(ruleID string) RuleConfiguration {
@@ -32,23 +36,39 @@ func GetConfigByRuleID(ruleID string) RuleConfiguration {
 	return RuleConfiguration{Enabled: true}
 }
 
-func loadConfig() {
-	var defaultData config
-
-	loadConfigFromYaml(yamlDefaultData, &defaultData)
+func loadConfig() error {
+	var configData config
+	err := loadConfigFromYaml(yamlDefaultData, &configData)
+	if err != nil {
+		return err
+	}
 
 	customConfigPath, found := getCustomConfigPath()
-	if found == nil {
-		appData, err := loadCustomConfigFromFile(customConfigPath)
-		if err == nil {
-			mergo.Merge(&defaultData, appData, mergo.WithOverride)
+	var appData config
+	if found {
+		appData, err = loadCustomConfigFromFile(customConfigPath)
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Could not load config from custom config file %s: %s", customConfigPath, err.Error())
+		} else {
+			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverride)
+			if mergeErr != nil {
+				return mergeErr
+			}
 		}
 	}
 
 	var envData config
-	loadConfigFromEnv(&envData)
-	mergo.Merge(&defaultData, envData, mergo.WithOverride)
-	Configuration = defaultData
+	err = loadConfigFromEnv(&envData)
+	if err != nil {
+		return err
+	}
+	mergeErr := mergo.Merge(&configData, envData, mergo.WithOverride)
+	if mergeErr != nil {
+		return mergeErr
+	}
+
+	Configuration = configData
+	return nil
 }
 
 func loadCustomConfigFromFile(configPath string) (config, error) {
@@ -58,43 +78,31 @@ func loadCustomConfigFromFile(configPath string) (config, error) {
 	if err != nil {
 		return appData, err
 	}
-	if extension == ".tfcoach" || extension == ".json" {
-		loadConfigFromJSON(configData, &appData)
-		return appData, nil
-	}
-	if extension == ".yaml" || extension == ".yml" {
-		loadConfigFromYaml(configData, &appData)
-		return appData, nil
-	}
-	return appData, os.ErrNotExist
-
-}
-
-func loadConfigFromEnv(mapData *config) {
-	err := envconfig.Process("tfcoach", mapData)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-		return
+	switch extension {
+	case ".tfcoach", ".json":
+		err = loadConfigFromJSON(configData, &appData)
+		return appData, err
+	case ".yaml", ".yml":
+		err = loadConfigFromYaml(configData, &appData)
+		return appData, err
+	default:
+		return appData, os.ErrNotExist
 	}
 }
 
-func loadConfigFromYaml(data []byte, mapData *config) {
-	err := yaml.Unmarshal(data, &mapData)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-		return
-	}
+func loadConfigFromEnv(mapData *config) error {
+	return envconfig.Process("tfcoach", mapData)
 }
 
-func loadConfigFromJSON(data []byte, mapData *config) {
-	err := json.Unmarshal(data, &mapData)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-		return
-	}
+func loadConfigFromYaml(data []byte, mapData *config) error {
+	return yaml.Unmarshal(data, &mapData)
 }
 
-func getCustomConfigPath() (string, error) {
+func loadConfigFromJSON(data []byte, mapData *config) error {
+	return json.Unmarshal(data, &mapData)
+}
+
+func getCustomConfigPath() (string, bool) {
 	files := []string{
 		".tfcoach.yml",
 		".tfcoach.yaml",
@@ -104,9 +112,9 @@ func getCustomConfigPath() (string, error) {
 
 	for _, f := range files {
 		if _, err := os.Stat(f); err == nil {
-			return f, nil
+			return f, true
 		}
 	}
 
-	return "", os.ErrNotExist
+	return "", false
 }
