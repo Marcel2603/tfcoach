@@ -9,7 +9,7 @@ import (
 	"github.com/Marcel2603/tfcoach/rules/core"
 )
 
-const ruleDocsFormat = "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/%s.md"
+const ruleDocsFormat = "https://marcel2603.github.io/tfcoach/rules/%s"
 
 type issueOutput struct {
 	File     string `json:"file"`

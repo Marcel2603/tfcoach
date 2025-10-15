@@ -88,7 +88,7 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 	  "rule_id": "core.file_naming",
 	  "severity": "HIGH",
 	  "category": "",
-	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/core/file_naming.md"
+	  "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/file_naming"
 	}
   ]
 }
@@ -138,7 +138,7 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 	  "rule_id": "core.naming_convention",
 	  "severity": "HIGH",
 	  "category": "",
-	  "docs_url": "https://github.com/Marcel2603/tfcoach/tree/main/docs/pages/rules/core/naming_convention.md"
+	  "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/naming_convention"
 	}
   ]
 }`
