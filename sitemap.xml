@@ -2,66 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://marcel2603.github.io/tfcoach/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
+    </url>
+    <url>
+         <loc>https://marcel2603.github.io/tfcoach/configuration/</loc>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/getting-started/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/rule-ideas/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/usage/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/about/license/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/about/security/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/development/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/development/release/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/development/rule-conventions/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/development/tools/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/development/tools/gen-rules-doc/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/development/tools/hcl-test/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/rules/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/rules/core/file_naming/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/rules/core/naming_convention/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
     <url>
          <loc>https://marcel2603.github.io/tfcoach/rules/core/required_provider_must_be_declared/</loc>
-         <lastmod>2025-10-11</lastmod>
+         <lastmod>2025-10-15</lastmod>
     </url>
 </urlset>
