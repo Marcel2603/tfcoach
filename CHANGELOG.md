@@ -1,6 +1,25 @@
 # Changelog
 
-## [0.3.0](https://github.com/Marcel2603/tfcoach/compare/v0.2.0..0.3.0) - 2025-10-09
+## [0.4.0](https://github.com/Marcel2603/tfcoach/compare/v0.3.0..0.4.0) - 2025-10-15
+
+### Features
+
+- *(app)* Add flag to lint command for JSON output format ([#12](https://github.com/marcel2603/tfcoach/issues/12)) - ([9c42309](https://github.com/Marcel2603/tfcoach/commit/9c42309df0e846b483ae0858c8109d682918b1db))
+- *(config)* Make tfcoach configurable ([#19](https://github.com/marcel2603/tfcoach/issues/19)) - ([01ef141](https://github.com/Marcel2603/tfcoach/commit/01ef141eb460e45957a6b527545e8523593b7455))
+
+### Documentation
+
+- *(codeowners)* Secure all files - ([4979c78](https://github.com/Marcel2603/tfcoach/commit/4979c78cfa12cd0cd0849e2653f6f33edae5d3a0))
+
+### Miscellaneous Tasks
+
+- *(preview)* Disable workflow - ([3dfe6d7](https://github.com/Marcel2603/tfcoach/commit/3dfe6d72e3599748e37f175bc092e011682f13ec))
+- *(preview)* Disable workflow - ([baccb89](https://github.com/Marcel2603/tfcoach/commit/baccb89d6056ecb332837c2cf4d89c7f6a733b3d))
+
+## New Contributors ❤️
+
+* @renovate[bot] made their first contribution in [#24](https://github.com/Marcel2603/tfcoach/pull/24)
+## [0.3.0](https://github.com/Marcel2603/tfcoach/compare/v0.2.0..v0.3.0) - 2025-10-09
 
 ### Features
 
