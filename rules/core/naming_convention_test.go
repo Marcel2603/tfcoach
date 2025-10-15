@@ -15,7 +15,7 @@ func TestNameFormat_ExpectedMETA(t *testing.T) {
 	expectedMETA := types.RuleMeta{
 		Title:       "Naming Convention",
 		Description: "terraform names should only contain lowercase alphanumeric characters and underscores.",
-		Severity:    "HIGH",
+		Severity:    types.SeverityHigh,
 		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
 

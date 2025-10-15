@@ -84,7 +84,7 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 	  "column": 1,
 	  "message": "Block \"a\" should be inside of \"b.tf\"",
 	  "rule_id": "core.file_naming",
-	  "severity": "HIGH",
+	  "severity": "LOW",
 	  "category": "",
 	  "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/file_naming"
 	}

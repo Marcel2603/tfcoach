@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"slices"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
@@ -12,14 +13,14 @@ import (
 const ruleDocsFormat = "https://marcel2603.github.io/tfcoach/rules/%s"
 
 type issueOutput struct {
-	File     string `json:"file"`
-	Line     int    `json:"line"`
-	Column   int    `json:"column"`
-	Message  string `json:"message"`
-	RuleId   string `json:"rule_id"`
-	Severity string `json:"severity"`
-	Category string `json:"category"`
-	DocsUrl  string `json:"docs_url"`
+	File     string         `json:"file"`
+	Line     int            `json:"line"`
+	Column   int            `json:"column"`
+	Message  string         `json:"message"`
+	RuleId   string         `json:"rule_id"`
+	Severity types.Severity `json:"severity"`
+	Category string         `json:"category"`
+	DocsUrl  string         `json:"docs_url"`
 }
 
 type jsonOutput struct {
@@ -34,6 +35,11 @@ func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error 
 		writeTextSummaryCompact(issues, w)
 	case "json":
 		err := writeJson(issues, w)
+		if err != nil {
+			return err
+		}
+	case "pretty":
+		err := writePretty(issues, w)
 		if err != nil {
 			return err
 		}
@@ -76,14 +82,41 @@ func writeJson(issues []types.Issue, w io.Writer) error {
 	return nil
 }
 
+func writePretty(issues []types.Issue, w io.Writer) error {
+	preparedIssues := toIssueOutputs(issues)
+	issuesGroupedByFile := make(map[string][]issueOutput)
+	for _, issue := range preparedIssues {
+		issuesGroupedByFile[issue.File] = append(issuesGroupedByFile[issue.File], issue)
+	}
+	for fileName, issuesInFile := range issuesGroupedByFile {
+		slices.SortStableFunc(issuesInFile, func(a, b issueOutput) int {
+			return a.Severity.Cmp(b.Severity)
+		})
+		// TODO #13: better padding
+		_, err := fmt.Fprintf(w, "--- %s ----------------\n\n", fileName)
+		if err != nil {
+			return err
+		}
+		for _, issue := range issuesInFile {
+			// TODO #13: add color
+			_, err = fmt.Fprintf(w, "\t%d:%d\t[%s]\t%s\n\t\t%s\n\t\tdocs: %s\n\n", issue.Line, issue.Column, issue.RuleId, issue.Severity, issue.Message, issue.DocsUrl)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func toIssueOutputs(issues []types.Issue) []issueOutput {
 	var result []issueOutput
 
 	for _, issue := range issues {
 		rule, err := core.FindById(issue.RuleID)
-		var severity, docsUrl string
+		var severity types.Severity
+		var docsUrl string
 		if err != nil {
-			severity = "UNKNOWN"
+			severity = types.SeverityUnknown
 			docsUrl = "about:blank"
 		} else {
 			rulesMeta := rule.META()

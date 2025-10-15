@@ -31,7 +31,7 @@ func (n *NamingConvention) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "Naming Convention",
 		Description: n.message,
-		Severity:    "HIGH",
+		Severity:    types.SeverityHigh,
 		DocsURL:     strings.ReplaceAll(n.id, ".", "/"),
 	}
 }
