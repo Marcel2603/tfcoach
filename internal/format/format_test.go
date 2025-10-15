@@ -35,16 +35,15 @@ func rng(file string, line0, col int) hcl.Range {
 	}
 }
 
-func TestWriteResults_TextSingle(t *testing.T) {
+func TestWriteResults_CompactSingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "raw")
+	err := format.WriteResults(issues1, &buf, "compact")
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
 	want := `main.tf:0:1: Block "a" should be inside of "b.tf" (core.file_naming)
-Summary:
- Issues: 1
+Summary: 1 issue
 `
 
 	if got := buf.String(); got != want {
@@ -52,17 +51,16 @@ Summary:
 	}
 }
 
-func TestWriteResults_TextMultiple(t *testing.T) {
+func TestWriteResults_CompactMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "raw")
+	err := format.WriteResults(issues2, &buf, "compact")
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
 	want := `a.tf:4:7: m1 (core.something_something)
 b.tf:9:2: m2 (core.naming_convention)
-Summary:
- Issues: 2
+Summary: 2 issues
 `
 
 	if got := buf.String(); got != want {

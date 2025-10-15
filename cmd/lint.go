@@ -17,7 +17,7 @@ var (
 )
 
 // TODO later: pretty, educational
-var supportedOutputFormats = []string{"json", "raw"}
+var supportedOutputFormats = []string{"json", "compact"}
 
 var lintCmd = &cobra.Command{
 	Use:   "lint [path]",
@@ -46,5 +46,5 @@ func init() {
 	rootCmd.AddCommand(lintCmd)
 
 	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
-	lintCmd.Flags().StringVarP(&format, "format", "f", "raw", formatUsageHelp)
+	lintCmd.Flags().StringVarP(&format, "format", "f", "compact", formatUsageHelp)
 }
