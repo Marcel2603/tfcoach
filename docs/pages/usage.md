@@ -4,6 +4,10 @@
 tfcoach lint [path]
 ```
 
+Available output formats:
+- `raw` (default): one line per issue with location information and rule explanation in a human-friendly format
+- `json`: more detailed output optimized for machine-parsing
+
 Exit codes:
 
 - 0: no issues
