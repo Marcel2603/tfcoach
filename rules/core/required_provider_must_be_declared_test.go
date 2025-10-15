@@ -14,7 +14,7 @@ func TestRequiredProviderMustBeDeclared_ExpectedMeta(t *testing.T) {
 	expectedMETA := types.RuleMeta{
 		Title:       "Required Provider Must Be Declared",
 		Description: "All providers used in resources or data sources are declared in the terraform.required_providers block.",
-		Severity:    "HIGH",
+		Severity:    types.SeverityMedium,
 		DocsURL:     "core/required_provider_must_be_declared",
 	}
 

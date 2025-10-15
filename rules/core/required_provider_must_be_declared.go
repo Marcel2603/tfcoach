@@ -44,7 +44,7 @@ func (r *RequiredProviderMustBeDeclared) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "Required Provider Must Be Declared",
 		Description: "All providers used in resources or data sources are declared in the terraform.required_providers block.",
-		Severity:    "HIGH",
+		Severity:    types.SeverityMedium, // TODO #13: revert to HIGH
 		DocsURL:     strings.ReplaceAll(r.id, ".", "/"),
 	}
 }
