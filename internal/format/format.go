@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"slices"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
@@ -88,7 +89,8 @@ func writePretty(issues []types.Issue, w io.Writer) error {
 	for _, issue := range preparedIssues {
 		issuesGroupedByFile[issue.File] = append(issuesGroupedByFile[issue.File], issue)
 	}
-	for fileName, issuesInFile := range issuesGroupedByFile {
+	for _, fileName := range slices.Sorted(maps.Keys(issuesGroupedByFile)) {
+		issuesInFile := issuesGroupedByFile[fileName]
 		slices.SortStableFunc(issuesInFile, func(a, b issueOutput) int {
 			return a.Severity.Cmp(b.Severity)
 		})
