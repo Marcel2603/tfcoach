@@ -29,9 +29,9 @@ type jsonOutput struct {
 
 func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error {
 	switch outputFormat {
-	case "raw":
-		writeTextIssues(issues, w)
-		writeTextSummary(issues, w)
+	case "compact":
+		writeTextIssuesCompact(issues, w)
+		writeTextSummaryCompact(issues, w)
 	case "json":
 		err := writeJson(issues, w)
 		if err != nil {
@@ -43,15 +43,21 @@ func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error 
 	return nil
 }
 
-func writeTextIssues(issues []types.Issue, w io.Writer) {
+func writeTextIssuesCompact(issues []types.Issue, w io.Writer) {
 	for _, issue := range issues {
 		_, _ = fmt.Fprintf(w, "%s:%d:%d: %s (%s)\n",
 			issue.File, issue.Range.Start.Line, issue.Range.Start.Column, issue.Message, issue.RuleID)
 	}
 }
 
-func writeTextSummary(issues []types.Issue, w io.Writer) {
-	_, _ = fmt.Fprintf(w, "Summary:\n Issues: %d\n", len(issues))
+func writeTextSummaryCompact(issues []types.Issue, w io.Writer) {
+	var suffix string
+	if len(issues) == 1 {
+		suffix = ""
+	} else {
+		suffix = "s"
+	}
+	_, _ = fmt.Fprintf(w, "Summary: %d issue%s\n", len(issues), suffix)
 }
 
 func writeJson(issues []types.Issue, w io.Writer) error {
