@@ -56,7 +56,7 @@ func (n *NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
 	return out
 }
 
-func (n *NamingConvention) Finish() []types.Issue {
+func (*NamingConvention) Finish() []types.Issue {
 	return []types.Issue{}
 }
 

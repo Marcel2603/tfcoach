@@ -36,9 +36,9 @@ func TestRequiredProviderMustBeDeclared_ShouldFindIssuesInOneFileAtFinish(t *tes
 		t.Fatalf("issues mismatch; got %d, wanted 1", len(issues))
 	}
 
-	actualRuleId := issues[0].RuleID
-	if actualRuleId != rule.ID() {
-		t.Fatalf("rule id mismatch; got %s, want %s", actualRuleId, rule.ID())
+	actualRuleID := issues[0].RuleID
+	if actualRuleID != rule.ID() {
+		t.Fatalf("rule id mismatch; got %s, want %s", actualRuleID, rule.ID())
 	}
 }
 
