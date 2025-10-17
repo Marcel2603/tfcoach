@@ -6,6 +6,7 @@ import (
 	"io"
 	"maps"
 	"slices"
+	"strings"
 
 	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
@@ -59,13 +60,7 @@ func writeTextIssuesCompact(issues []types.Issue, w io.Writer) {
 }
 
 func writeTextSummaryCompact(issues []types.Issue, w io.Writer) {
-	var suffix string
-	if len(issues) == 1 {
-		suffix = ""
-	} else {
-		suffix = "s"
-	}
-	_, _ = fmt.Fprintf(w, "Summary: %d issue%s\n", len(issues), suffix)
+	_, _ = fmt.Fprintf(w, "Summary: %d issue%s\n", len(issues), condPlural(len(issues)))
 }
 
 func writeJSON(issues []types.Issue, w io.Writer) error {
@@ -87,22 +82,46 @@ func writeJSON(issues []types.Issue, w io.Writer) error {
 func writePretty(issues []types.Issue, w io.Writer) error {
 	preparedIssues := toIssueOutputs(issues)
 	issuesGroupedByFile := make(map[string][]issueOutput)
+	longestFilePath := 10 // for padding
 	for _, issue := range preparedIssues {
 		issuesGroupedByFile[issue.File] = append(issuesGroupedByFile[issue.File], issue)
+		longestFilePath = max(longestFilePath, len(issue.File))
+	}
+
+	_, err := fmt.Fprintf(
+		w,
+		"Summary: %d issue%s found in %d file%s\n\n",
+		len(issues),
+		condPlural(len(issues)),
+		len(issuesGroupedByFile),
+		condPlural(len(issuesGroupedByFile)),
+	)
+	if err != nil {
+		return err
 	}
 	for _, fileName := range slices.Sorted(maps.Keys(issuesGroupedByFile)) {
 		issuesInFile := issuesGroupedByFile[fileName]
 		slices.SortStableFunc(issuesInFile, func(a, b issueOutput) int {
 			return a.Severity.Cmp(b.Severity)
 		})
-		// TODO #13: better padding
-		_, err := fmt.Fprintf(w, "--- %s ----------------\n\n", fileName)
+
+		padding := strings.Repeat("─", longestFilePath-len(fileName))
+		_, err = fmt.Fprintf(w, "─── %s %s─────────\n\n", fileName, padding)
 		if err != nil {
 			return err
 		}
 		for _, issue := range issuesInFile {
 			// TODO #13: add color
-			_, err = fmt.Fprintf(w, "\t%d:%d\t[%s]\t%s\n\t\t%s\n\t\tdocs: %s\n\n", issue.Line, issue.Column, issue.RuleID, issue.Severity, issue.Message, issue.DocsURL)
+			_, err = fmt.Fprintf(
+				w,
+				"  %d:%d\t[%s]\t%s\n\t\t%s\n\t\tdocs: %s\n\n",
+				issue.Line,
+				issue.Column,
+				issue.RuleID,
+				issue.Severity,
+				issue.Message,
+				issue.DocsURL,
+			)
 			if err != nil {
 				return err
 			}
@@ -140,4 +159,11 @@ func toIssueOutputs(issues []types.Issue) []issueOutput {
 	}
 
 	return result
+}
+
+func condPlural(n int) string {
+	if n == 1 {
+		return ""
+	}
+	return "s"
 }

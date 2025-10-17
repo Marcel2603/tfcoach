@@ -170,9 +170,11 @@ func TestWriteResults_PrettySingle(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `--- main.tf ----------------
+	want := `Summary: 1 issue found in 1 file
 
-	0:1	[core.file_naming]	LOW
+─── main.tf ────────────
+
+  0:1	[core.file_naming]	LOW
 		Block "a" should be inside of "b.tf"
 		docs: https://marcel2603.github.io/tfcoach/rules/core/file_naming
 
@@ -190,15 +192,17 @@ func TestWriteResults_PrettyMultiple(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `--- a.tf ----------------
+	want := `Summary: 2 issues found in 2 files
 
-	4:7	[core.something_something]	UNKNOWN
+─── a.tf ───────────────
+
+  4:7	[core.something_something]	UNKNOWN
 		m1
 		docs: about:blank
 
---- b.tf ----------------
+─── b.tf ───────────────
 
-	9:2	[core.naming_convention]	HIGH
+  9:2	[core.naming_convention]	HIGH
 		m2
 		docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
 
@@ -216,23 +220,25 @@ func TestWriteResults_PrettySorting(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `--- a.tf ----------------
+	want := `Summary: 4 issues found in 2 files
 
-	10:2	[core.naming_convention]	HIGH
+─── a.tf ───────────────
+
+  10:2	[core.naming_convention]	HIGH
 		m3
 		docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
 
-	2:1	[core.file_naming]	LOW
+  2:1	[core.file_naming]	LOW
 		m4
 		docs: https://marcel2603.github.io/tfcoach/rules/core/file_naming
 
-	4:7	[core.something_something]	UNKNOWN
+  4:7	[core.something_something]	UNKNOWN
 		m1
 		docs: about:blank
 
---- b.tf ----------------
+─── b.tf ───────────────
 
-	9:2	[core.naming_convention]	HIGH
+  9:2	[core.naming_convention]	HIGH
 		m2
 		docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
 
