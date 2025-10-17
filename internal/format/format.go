@@ -16,7 +16,10 @@ import (
 
 const ruleDocsFormat = "https://marcel2603.github.io/tfcoach/rules/%s"
 
-var boldFont = color.New(color.Bold)
+var (
+	boldFont  = color.New(color.Bold)
+	greyColor = color.RGB(100, 100, 100)
+)
 
 type issueOutput struct {
 	File     string         `json:"file"`
@@ -56,9 +59,21 @@ func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error 
 }
 
 func writeTextIssuesCompact(issues []types.Issue, w io.Writer) {
-	for _, issue := range issues {
-		_, _ = fmt.Fprintf(w, "%s:%d:%d: %s (%s)\n",
-			issue.File, issue.Range.Start.Line, issue.Range.Start.Column, issue.Message, issue.RuleID)
+	preparedIssues := toIssueOutputs(issues)
+	slices.SortStableFunc(preparedIssues, func(a, b issueOutput) int {
+		return a.Severity.Cmp(b.Severity)
+	})
+	for _, issue := range preparedIssues {
+		_, _ = fmt.Fprintf(
+			w,
+			"%s %s:%d:%d: %s %s\n",
+			color.New(issue.Severity.Color(), color.Bold).Sprint(string(issue.Severity.String()[0])),
+			boldFont.Sprint(issue.File),
+			issue.Line,
+			issue.Column,
+			issue.Message,
+			greyColor.Sprint("["+issue.RuleID+"]"),
+		)
 	}
 }
 
@@ -120,7 +135,7 @@ func writePretty(issues []types.Issue, w io.Writer) error {
 				issue.Line,
 				issue.Column,
 				boldFont.Sprint("["+issue.RuleID+"]"),
-				issue.Severity.ColoredString(),
+				color.New(issue.Severity.Color(), color.Bold).Sprint(issue.Severity),
 				issue.Message,
 				issue.DocsURL,
 			)

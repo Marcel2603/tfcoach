@@ -20,17 +20,16 @@ func (s Severity) String() string {
 	return s.Str
 }
 
-func (s Severity) ColoredString() string {
-	str := s.String()
+func (s Severity) Color() color.Attribute {
 	switch s.Priority {
 	case 1:
-		return color.HiRedString(str)
+		return color.FgHiRed
 	case 2:
-		return color.HiYellowString(str)
+		return color.FgHiYellow
 	case 3:
-		return color.HiWhiteString(str)
+		return color.FgHiWhite
 	default:
-		return str
+		return color.Reset
 	}
 }
 
