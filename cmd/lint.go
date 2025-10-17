@@ -9,11 +9,13 @@ import (
 	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/runner"
 	"github.com/Marcel2603/tfcoach/rules/core"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
 var (
-	format string
+	format  string
+	noColor bool
 )
 
 // TODO later: educational
@@ -24,6 +26,8 @@ var lintCmd = &cobra.Command{
 	Short: "Lint Terraform files",
 	Args:  cobra.ArbitraryArgs,
 	PreRunE: func(_ *cobra.Command, _ []string) error {
+		color.NoColor = noColor
+
 		if slices.Contains(supportedOutputFormats, format) {
 			return nil
 		}
@@ -35,7 +39,6 @@ var lintCmd = &cobra.Command{
 			target = args[0]
 		}
 
-		//color.NoColor = true  // TODO #13 add flag
 		src := engine.FileSystem{SkipDirs: []string{".git", ".terraform"}}
 		code := runner.Lint(target, src, core.All(), cmd.OutOrStdout(), format)
 		os.Exit(code)
@@ -48,4 +51,6 @@ func init() {
 
 	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
 	lintCmd.Flags().StringVarP(&format, "format", "f", "pretty", formatUsageHelp)
+
+	lintCmd.Flags().BoolVar(&noColor, "no-color", false, "Disable color output")
 }
