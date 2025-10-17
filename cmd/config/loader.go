@@ -30,6 +30,10 @@ func GetConfigByRuleID(ruleID string) RuleConfiguration {
 	return RuleConfiguration{Enabled: true}
 }
 
+func GetDefaultOutput() DefaultOutput {
+	return configuration.DefaultOutput
+}
+
 func mustLoadConfig() config {
 	configData, err := loadConfig()
 	if err != nil {
