@@ -199,30 +199,27 @@ func TestGetDefaultOutput(t *testing.T) {
 `)
 	configCompactFalseJSON := []byte(`{"default_output": {"format": "compact", "color": false}}`)
 
+	want := DefaultOutput{Format: "compact", Color: false}
+
 	tests := []struct {
 		fileName string
 		content  []byte
-		expected DefaultOutput
 	}{
 		{
 			fileName: ".tfcoach.yaml",
 			content:  configCompactFalseYAML,
-			expected: DefaultOutput{Format: "compact", Color: false},
 		},
 		{
 			fileName: ".tfcoach.yml",
 			content:  configCompactFalseYAML,
-			expected: DefaultOutput{Format: "compact", Color: false},
 		},
 		{
 			fileName: ".tfcoach",
 			content:  configCompactFalseJSON,
-			expected: DefaultOutput{Format: "compact", Color: false},
 		},
 		{
 			fileName: ".tfcoach.json",
 			content:  configCompactFalseJSON,
-			expected: DefaultOutput{Format: "compact", Color: false},
 		},
 	}
 	for _, tt := range tests {
@@ -237,8 +234,8 @@ func TestGetDefaultOutput(t *testing.T) {
 
 			configuration = configData
 			defaultOutput := GetDefaultOutput()
-			if defaultOutput != tt.expected {
-				t.Errorf("Expected %+v, got %+v", tt.expected, defaultOutput)
+			if defaultOutput != want {
+				t.Errorf("Expected %+v, got %+v", want, defaultOutput)
 			}
 		})
 	}
