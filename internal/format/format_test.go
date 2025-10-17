@@ -48,7 +48,7 @@ func TestWriteResults_CompactSingle(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `main.tf:0:1: Block "a" should be inside of "b.tf" (core.file_naming)
+	want := `L main.tf:0:1: Block "a" should be inside of "b.tf" [core.file_naming]
 Summary: 1 issue
 `
 
@@ -64,8 +64,8 @@ func TestWriteResults_CompactMultiple(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `a.tf:4:7: m1 (core.something_something)
-b.tf:9:2: m2 (core.naming_convention)
+	want := `H b.tf:9:2: m2 [core.naming_convention]
+U a.tf:4:7: m1 [core.something_something]
 Summary: 2 issues
 `
 
