@@ -19,9 +19,6 @@ var (
 	noColor bool
 )
 
-// TODO later: educational
-var supportedOutputFormats = []string{"json", "compact", "pretty"}
-
 var lintCmd = &cobra.Command{
 	Use:   "lint [path]",
 	Short: "Lint Terraform files",
@@ -29,10 +26,10 @@ var lintCmd = &cobra.Command{
 	PreRunE: func(_ *cobra.Command, _ []string) error {
 		color.NoColor = noColor
 
-		if slices.Contains(supportedOutputFormats, format) {
+		if slices.Contains(config.GetSupportedOutputFormats(), format) {
 			return nil
 		}
-		return fmt.Errorf("invalid --format: %s (want %s)", format, strings.Join(supportedOutputFormats, "|"))
+		return fmt.Errorf("invalid --format: %s (want %s)", format, strings.Join(config.GetSupportedOutputFormats(), "|"))
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		target := "."
@@ -50,9 +47,12 @@ var lintCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lintCmd)
 
-	defaultOutputConfig := config.GetDefaultOutput()
+	defaultOutputConfig, err := config.GetDefaultOutput()
+	if err != nil {
+		panic(err)
+	}
 
-	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
+	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(config.GetSupportedOutputFormats(), "|"))
 	lintCmd.Flags().StringVarP(&format, "format", "f", defaultOutputConfig.Format, formatUsageHelp)
 
 	lintCmd.Flags().BoolVar(&noColor, "no-color", !defaultOutputConfig.Color, "Disable color output")
