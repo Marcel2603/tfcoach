@@ -3,7 +3,6 @@ package config
 import (
 	_ "embed"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -38,7 +37,7 @@ func GetConfigByRuleID(ruleID string) RuleConfiguration {
 func GetDefaultOutput() (DefaultOutput, error) {
 	outputConfiguration := configuration.DefaultOutput
 	if !slices.Contains(supportedOutputFormats, outputConfiguration.Format) {
-		return DefaultOutput{}, errors.New(fmt.Sprintf("unsupported output format: %s", outputConfiguration.Format))
+		return DefaultOutput{}, fmt.Errorf("unsupported output format: %s", outputConfiguration.Format)
 	}
 
 	return outputConfiguration, nil
