@@ -6,6 +6,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/Marcel2603/tfcoach/cmd/config"
 	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/runner"
 	"github.com/Marcel2603/tfcoach/rules/core"
@@ -49,8 +50,10 @@ var lintCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lintCmd)
 
-	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
-	lintCmd.Flags().StringVarP(&format, "format", "f", "pretty", formatUsageHelp)
+	defaultOutputConfig := config.GetDefaultOutput()
 
-	lintCmd.Flags().BoolVar(&noColor, "no-color", false, "Disable color output")
+	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
+	lintCmd.Flags().StringVarP(&format, "format", "f", defaultOutputConfig.Format, formatUsageHelp)
+
+	lintCmd.Flags().BoolVar(&noColor, "no-color", !defaultOutputConfig.Color, "Disable color output")
 }

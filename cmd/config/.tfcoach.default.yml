@@ -1,1 +1,4 @@
 rules: {}
+default_output:
+  format: pretty
+  color: true
