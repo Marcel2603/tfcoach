@@ -16,7 +16,7 @@ var (
 	format string
 )
 
-// TODO later: pretty, educational
+// TODO later: educational
 var supportedOutputFormats = []string{"json", "compact", "pretty"}
 
 var lintCmd = &cobra.Command{
@@ -35,6 +35,7 @@ var lintCmd = &cobra.Command{
 			target = args[0]
 		}
 
+		//color.NoColor = true  // TODO #13 add flag
 		src := engine.FileSystem{SkipDirs: []string{".git", ".terraform"}}
 		code := runner.Lint(target, src, core.All(), cmd.OutOrStdout(), format)
 		os.Exit(code)
