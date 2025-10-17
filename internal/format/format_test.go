@@ -175,8 +175,8 @@ func TestWriteResults_PrettySingle(t *testing.T) {
 ─── main.tf ────────────
 
   0:1	[core.file_naming]	LOW
-		Block "a" should be inside of "b.tf"
-		docs: https://marcel2603.github.io/tfcoach/rules/core/file_naming
+	💡  Block "a" should be inside of "b.tf"
+	📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
 
 `
 
@@ -197,14 +197,14 @@ func TestWriteResults_PrettyMultiple(t *testing.T) {
 ─── a.tf ───────────────
 
   4:7	[core.something_something]	UNKNOWN
-		m1
-		docs: about:blank
+	💡  m1
+	📑  about:blank
 
 ─── b.tf ───────────────
 
   9:2	[core.naming_convention]	HIGH
-		m2
-		docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+	💡  m2
+	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
 
 `
 
@@ -225,22 +225,22 @@ func TestWriteResults_PrettySorting(t *testing.T) {
 ─── a.tf ───────────────
 
   10:2	[core.naming_convention]	HIGH
-		m3
-		docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+	💡  m3
+	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
 
   2:1	[core.file_naming]	LOW
-		m4
-		docs: https://marcel2603.github.io/tfcoach/rules/core/file_naming
+	💡  m4
+	📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
 
   4:7	[core.something_something]	UNKNOWN
-		m1
-		docs: about:blank
+	💡  m1
+	📑  about:blank
 
 ─── b.tf ───────────────
 
   9:2	[core.naming_convention]	HIGH
-		m2
-		docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+	💡  m2
+	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
 
 `
 

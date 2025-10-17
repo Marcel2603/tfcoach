@@ -11,9 +11,12 @@ import (
 	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
+	"github.com/fatih/color"
 )
 
 const ruleDocsFormat = "https://marcel2603.github.io/tfcoach/rules/%s"
+
+var boldFont = color.New(color.Bold)
 
 type issueOutput struct {
 	File     string         `json:"file"`
@@ -90,10 +93,10 @@ func writePretty(issues []types.Issue, w io.Writer) error {
 
 	_, err := fmt.Fprintf(
 		w,
-		"Summary: %d issue%s found in %d file%s\n\n",
-		len(issues),
+		"Summary: %s issue%s found in %s file%s\n\n",
+		boldFont.Sprint(len(issues)),
 		condPlural(len(issues)),
-		len(issuesGroupedByFile),
+		boldFont.Sprint(len(issuesGroupedByFile)),
 		condPlural(len(issuesGroupedByFile)),
 	)
 	if err != nil {
@@ -106,19 +109,18 @@ func writePretty(issues []types.Issue, w io.Writer) error {
 		})
 
 		padding := strings.Repeat("─", longestFilePath-len(fileName))
-		_, err = fmt.Fprintf(w, "─── %s %s─────────\n\n", fileName, padding)
+		_, err = fmt.Fprintf(w, "─── %s %s─────────\n\n", boldFont.Sprint(fileName), padding)
 		if err != nil {
 			return err
 		}
 		for _, issue := range issuesInFile {
-			// TODO #13: add color
 			_, err = fmt.Fprintf(
 				w,
-				"  %d:%d\t[%s]\t%s\n\t\t%s\n\t\tdocs: %s\n\n",
+				"  %d:%d\t%s\t%s\n\t💡  %s\n\t📑  %s\n\n",
 				issue.Line,
 				issue.Column,
-				issue.RuleID,
-				issue.Severity,
+				boldFont.Sprint("["+issue.RuleID+"]"),
+				issue.Severity.ColoredString(),
 				issue.Message,
 				issue.DocsURL,
 			)
