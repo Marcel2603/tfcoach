@@ -23,7 +23,7 @@ var lintCmd = &cobra.Command{
 	Use:   "lint [path]",
 	Short: "Lint Terraform files",
 	Args:  cobra.ArbitraryArgs,
-	PreRunE: func(cmd *cobra.Command, args []string) error {
+	PreRunE: func(_ *cobra.Command, _ []string) error {
 		if slices.Contains(supportedOutputFormats, format) {
 			return nil
 		}
