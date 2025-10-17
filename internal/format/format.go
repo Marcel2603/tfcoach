@@ -7,6 +7,7 @@ import (
 	"maps"
 	"slices"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
 )
@@ -118,7 +119,7 @@ func toIssueOutputs(issues []types.Issue) []issueOutput {
 		var severity types.Severity
 		var docsUrl string
 		if err != nil {
-			severity = types.SeverityUnknown
+			severity = constants.SeverityUnknown
 			docsUrl = "about:blank"
 		} else {
 			rulesMeta := rule.META()

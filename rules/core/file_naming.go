@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/internal/utils"
 	"github.com/hashicorp/hcl/v2"
@@ -48,7 +49,7 @@ func (r *FileNaming) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "File Naming",
 		Description: "File naming should follow a strict convention.",
-		Severity:    types.SeverityLow, // TODO #13: revert to HIGH
+		Severity:    constants.SeverityLow, // TODO #13: revert to HIGH
 		DocsURL:     strings.ReplaceAll(r.id, ".", "/"),
 	}
 }

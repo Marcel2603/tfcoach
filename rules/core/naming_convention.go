@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -31,7 +32,7 @@ func (n *NamingConvention) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "Naming Convention",
 		Description: n.message,
-		Severity:    types.SeverityHigh,
+		Severity:    constants.SeverityHigh,
 		DocsURL:     strings.ReplaceAll(n.id, ".", "/"),
 	}
 }
