@@ -233,9 +233,59 @@ func TestGetDefaultOutput(t *testing.T) {
 			}
 
 			configuration = configData
-			defaultOutput := GetDefaultOutput()
-			if defaultOutput != want {
-				t.Errorf("Expected %+v, got %+v", want, defaultOutput)
+			var got DefaultOutput
+			got, err = GetDefaultOutput()
+			if err != nil {
+				t.Errorf("GetDefaultOutput() error = %v", err)
+			}
+			if got != want {
+				t.Errorf("Expected %+v, got %+v", want, got)
+			}
+		})
+	}
+}
+
+func TestGetDefaultOutput_Invalid(t *testing.T) {
+	configCompactFalseYAML := []byte(`default_output:
+  format: abcd
+`)
+	configCompactFalseJSON := []byte(`{"default_output": {"format": "abcd"}}`)
+
+	tests := []struct {
+		fileName string
+		content  []byte
+	}{
+		{
+			fileName: ".tfcoach.yaml",
+			content:  configCompactFalseYAML,
+		},
+		{
+			fileName: ".tfcoach.yml",
+			content:  configCompactFalseYAML,
+		},
+		{
+			fileName: ".tfcoach",
+			content:  configCompactFalseJSON,
+		},
+		{
+			fileName: ".tfcoach.json",
+			content:  configCompactFalseJSON,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.fileName, func(t *testing.T) {
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			_ = os.WriteFile(filepath.Join(dir, tt.fileName), tt.content, 0644)
+			configData, err := loadConfig()
+			if err != nil {
+				t.Errorf("loadConfig() error = %v", err)
+			}
+
+			configuration = configData
+			_, err = GetDefaultOutput()
+			if err == nil {
+				t.Errorf("expected error, got none")
 			}
 		})
 	}
