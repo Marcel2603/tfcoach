@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
@@ -16,7 +17,7 @@ func TestFileNaming_ExpectedMeta(t *testing.T) {
 	expectedMETA := types.RuleMeta{
 		Title:       "File Naming",
 		Description: "File naming should follow a strict convention.",
-		Severity:    "HIGH",
+		Severity:    constants.SeverityLow,
 		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
 

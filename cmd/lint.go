@@ -6,28 +6,30 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/Marcel2603/tfcoach/cmd/config"
 	"github.com/Marcel2603/tfcoach/internal/engine"
 	"github.com/Marcel2603/tfcoach/internal/runner"
 	"github.com/Marcel2603/tfcoach/rules/core"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
 var (
-	format string
+	format  string
+	noColor bool
 )
-
-// TODO later: pretty, educational
-var supportedOutputFormats = []string{"json", "raw"}
 
 var lintCmd = &cobra.Command{
 	Use:   "lint [path]",
 	Short: "Lint Terraform files",
 	Args:  cobra.ArbitraryArgs,
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		if slices.Contains(supportedOutputFormats, format) {
+	PreRunE: func(_ *cobra.Command, _ []string) error {
+		color.NoColor = noColor
+
+		if slices.Contains(config.GetSupportedOutputFormats(), format) {
 			return nil
 		}
-		return fmt.Errorf("invalid --format: %s (want %s)", format, strings.Join(supportedOutputFormats, "|"))
+		return fmt.Errorf("invalid --format: %s (want %s)", format, strings.Join(config.GetSupportedOutputFormats(), "|"))
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		target := "."
@@ -45,6 +47,13 @@ var lintCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lintCmd)
 
-	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
-	lintCmd.Flags().StringVarP(&format, "format", "f", "raw", formatUsageHelp)
+	defaultOutputConfig, err := config.GetDefaultOutput()
+	if err != nil {
+		panic(err)
+	}
+
+	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(config.GetSupportedOutputFormats(), "|"))
+	lintCmd.Flags().StringVarP(&format, "format", "f", defaultOutputConfig.Format, formatUsageHelp)
+
+	lintCmd.Flags().BoolVar(&noColor, "no-color", !defaultOutputConfig.Color, "Disable color output")
 }

@@ -58,33 +58,39 @@ func TestMustLoadConfig_Invalid(t *testing.T) {
 }
 
 func TestLoadConfig_OverriddenByFile(t *testing.T) {
-	contentYAML := []byte(`rules: {"RULE_1": {"enabled": false}}`)
-	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}}`)
+	contentYAML := []byte(`rules:
+  RULE_1:
+    "enabled": false
+default_output:
+  format: compact
+  color: false
+`)
+	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "default_output": {"format": "compact", "color": false}}`)
+
+	want := config{
+		Rules:         map[string]RuleConfiguration{"RULE_1": {Enabled: true}},
+		DefaultOutput: DefaultOutput{Format: "compact", Color: false},
+	}
 
 	tests := []struct {
 		filename string
 		content  []byte
-		expected config
 	}{
 		{
 			filename: ".tfcoach.yml",
 			content:  contentYAML,
-			expected: config{Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: true}}},
 		},
 		{
 			filename: ".tfcoach.yaml",
 			content:  contentYAML,
-			expected: config{Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: true}}},
 		},
 		{
 			filename: ".tfcoach.json",
 			content:  contentJSON,
-			expected: config{Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: true}}},
 		},
 		{
 			filename: ".tfcoach",
 			content:  contentJSON,
-			expected: config{Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: true}}},
 		},
 	}
 	for _, tt := range tests {
@@ -97,14 +103,14 @@ func TestLoadConfig_OverriddenByFile(t *testing.T) {
 				t.Errorf("loadConfig() error = %v", err)
 			}
 
-			if reflect.DeepEqual(configData, tt.expected) {
-				t.Errorf("Expected %v, got %v", tt.expected, configData)
+			if reflect.DeepEqual(configData, want) {
+				t.Errorf("Wanted %v, got %v", want, configData)
 			}
 		})
 	}
 }
 
-func TestLoadConfig_InvalidOverride(t *testing.T) {
+func TestLoadConfig_InvalidRulesOverride(t *testing.T) {
 	contentYAML := []byte(`rules: {::: {"enabled": false}}`)
 	contentJSON := []byte(`{"rules": {4}}`)
 	expected := config{}
@@ -181,6 +187,105 @@ func TestGetConfigByRuleId(t *testing.T) {
 			}
 			if !reflect.DeepEqual(ruleConfig.Spec, tt.expected.Spec) {
 				t.Errorf("Expected %+v, got %+v", tt.expected.Spec, ruleConfig.Spec)
+			}
+		})
+	}
+}
+
+func TestGetDefaultOutput(t *testing.T) {
+	configCompactFalseYAML := []byte(`default_output:
+  format: compact
+  color: false
+`)
+	configCompactFalseJSON := []byte(`{"default_output": {"format": "compact", "color": false}}`)
+
+	want := DefaultOutput{Format: "compact", Color: false}
+
+	tests := []struct {
+		fileName string
+		content  []byte
+	}{
+		{
+			fileName: ".tfcoach.yaml",
+			content:  configCompactFalseYAML,
+		},
+		{
+			fileName: ".tfcoach.yml",
+			content:  configCompactFalseYAML,
+		},
+		{
+			fileName: ".tfcoach",
+			content:  configCompactFalseJSON,
+		},
+		{
+			fileName: ".tfcoach.json",
+			content:  configCompactFalseJSON,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.fileName, func(t *testing.T) {
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			_ = os.WriteFile(filepath.Join(dir, tt.fileName), tt.content, 0644)
+			configData, err := loadConfig()
+			if err != nil {
+				t.Errorf("loadConfig() error = %v", err)
+			}
+
+			configuration = configData
+			var got DefaultOutput
+			got, err = GetDefaultOutput()
+			if err != nil {
+				t.Errorf("GetDefaultOutput() error = %v", err)
+			}
+			if got != want {
+				t.Errorf("Expected %+v, got %+v", want, got)
+			}
+		})
+	}
+}
+
+func TestGetDefaultOutput_Invalid(t *testing.T) {
+	configCompactFalseYAML := []byte(`default_output:
+  format: abcd
+`)
+	configCompactFalseJSON := []byte(`{"default_output": {"format": "abcd"}}`)
+
+	tests := []struct {
+		fileName string
+		content  []byte
+	}{
+		{
+			fileName: ".tfcoach.yaml",
+			content:  configCompactFalseYAML,
+		},
+		{
+			fileName: ".tfcoach.yml",
+			content:  configCompactFalseYAML,
+		},
+		{
+			fileName: ".tfcoach",
+			content:  configCompactFalseJSON,
+		},
+		{
+			fileName: ".tfcoach.json",
+			content:  configCompactFalseJSON,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.fileName, func(t *testing.T) {
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			_ = os.WriteFile(filepath.Join(dir, tt.fileName), tt.content, 0644)
+			configData, err := loadConfig()
+			if err != nil {
+				t.Errorf("loadConfig() error = %v", err)
+			}
+
+			configuration = configData
+			_, err = GetDefaultOutput()
+			if err == nil {
+				t.Errorf("expected error, got none")
 			}
 		})
 	}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"dario.cat/mergo"
 	"github.com/kelseyhightower/envconfig"
@@ -18,6 +19,9 @@ var (
 	//go:embed .tfcoach.default.yml
 	yamlDefaultData []byte
 
+	// TODO later: educational
+	supportedOutputFormats = []string{"json", "compact", "pretty"}
+
 	configuration = mustLoadConfig()
 )
 
@@ -28,6 +32,19 @@ func GetConfigByRuleID(ruleID string) RuleConfiguration {
 		return ruleConfiguration
 	}
 	return RuleConfiguration{Enabled: true}
+}
+
+func GetDefaultOutput() (DefaultOutput, error) {
+	outputConfiguration := configuration.DefaultOutput
+	if !slices.Contains(supportedOutputFormats, outputConfiguration.Format) {
+		return DefaultOutput{}, fmt.Errorf("unsupported output format: %s", outputConfiguration.Format)
+	}
+
+	return outputConfiguration, nil
+}
+
+func GetSupportedOutputFormats() []string {
+	return slices.Clone(supportedOutputFormats)
 }
 
 func mustLoadConfig() config {
@@ -96,11 +113,11 @@ func loadConfigFromEnv(mapData *config) error {
 }
 
 func loadConfigFromYaml(data []byte, mapData *config) error {
-	return yaml.Unmarshal(data, &mapData)
+	return yaml.Unmarshal(data, mapData)
 }
 
 func loadConfigFromJSON(data []byte, mapData *config) error {
-	return json.Unmarshal(data, &mapData)
+	return json.Unmarshal(data, mapData)
 }
 
 func getCustomConfigPath() (string, bool) {

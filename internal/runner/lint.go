@@ -21,7 +21,7 @@ func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer, outpu
 	if len(issues) > 0 {
 		writeErr := format.WriteResults(issues, w, outputFormat)
 		if writeErr != nil {
-			fmt.Printf("error writing results: %v\n", writeErr)
+			_, _ = fmt.Printf("error writing results: %v\n", writeErr)
 			return 2
 		}
 		return 1

@@ -5,6 +5,7 @@ package testutil
 import (
 	"strings"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -22,7 +23,7 @@ func (r *AlwaysFlag) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "AlwaysFlag",
 		Description: r.Message,
-		Severity:    "HIGH",
+		Severity:    constants.SeverityHigh,
 		DocsURL:     "tbd",
 	}
 }
@@ -63,7 +64,7 @@ func (r *NeverFlag) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "NeverFlag",
 		Description: r.Message,
-		Severity:    "HIGH",
+		Severity:    constants.SeverityHigh,
 		DocsURL:     "tbd",
 	}
 }
@@ -91,7 +92,7 @@ func (r *FlagOnFinish) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "FlagOnFinish",
 		Description: r.Message,
-		Severity:    "HIGH",
+		Severity:    constants.SeverityHigh,
 		DocsURL:     "tbd",
 	}
 }

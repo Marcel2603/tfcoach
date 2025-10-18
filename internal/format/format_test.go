@@ -24,6 +24,12 @@ var (
 		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "core.something_something"},
 		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "core.naming_convention"},
 	}
+	issues3 = []types.Issue{
+		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "core.something_something"},
+		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "core.naming_convention"},
+		{File: "a.tf", Range: rng("a.tf", 10, 2), Message: "m3", RuleID: "core.naming_convention"},
+		{File: "a.tf", Range: rng("a.tf", 2, 1), Message: "m4", RuleID: "core.file_naming"},
+	}
 )
 
 func rng(file string, line0, col int) hcl.Range {
@@ -35,16 +41,15 @@ func rng(file string, line0, col int) hcl.Range {
 	}
 }
 
-func TestWriteResults_TextSingle(t *testing.T) {
+func TestWriteResults_CompactSingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "raw")
+	err := format.WriteResults(issues1, &buf, "compact")
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `main.tf:0:1: Block "a" should be inside of "b.tf" (core.file_naming)
-Summary:
- Issues: 1
+	want := `L main.tf:0:1: Block "a" should be inside of "b.tf" [core.file_naming]
+Summary: 1 issue
 `
 
 	if got := buf.String(); got != want {
@@ -52,17 +57,16 @@ Summary:
 	}
 }
 
-func TestWriteResults_TextMultiple(t *testing.T) {
+func TestWriteResults_CompactMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "raw")
+	err := format.WriteResults(issues2, &buf, "compact")
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `a.tf:4:7: m1 (core.something_something)
-b.tf:9:2: m2 (core.naming_convention)
-Summary:
- Issues: 2
+	want := `H b.tf:9:2: m2 [core.naming_convention]
+U a.tf:4:7: m1 [core.something_something]
+Summary: 2 issues
 `
 
 	if got := buf.String(); got != want {
@@ -86,7 +90,7 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 	  "column": 1,
 	  "message": "Block \"a\" should be inside of \"b.tf\"",
 	  "rule_id": "core.file_naming",
-	  "severity": "HIGH",
+	  "severity": "LOW",
 	  "category": "",
 	  "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/file_naming"
 	}
@@ -156,6 +160,92 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 
 	if !reflect.DeepEqual(gotJ, wantJ) {
 		t.Fatalf("JSON DeepEqual mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+func TestWriteResults_PrettySingle(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.WriteResults(issues1, &buf, "pretty")
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	want := `Summary: 1 issue found in 1 file
+
+─── main.tf ────────────
+
+  0:1	[core.file_naming]	LOW
+	💡  Block "a" should be inside of "b.tf"
+	📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+`
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got: %q\nwant: %q", got, want)
+	}
+}
+
+func TestWriteResults_PrettyMultiple(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.WriteResults(issues2, &buf, "pretty")
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	want := `Summary: 2 issues found in 2 files
+
+─── a.tf ───────────────
+
+  4:7	[core.something_something]	UNKNOWN
+	💡  m1
+	📑  about:blank
+
+─── b.tf ───────────────
+
+  9:2	[core.naming_convention]	HIGH
+	💡  m2
+	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+`
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+func TestWriteResults_PrettySorting(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.WriteResults(issues3, &buf, "pretty")
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	want := `Summary: 4 issues found in 2 files
+
+─── a.tf ───────────────
+
+  10:2	[core.naming_convention]	HIGH
+	💡  m3
+	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+  2:1	[core.file_naming]	LOW
+	💡  m4
+	📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+  4:7	[core.something_something]	UNKNOWN
+	💡  m1
+	📑  about:blank
+
+─── b.tf ───────────────
+
+  9:2	[core.naming_convention]	HIGH
+	💡  m2
+	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+`
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
 	}
 }
 
