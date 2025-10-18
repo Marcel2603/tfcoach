@@ -113,11 +113,11 @@ func loadConfigFromEnv(mapData *config) error {
 }
 
 func loadConfigFromYaml(data []byte, mapData *config) error {
-	return yaml.Unmarshal(data, &mapData)
+	return yaml.Unmarshal(data, mapData)
 }
 
 func loadConfigFromJSON(data []byte, mapData *config) error {
-	return json.Unmarshal(data, &mapData)
+	return json.Unmarshal(data, mapData)
 }
 
 func getCustomConfigPath() (string, bool) {
