@@ -47,7 +47,7 @@ var lintCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lintCmd)
 
-	defaultOutputConfig, err := config.GetDefaultOutput()
+	defaultOutputConfig, err := config.GetOutputConfiguration()
 	if err != nil {
 		panic(err)
 	}

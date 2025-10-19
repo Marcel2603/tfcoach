@@ -68,8 +68,8 @@ default_output:
 	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "default_output": {"format": "compact", "color": false}}`)
 
 	want := config{
-		Rules:         map[string]RuleConfiguration{"RULE_1": {Enabled: true}},
-		DefaultOutput: DefaultOutput{Format: "compact", Color: false},
+		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: true}},
+		Output: OutputConfiguration{Format: "compact", Color: false},
 	}
 
 	tests := []struct {
@@ -193,13 +193,13 @@ func TestGetConfigByRuleId(t *testing.T) {
 }
 
 func TestGetDefaultOutput(t *testing.T) {
-	configCompactFalseYAML := []byte(`default_output:
+	configCompactFalseYAML := []byte(`output:
   format: compact
   color: false
 `)
-	configCompactFalseJSON := []byte(`{"default_output": {"format": "compact", "color": false}}`)
+	configCompactFalseJSON := []byte(`{"output": {"format": "compact", "color": false}}`)
 
-	want := DefaultOutput{Format: "compact", Color: false}
+	want := OutputConfiguration{Format: "compact", Color: false}
 
 	tests := []struct {
 		fileName string
@@ -233,10 +233,10 @@ func TestGetDefaultOutput(t *testing.T) {
 			}
 
 			configuration = configData
-			var got DefaultOutput
-			got, err = GetDefaultOutput()
+			var got OutputConfiguration
+			got, err = GetOutputConfiguration()
 			if err != nil {
-				t.Errorf("GetDefaultOutput() error = %v", err)
+				t.Errorf("GetOutputConfiguration() error = %v", err)
 			}
 			if got != want {
 				t.Errorf("Expected %+v, got %+v", want, got)
@@ -246,10 +246,10 @@ func TestGetDefaultOutput(t *testing.T) {
 }
 
 func TestGetDefaultOutput_Invalid(t *testing.T) {
-	configCompactFalseYAML := []byte(`default_output:
+	configCompactFalseYAML := []byte(`output:
   format: abcd
 `)
-	configCompactFalseJSON := []byte(`{"default_output": {"format": "abcd"}}`)
+	configCompactFalseJSON := []byte(`{"output": {"format": "abcd"}}`)
 
 	tests := []struct {
 		fileName string
@@ -283,7 +283,7 @@ func TestGetDefaultOutput_Invalid(t *testing.T) {
 			}
 
 			configuration = configData
-			_, err = GetDefaultOutput()
+			_, err = GetOutputConfiguration()
 			if err == nil {
 				t.Errorf("expected error, got none")
 			}

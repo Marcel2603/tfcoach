@@ -1,8 +1,8 @@
 package config
 
 type config struct {
-	Rules         map[string]RuleConfiguration `json:"rules" yaml:"rules"`
-	DefaultOutput DefaultOutput                `json:"default_output" yaml:"default_output"`
+	Rules  map[string]RuleConfiguration `json:"rules" yaml:"rules"`
+	Output OutputConfiguration          `json:"output" yaml:"output"`
 }
 
 type RuleConfiguration struct {
@@ -10,7 +10,7 @@ type RuleConfiguration struct {
 	Spec    map[string]string `json:"spec" yaml:"spec"`
 }
 
-type DefaultOutput struct {
+type OutputConfiguration struct {
 	Format string `json:"format" yaml:"format"`
 	Color  bool   `json:"color" yaml:"color"`
 }

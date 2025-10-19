@@ -34,10 +34,10 @@ func GetConfigByRuleID(ruleID string) RuleConfiguration {
 	return RuleConfiguration{Enabled: true}
 }
 
-func GetDefaultOutput() (DefaultOutput, error) {
-	outputConfiguration := configuration.DefaultOutput
+func GetOutputConfiguration() (OutputConfiguration, error) {
+	outputConfiguration := configuration.Output
 	if !slices.Contains(supportedOutputFormats, outputConfiguration.Format) {
-		return DefaultOutput{}, fmt.Errorf("unsupported output format: %s", outputConfiguration.Format)
+		return OutputConfiguration{}, fmt.Errorf("unsupported output format: %s", outputConfiguration.Format)
 	}
 
 	return outputConfiguration, nil
@@ -69,7 +69,7 @@ func loadConfig() (config, error) {
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Could not load config from custom config file %s: %s\n", customConfigPath, err.Error())
 		} else {
-			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverride)
+			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverwriteWithEmptyValue)
 			if mergeErr != nil {
 				return config{}, mergeErr
 			}

@@ -1,4 +1,4 @@
 rules: {}
-default_output:
+output:
   format: pretty
   color: true
