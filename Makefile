@@ -30,8 +30,8 @@ build:
 clean:
 	rm -fv $(COVERFILE) $(HTMLFILE)
 
-doc-rules:
-	@go run ./tools/cmd/gen-rules-doc/main.go > docs/pages/rules/index.md
+generate-documentation:
+	@go run -tags tfcoach_tools ./tools/cmd/gen-docs
 
 format:
 	@gofmt -l -s -w .
