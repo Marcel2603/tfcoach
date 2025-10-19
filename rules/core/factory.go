@@ -26,7 +26,7 @@ func All() []types.Rule {
 	return enabledRules
 }
 
-func FindById(id string) (types.Rule, error) {
+func FindByID(id string) (types.Rule, error) {
 	rule, ok := ruleMap[id]
 	if !ok {
 		return nil, fmt.Errorf("no rule found for ID %s", id)

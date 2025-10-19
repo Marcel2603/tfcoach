@@ -16,10 +16,10 @@ type issueOutput struct {
 	Line     int    `json:"line"`
 	Column   int    `json:"column"`
 	Message  string `json:"message"`
-	RuleId   string `json:"rule_id"`
+	RuleID   string `json:"rule_id"`
 	Severity string `json:"severity"`
 	Category string `json:"category"`
-	DocsUrl  string `json:"docs_url"`
+	DocsURL  string `json:"docs_url"`
 }
 
 type jsonOutput struct {
@@ -33,7 +33,7 @@ func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error 
 		writeTextIssues(issues, w)
 		writeTextSummary(issues, w)
 	case "json":
-		err := writeJson(issues, w)
+		err := writeJSON(issues, w)
 		if err != nil {
 			return err
 		}
@@ -54,7 +54,7 @@ func writeTextSummary(issues []types.Issue, w io.Writer) {
 	_, _ = fmt.Fprintf(w, "Summary:\n Issues: %d\n", len(issues))
 }
 
-func writeJson(issues []types.Issue, w io.Writer) error {
+func writeJSON(issues []types.Issue, w io.Writer) error {
 	output := jsonOutput{
 		IssueCount: len(issues),
 		Issues:     toIssueOutputs(issues),
@@ -74,15 +74,15 @@ func toIssueOutputs(issues []types.Issue) []issueOutput {
 	var result []issueOutput
 
 	for _, issue := range issues {
-		rule, err := core.FindById(issue.RuleID)
-		var severity, docsUrl string
+		rule, err := core.FindByID(issue.RuleID)
+		var severity, docsURL string
 		if err != nil {
 			severity = "UNKNOWN"
-			docsUrl = "about:blank"
+			docsURL = "about:blank"
 		} else {
 			rulesMeta := rule.META()
 			severity = rulesMeta.Severity
-			docsUrl = fmt.Sprintf(ruleDocsFormat, rulesMeta.DocsURL)
+			docsURL = fmt.Sprintf(ruleDocsFormat, rulesMeta.DocsURL)
 		}
 
 		result = append(result, issueOutput{
@@ -90,10 +90,10 @@ func toIssueOutputs(issues []types.Issue) []issueOutput {
 			Line:     issue.Range.Start.Line,
 			Column:   issue.Range.Start.Column,
 			Message:  issue.Message,
-			RuleId:   issue.RuleID,
+			RuleID:   issue.RuleID,
 			Severity: severity,
 			//Category: "?",  // TODO later: implement rule category
-			DocsUrl: docsUrl,
+			DocsURL: docsURL,
 		})
 	}
 
