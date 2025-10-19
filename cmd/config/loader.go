@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 
 	"dario.cat/mergo"
 	"github.com/kelseyhightower/envconfig"
@@ -18,9 +17,6 @@ var (
 	//
 	//go:embed .tfcoach.default.yml
 	yamlDefaultData []byte
-
-	// TODO later: educational
-	supportedOutputFormats = []string{"json", "compact", "pretty"}
 
 	configuration = mustLoadConfig()
 )
@@ -34,17 +30,8 @@ func GetConfigByRuleID(ruleID string) RuleConfiguration {
 	return RuleConfiguration{Enabled: true}
 }
 
-func GetOutputConfiguration() (OutputConfiguration, error) {
-	outputConfiguration := configuration.Output
-	if !slices.Contains(supportedOutputFormats, outputConfiguration.Format) {
-		return OutputConfiguration{}, fmt.Errorf("unsupported output format: %s", outputConfiguration.Format)
-	}
-
-	return outputConfiguration, nil
-}
-
-func GetSupportedOutputFormats() []string {
-	return slices.Clone(supportedOutputFormats)
+func GetOutputConfiguration() OutputConfiguration {
+	return configuration.Output
 }
 
 func mustLoadConfig() config {
@@ -69,7 +56,7 @@ func loadConfig() (config, error) {
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Could not load config from custom config file %s: %s\n", customConfigPath, err.Error())
 		} else {
-			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverwriteWithEmptyValue)
+			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverride)
 			if mergeErr != nil {
 				return config{}, mergeErr
 			}
@@ -84,6 +71,11 @@ func loadConfig() (config, error) {
 	mergeErr := mergo.Merge(&configData, envData, mergo.WithOverride)
 	if mergeErr != nil {
 		return config{}, mergeErr
+	}
+
+	validationErr := configData.Output.Validate()
+	if validationErr != nil {
+		return config{}, validationErr
 	}
 
 	return configData, nil

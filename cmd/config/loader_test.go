@@ -61,15 +61,15 @@ func TestLoadConfig_OverriddenByFile(t *testing.T) {
 	contentYAML := []byte(`rules:
   RULE_1:
     "enabled": false
-default_output:
+output:
   format: compact
   color: false
 `)
-	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "default_output": {"format": "compact", "color": false}}`)
+	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": "false"}}`)
 
 	want := config{
 		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: true}},
-		Output: OutputConfiguration{Format: "compact", Color: false},
+		Output: OutputConfiguration{Format: "compact", Color: "false"},
 	}
 
 	tests := []struct {
@@ -199,7 +199,7 @@ func TestGetDefaultOutput(t *testing.T) {
 `)
 	configCompactFalseJSON := []byte(`{"output": {"format": "compact", "color": false}}`)
 
-	want := OutputConfiguration{Format: "compact", Color: false}
+	want := OutputConfiguration{Format: "compact", Color: "false"}
 
 	tests := []struct {
 		fileName string
@@ -234,10 +234,7 @@ func TestGetDefaultOutput(t *testing.T) {
 
 			configuration = configData
 			var got OutputConfiguration
-			got, err = GetOutputConfiguration()
-			if err != nil {
-				t.Errorf("GetOutputConfiguration() error = %v", err)
-			}
+			got = GetOutputConfiguration()
 			if got != want {
 				t.Errorf("Expected %+v, got %+v", want, got)
 			}
@@ -277,13 +274,7 @@ func TestGetDefaultOutput_Invalid(t *testing.T) {
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.fileName), tt.content, 0644)
-			configData, err := loadConfig()
-			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
-			}
-
-			configuration = configData
-			_, err = GetOutputConfiguration()
+			_, err := loadConfig()
 			if err == nil {
 				t.Errorf("expected error, got none")
 			}
