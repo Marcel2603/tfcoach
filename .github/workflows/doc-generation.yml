@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          featch-depth: 0
+          fetch-depth: 0
 
       - name: Setup Go
         uses: actions/setup-go@v6
