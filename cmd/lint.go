@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	format  string
-	noColor bool
+	format              string
+	noColor             bool
+	defaultOutputConfig = config.GetOutputConfiguration()
 )
 
 var lintCmd = &cobra.Command{
@@ -26,10 +27,10 @@ var lintCmd = &cobra.Command{
 	PreRunE: func(_ *cobra.Command, _ []string) error {
 		color.NoColor = noColor
 
-		if slices.Contains(config.GetSupportedOutputFormats(), format) {
+		if slices.Contains(defaultOutputConfig.SupportedFormats(), format) {
 			return nil
 		}
-		return fmt.Errorf("invalid --format: %s (want %s)", format, strings.Join(config.GetSupportedOutputFormats(), "|"))
+		return fmt.Errorf("invalid --format: %s (want %s)", format, strings.Join(defaultOutputConfig.SupportedFormats(), "|"))
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		target := "."
@@ -47,13 +48,8 @@ var lintCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lintCmd)
 
-	defaultOutputConfig, err := config.GetOutputConfiguration()
-	if err != nil {
-		panic(err)
-	}
-
-	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(config.GetSupportedOutputFormats(), "|"))
+	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(defaultOutputConfig.SupportedFormats(), "|"))
 	lintCmd.Flags().StringVarP(&format, "format", "f", defaultOutputConfig.Format, formatUsageHelp)
 
-	lintCmd.Flags().BoolVar(&noColor, "no-color", !defaultOutputConfig.Color, "Disable color output")
+	lintCmd.Flags().BoolVar(&noColor, "no-color", !defaultOutputConfig.Color.IsTrue, "Disable color output")
 }

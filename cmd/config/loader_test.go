@@ -69,7 +69,7 @@ default_output:
 
 	want := config{
 		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: true}},
-		Output: OutputConfiguration{Format: "compact", Color: false},
+		Output: OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}},
 	}
 
 	tests := []struct {
@@ -192,14 +192,14 @@ func TestGetConfigByRuleId(t *testing.T) {
 	}
 }
 
-func TestGetDefaultOutput(t *testing.T) {
+func TestGetOutputConfiguration(t *testing.T) {
 	configCompactFalseYAML := []byte(`output:
   format: compact
   color: false
 `)
 	configCompactFalseJSON := []byte(`{"output": {"format": "compact", "color": false}}`)
 
-	want := OutputConfiguration{Format: "compact", Color: false}
+	want := OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: true}}
 
 	tests := []struct {
 		fileName string
@@ -234,10 +234,7 @@ func TestGetDefaultOutput(t *testing.T) {
 
 			configuration = configData
 			var got OutputConfiguration
-			got, err = GetOutputConfiguration()
-			if err != nil {
-				t.Errorf("GetOutputConfiguration() error = %v", err)
-			}
+			got = GetOutputConfiguration()
 			if got != want {
 				t.Errorf("Expected %+v, got %+v", want, got)
 			}
@@ -245,7 +242,7 @@ func TestGetDefaultOutput(t *testing.T) {
 	}
 }
 
-func TestGetDefaultOutput_Invalid(t *testing.T) {
+func TestGetOutputConfiguration_Invalid(t *testing.T) {
 	configCompactFalseYAML := []byte(`output:
   format: abcd
 `)
@@ -278,15 +275,11 @@ func TestGetDefaultOutput_Invalid(t *testing.T) {
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.fileName), tt.content, 0644)
 			configData, err := loadConfig()
-			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
-			}
-
-			configuration = configData
-			_, err = GetOutputConfiguration()
 			if err == nil {
 				t.Errorf("expected error, got none")
 			}
+
+			configuration = configData
 		})
 	}
 }
