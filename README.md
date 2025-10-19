@@ -1,14 +1,21 @@
 # tfcoach
 
-⚠️ Disclaimer
-
-> This project is currently under heavy development and not yet feature-complete.
-> Functionality, APIs, and behavior may change without notice. Use at your own risk — contributions and feedback are
-> welcome!
-
 A lightweight linter for Terraform code.  
 tfcoach helps teams enforce consistent conventions and avoid common pitfalls by running simple, composable rules against
 `.tf` files.
+
+---
+
+## Note
+
+This project is currently under heavy development and not yet feature-complete.
+Functionality, APIs, and behavior may change without notice. Use at your own risk — contributions and feedback are welcome!
+
+---
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/Marcel2603/tfcoach)](https://goreportcard.com/report/github.com/Marcel2603/tfcoach)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/Marcel2603/tfcoach/blob/main/LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/Marcel2603/tfcoach)](https://github.com/Marcel2603/tfcoach/releases/latest)
 
 ---
 
