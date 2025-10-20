@@ -1,1 +1,4 @@
-variable "test" {}
+variable "test" {
+  type = string
+  description = "Test"
+}

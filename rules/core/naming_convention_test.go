@@ -14,7 +14,7 @@ func TestNameFormat_ExpectedMETA(t *testing.T) {
 
 	expectedMETA := types.RuleMeta{
 		Title:       "Naming Convention",
-		Description: "terraform names should only contain lowercase alphanumeric characters and underscores.",
+		Description: "Terraform names should only contain lowercase alphanumeric characters and underscores.",
 		Severity:    "HIGH",
 		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
@@ -110,7 +110,7 @@ func TestNameFormat_FailedModules(t *testing.T) {
 	issues := rule.Apply("bad.tf", f)
 
 	if len(issues) != 3 {
-		t.Fatalf("expected 4 issues; got %d: %#v", len(issues), issues)
+		t.Fatalf("expected 3 issues; got %d: %#v", len(issues), issues)
 	}
 }
 
