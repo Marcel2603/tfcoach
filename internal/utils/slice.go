@@ -1,3 +1,4 @@
+//revive:disable:var-naming For now its okay to have a generic name
 package utils
 
 import (
