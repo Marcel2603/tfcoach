@@ -3,6 +3,15 @@
 We use Github Action to release using [semantic-release](https://github.com/semantic-release/semantic-release)
 and [goreleaser](https://goreleaser.com/).
 
+## Strategy
+
+We release as needed, for example if we have added some rules or fixes any bug.
+
+The release is currently manually and gets triggered by admins.
+
+If you need to get a release, simply create an [Issue](https://github.com/Marcel2603/tfcoach/issues) or
+mention it in your pr.
+
 ## ReleaseFlow
 
 ```mermaid
