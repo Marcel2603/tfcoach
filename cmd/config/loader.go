@@ -73,7 +73,7 @@ func loadConfig() (config, error) {
 		return config{}, mergeErr
 	}
 
-	validationErr := configData.Output.Validate()
+	validationErr := configData.Validate()
 	if validationErr != nil {
 		return config{}, validationErr
 	}

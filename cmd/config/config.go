@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"slices"
@@ -34,16 +35,17 @@ type OutputConfiguration struct {
 	Color  NullableBool `json:"color" yaml:"color"`
 }
 
-func (o *OutputConfiguration) Validate() error {
-	if !slices.Contains(supportedOutputFormats, o.Format) {
-		return fmt.Errorf("invalid format: %q (supported: %v)", o.Format, supportedOutputFormats)
+func (c *config) Validate() error {
+	var errs []error
+	if !slices.Contains(supportedOutputFormats, c.Output.Format) {
+		errs = append(errs, fmt.Errorf("invalid format: %q (supported: %v)", c.Output.Format, supportedOutputFormats))
 	}
 
-	if !o.Color.HasValue {
-		return fmt.Errorf("invalid color: never set")
+	if !c.Output.Color.HasValue {
+		errs = append(errs, fmt.Errorf("invalid color: never set"))
 	}
 
-	return nil
+	return errors.Join(errs...)
 }
 
 func (o *OutputConfiguration) SupportedFormats() []string {
