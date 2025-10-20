@@ -21,24 +21,11 @@ output:
 	`rules: {}`,
 }
 
-var invalidConfigsYAML = []string{
-	// invalid YAML
-	`rules: {::: {"enabled": false}}`,
-	// invalid output format
-	`output:
-  format: abcd
-  color: false`,
-}
-
-var invalidConfigsJSON = []string{
-	// invalid JSON
-	`{"rules": {4}}`,
-	// invalid output format
-	`{"output": {"format": "abcd", "color": false}}`,
-}
-
 func resetYamlDefaultData() {
-	yamlDefaultData = []byte(`rules: {}`)
+	yamlDefaultData = []byte(`rules: {}
+output:
+  format: pretty
+  color: true`)
 }
 
 func TestLoadDefaultConfig(t *testing.T) {
@@ -146,31 +133,91 @@ output:
 	}
 }
 
-func TestLoadConfig_InvalidRulesOverride(t *testing.T) {
-	runTest := func(t *testing.T, fileName string, invalidConfig []byte) {
-		dir := t.TempDir()
-		_ = os.Chdir(dir)
-		_ = os.WriteFile(filepath.Join(dir, fileName), invalidConfig, 0644)
-		_, err := loadConfig()
-		if err == nil {
-			t.Errorf("Expected error, got none")
-		}
+func TestLoadConfig_InvalidOverride(t *testing.T) {
+	contentYAML := []byte(`output:
+  format: abcd
+  color: false`)
+	contentJSON := []byte(`{"output": {"format": "abcd", "color": false}}`)
+
+	tests := []struct {
+		filename string
+		content  []byte
+	}{
+		{
+			filename: ".tfcoach.yml",
+			content:  contentYAML,
+		},
+		{
+			filename: ".tfcoach.yaml",
+			content:  contentYAML,
+		},
+		{
+			filename: ".tfcoach.json",
+			content:  contentJSON,
+		},
+		{
+			filename: ".tfcoach",
+			content:  contentJSON,
+		},
 	}
 
-	for _, fileName := range []string{".tfcoach.yml", ".tfcoach.yaml"} {
-		for _, invalidConfig := range invalidConfigsYAML {
-			t.Run(fileName+"_"+invalidConfig, func(t *testing.T) {
-				runTest(t, fileName, []byte(invalidConfig))
-			})
-		}
+	for _, tt := range tests {
+		t.Run(tt.filename, func(t *testing.T) {
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.content, 0644)
+			_, err := loadConfig()
+			if err == nil {
+				t.Errorf("Expected error, got none")
+			}
+		})
+	}
+}
+
+func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
+	contentYAML := []byte(`rules: {::: {"enabled": false}}`)
+	contentJSON := []byte(`{"rules": {4}}`)
+
+	want := config{
+		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: true}},
 	}
 
-	for _, fileName := range []string{".tfcoach.json", ".tfcoach"} {
-		for _, invalidConfig := range invalidConfigsJSON {
-			t.Run(fileName+"_"+invalidConfig, func(t *testing.T) {
-				runTest(t, fileName, []byte(invalidConfig))
-			})
-		}
+	tests := []struct {
+		filename string
+		content  []byte
+	}{
+		{
+			filename: ".tfcoach.yml",
+			content:  contentYAML,
+		},
+		{
+			filename: ".tfcoach.yaml",
+			content:  contentYAML,
+		},
+		{
+			filename: ".tfcoach.json",
+			content:  contentJSON,
+		},
+		{
+			filename: ".tfcoach",
+			content:  contentJSON,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.filename, func(t *testing.T) {
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.content, 0644)
+			configData, err := loadConfig()
+			if err != nil {
+				t.Errorf("loadConfig() error = %v", err)
+			}
+
+			if reflect.DeepEqual(configData, want) {
+				t.Errorf("Wanted %v, got %v", want, configData)
+			}
+		})
 	}
 }
 
