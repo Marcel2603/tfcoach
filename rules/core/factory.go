@@ -12,7 +12,12 @@ const (
 )
 
 var (
-	rules   = []types.Rule{NamingConventionRule(), FileNamingRule(), RequiredProviderMustBeDeclaredRule()}
+	rules = []types.Rule{
+		NamingConventionRule(),
+		FileNamingRule(),
+		RequiredProviderMustBeDeclaredRule(),
+		EnforceVariableDescriptionRule(),
+	}
 	ruleMap = mapRules(rules)
 )
 
