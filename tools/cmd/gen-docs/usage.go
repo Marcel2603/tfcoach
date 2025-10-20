@@ -4,9 +4,11 @@ package main
 
 import (
 	"bytes"
+	"cmp"
+	"fmt"
 	"log"
 	"os"
-	"sort"
+	"slices"
 	"strings"
 
 	"github.com/Marcel2603/tfcoach/cmd"
@@ -27,7 +29,9 @@ func GenerateUsage(filename string) {
 	buf.WriteString("# Usage \n")
 
 	cmds := collectCommands(cmd.GetRootCommand())
-	sort.Slice(cmds, func(i, j int) bool { return cmds[i].CommandPath() < cmds[j].CommandPath() })
+	slices.SortStableFunc(cmds, func(a, b *cobra.Command) int {
+		return cmp.Compare(a.CommandPath(), b.CommandPath())
+	})
 
 	for _, command := range cmds {
 		var section bytes.Buffer
@@ -44,7 +48,10 @@ func GenerateUsage(filename string) {
 			log.Fatalf("error generating markdown for %s: %v", command.Name(), err)
 		}
 
-		out := cleanMarkdown(section.String())
+		commandString := section.String()
+		addReturnCode(command, commandString)
+		out := cleanMarkdown(commandString)
+
 		buf.WriteString(out)
 		buf.WriteString("\n")
 	}
@@ -70,4 +77,16 @@ func cleanMarkdown(s string) string {
 	s = strings.Join(cleaned, "\n")
 
 	return strings.TrimSpace(s) + "\n"
+}
+
+func addReturnCode(command *cobra.Command, commandString string) {
+	if note, ok := command.Annotations["exitCodes"]; ok {
+		commandString += "### Exit Codes\n\n"
+		commandString += "| Code | Meaning|\n"
+		commandString += "|------|--------|\n"
+		for _, exitStr := range strings.Split(note, ",") {
+			codeAndMeaning := strings.SplitN(exitStr, ":", 2)
+			commandString += fmt.Sprintf("| %s | %s | \n", codeAndMeaning[0], codeAndMeaning[1])
+		}
+	}
 }

@@ -19,4 +19,4 @@ jobs:
       - name: Validate CLI docs
         run: |
           make generate-documentation
-          git diff --exit-code -- **/*.md || echo "Generate Documenation localy using 'make generate-documentation'"
+          git diff --exit-code -- **/*.md || echo "Generate Documentation locally using 'make generate-documentation'"
