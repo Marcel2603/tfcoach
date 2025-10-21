@@ -9,7 +9,7 @@ import (
 	"github.com/Marcel2603/tfcoach/internal/types"
 )
 
-func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer, outputFormat string) int {
+func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer, outputFormat string, allowEmojis bool) int {
 	eng := engine.New(src)
 	eng.RegisterMany(rules)
 	issues, err := eng.Run(path)
@@ -19,7 +19,7 @@ func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer, outpu
 	}
 
 	if len(issues) > 0 {
-		writeErr := format.WriteResults(issues, w, outputFormat)
+		writeErr := format.WriteResults(issues, w, outputFormat, allowEmojis)
 		if writeErr != nil {
 			_, _ = fmt.Printf("error writing results: %v\n", writeErr)
 			return 2

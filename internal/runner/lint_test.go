@@ -14,7 +14,7 @@ func TestRunLint_NoIssues(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{"ok.tf": `# nothing`}}
 	var rules []types.Rule // no rules -> no issues
 	var out bytes.Buffer
-	code := runner.Lint(".", src, rules, &out, "raw")
+	code := runner.Lint(".", src, rules, &out, "compact", true)
 	if code != 0 {
 		t.Fatalf("want 0, got %d", code)
 	}
@@ -29,7 +29,7 @@ func TestRunLint_Issues(t *testing.T) {
 		RuleID: "test.always.flag", Message: "failed", Match: "", // always emits
 	}}
 	var out bytes.Buffer
-	code := runner.Lint(".", src, rules, &out, "raw")
+	code := runner.Lint(".", src, rules, &out, "compact", true)
 	if code != 1 {
 		t.Fatalf("want 1, got %d", code)
 	}

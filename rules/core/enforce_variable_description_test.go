@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
@@ -15,7 +16,7 @@ func TestEnforceVariableDescription_ExpectedMETA(t *testing.T) {
 	expectedMETA := types.RuleMeta{
 		Title:       "Enforce Variable Description",
 		Description: "To understand what that variable does (even if it seems trivial), always add a description",
-		Severity:    "MEDIUM",
+		Severity:    constants.SeverityMedium,
 		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
 

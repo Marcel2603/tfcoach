@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
@@ -15,7 +16,7 @@ func TestNameFormat_ExpectedMETA(t *testing.T) {
 	expectedMETA := types.RuleMeta{
 		Title:       "Naming Convention",
 		Description: "Terraform names should only contain lowercase alphanumeric characters and underscores.",
-		Severity:    "HIGH",
+		Severity:    constants.SeverityHigh,
 		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
 

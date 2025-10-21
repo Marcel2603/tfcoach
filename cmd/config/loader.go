@@ -30,6 +30,10 @@ func GetConfigByRuleID(ruleID string) RuleConfiguration {
 	return RuleConfiguration{Enabled: true}
 }
 
+func GetOutputConfiguration() OutputConfiguration {
+	return configuration.Output
+}
+
 func mustLoadConfig() config {
 	configData, err := loadConfig()
 	if err != nil {
@@ -52,7 +56,7 @@ func loadConfig() (config, error) {
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "Could not load config from custom config file %s: %s\n", customConfigPath, err.Error())
 		} else {
-			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverride)
+			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
 			if mergeErr != nil {
 				return config{}, mergeErr
 			}
@@ -64,9 +68,14 @@ func loadConfig() (config, error) {
 	if err != nil {
 		return config{}, err
 	}
-	mergeErr := mergo.Merge(&configData, envData, mergo.WithOverride)
+	mergeErr := mergo.Merge(&configData, envData, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
 	if mergeErr != nil {
 		return config{}, mergeErr
+	}
+
+	validationErr := configData.Validate()
+	if validationErr != nil {
+		return config{}, validationErr
 	}
 
 	return configData, nil
@@ -96,11 +105,11 @@ func loadConfigFromEnv(mapData *config) error {
 }
 
 func loadConfigFromYaml(data []byte, mapData *config) error {
-	return yaml.Unmarshal(data, &mapData)
+	return yaml.Unmarshal(data, mapData)
 }
 
 func loadConfigFromJSON(data []byte, mapData *config) error {
-	return json.Unmarshal(data, &mapData)
+	return json.Unmarshal(data, mapData)
 }
 
 func getCustomConfigPath() (string, bool) {

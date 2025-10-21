@@ -9,8 +9,25 @@ import (
 	"testing"
 )
 
+var invalidDefaultConfigsYAML = []string{
+	// invalid YAML
+	`rules: {::: {"enabled": false}}`,
+	// invalid output format
+	`rules: {}
+output:
+  format: abcd
+  color: false`,
+	// incomplete config,
+	`rules: {}`,
+}
+
 func resetYamlDefaultData() {
-	yamlDefaultData = []byte(`rules: {}`)
+	yamlDefaultData = []byte(`rules: {}
+output:
+  format: pretty
+  color: true
+  emojis: true
+`)
 }
 
 func TestLoadDefaultConfig(t *testing.T) {
@@ -35,56 +52,73 @@ func TestMustLoadConfig(t *testing.T) {
 }
 
 func TestLoadDefaultConfig_Invalid(t *testing.T) {
-	defer resetYamlDefaultData()
-	yamlDefaultData = []byte(`rules: {::: {"enabled": false}}`)
+	t.Cleanup(resetYamlDefaultData)
 
-	_, err := loadConfig()
-	if err == nil {
-		t.Errorf("expected error, got none")
+	for _, invalidConfig := range invalidDefaultConfigsYAML {
+		t.Run(invalidConfig, func(t *testing.T) {
+			yamlDefaultData = []byte(invalidConfig)
+
+			_, err := loadConfig()
+			if err == nil {
+				t.Errorf("expected error, got none")
+			}
+		})
 	}
 }
 
 func TestMustLoadConfig_Invalid(t *testing.T) {
-	defer resetYamlDefaultData()
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("mustLoadConfig() did not panic on invalid default config")
-		}
-	}()
+	t.Cleanup(resetYamlDefaultData)
 
-	yamlDefaultData = []byte(`rules: {::: {"enabled": false}}`)
+	for _, invalidConfig := range invalidDefaultConfigsYAML {
+		t.Run(invalidConfig, func(t *testing.T) {
+			defer func() {
+				if r := recover(); r == nil {
+					t.Errorf("mustLoadConfig() did not panic on invalid default config")
+				}
+			}()
 
-	_ = mustLoadConfig()
+			yamlDefaultData = []byte(invalidConfig)
+
+			_ = mustLoadConfig()
+		})
+	}
 }
 
 func TestLoadConfig_OverriddenByFile(t *testing.T) {
-	contentYAML := []byte(`rules: {"RULE_1": {"enabled": false}}`)
-	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}}`)
+	contentYAML := []byte(`rules:
+  RULE_1:
+    "enabled": false
+output:
+  format: compact
+  color: false
+  emojis: false
+`)
+	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false, "emojis": false}}`)
+
+	want := config{
+		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: true}},
+		Output: OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: false}},
+	}
 
 	tests := []struct {
 		filename string
 		content  []byte
-		expected config
 	}{
 		{
 			filename: ".tfcoach.yml",
 			content:  contentYAML,
-			expected: config{Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: true}}},
 		},
 		{
 			filename: ".tfcoach.yaml",
 			content:  contentYAML,
-			expected: config{Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: true}}},
 		},
 		{
 			filename: ".tfcoach.json",
 			content:  contentJSON,
-			expected: config{Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: true}}},
 		},
 		{
 			filename: ".tfcoach",
 			content:  contentJSON,
-			expected: config{Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: true}}},
 		},
 	}
 	for _, tt := range tests {
@@ -97,22 +131,22 @@ func TestLoadConfig_OverriddenByFile(t *testing.T) {
 				t.Errorf("loadConfig() error = %v", err)
 			}
 
-			if reflect.DeepEqual(configData, tt.expected) {
-				t.Errorf("Expected %v, got %v", tt.expected, configData)
+			if reflect.DeepEqual(configData, want) {
+				t.Errorf("Wanted %v, got %v", want, configData)
 			}
 		})
 	}
 }
 
 func TestLoadConfig_InvalidOverride(t *testing.T) {
-	contentYAML := []byte(`rules: {::: {"enabled": false}}`)
-	contentJSON := []byte(`{"rules": {4}}`)
-	expected := config{}
+	contentYAML := []byte(`output:
+  format: abcd
+  color: false`)
+	contentJSON := []byte(`{"output": {"format": "abcd", "color": false}}`)
 
 	tests := []struct {
 		filename string
 		content  []byte
-		expected config
 	}{
 		{
 			filename: ".tfcoach.yml",
@@ -131,6 +165,50 @@ func TestLoadConfig_InvalidOverride(t *testing.T) {
 			content:  contentJSON,
 		},
 	}
+
+	for _, tt := range tests {
+		t.Run(tt.filename, func(t *testing.T) {
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.content, 0644)
+			_, err := loadConfig()
+			if err == nil {
+				t.Errorf("Expected error, got none")
+			}
+		})
+	}
+}
+
+func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
+	contentYAML := []byte(`rules: {::: {"enabled": false}}`)
+	contentJSON := []byte(`{"rules": {4}}`)
+
+	want := config{
+		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: true}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+	}
+
+	tests := []struct {
+		filename string
+		content  []byte
+	}{
+		{
+			filename: ".tfcoach.yml",
+			content:  contentYAML,
+		},
+		{
+			filename: ".tfcoach.yaml",
+			content:  contentYAML,
+		},
+		{
+			filename: ".tfcoach.json",
+			content:  contentJSON,
+		},
+		{
+			filename: ".tfcoach",
+			content:  contentJSON,
+		},
+	}
+
 	for _, tt := range tests {
 		t.Run(tt.filename, func(t *testing.T) {
 			dir := t.TempDir()
@@ -141,15 +219,15 @@ func TestLoadConfig_InvalidOverride(t *testing.T) {
 				t.Errorf("loadConfig() error = %v", err)
 			}
 
-			if reflect.DeepEqual(configData, expected) {
-				t.Errorf("Expected %v, got %v", expected, configData)
+			if reflect.DeepEqual(configData, want) {
+				t.Errorf("Wanted %v, got %v", want, configData)
 			}
 		})
 	}
 }
 
 func TestGetConfigByRuleId(t *testing.T) {
-	content := []byte(`{"rules": {"RULE_1": {"enabled": false, "spec": {"foo":"bar"}}}}`)
+	content := []byte(`{"rules": {"RULE_1": {"enabled": false, "spec": {"foo":"bar"}}}, "output": {"format": "compact", "color": false, "emojis": true}}`)
 
 	tests := []struct {
 		ruleID   string
@@ -181,6 +259,57 @@ func TestGetConfigByRuleId(t *testing.T) {
 			}
 			if !reflect.DeepEqual(ruleConfig.Spec, tt.expected.Spec) {
 				t.Errorf("Expected %+v, got %+v", tt.expected.Spec, ruleConfig.Spec)
+			}
+		})
+	}
+}
+
+func TestGetOutputConfiguration(t *testing.T) {
+	configCompactFalseYAML := []byte(`output:
+  format: compact
+  color: false
+  emojis: true
+`)
+	configCompactFalseJSON := []byte(`{"output": {"format": "compact", "color": false, "emojis": true}}`)
+
+	want := OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}}
+
+	tests := []struct {
+		fileName string
+		content  []byte
+	}{
+		{
+			fileName: ".tfcoach.yaml",
+			content:  configCompactFalseYAML,
+		},
+		{
+			fileName: ".tfcoach.yml",
+			content:  configCompactFalseYAML,
+		},
+		{
+			fileName: ".tfcoach",
+			content:  configCompactFalseJSON,
+		},
+		{
+			fileName: ".tfcoach.json",
+			content:  configCompactFalseJSON,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.fileName, func(t *testing.T) {
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			_ = os.WriteFile(filepath.Join(dir, tt.fileName), tt.content, 0644)
+			configData, err := loadConfig()
+			if err != nil {
+				t.Errorf("loadConfig() error = %v", err)
+			}
+
+			configuration = configData
+			var got OutputConfiguration
+			got = GetOutputConfiguration()
+			if got != want {
+				t.Errorf("Expected %+v, got %+v", want, got)
 			}
 		})
 	}

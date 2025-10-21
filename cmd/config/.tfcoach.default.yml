@@ -1,1 +1,5 @@
 rules: {}
+output:
+  format: pretty
+  color: true
+  emojis: true

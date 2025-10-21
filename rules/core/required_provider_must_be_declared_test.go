@@ -3,6 +3,7 @@ package core_test
 import (
 	"testing"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/testutil"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/rules/core"
@@ -14,7 +15,7 @@ func TestRequiredProviderMustBeDeclared_ExpectedMeta(t *testing.T) {
 	expectedMETA := types.RuleMeta{
 		Title:       "Required Provider Must Be Declared",
 		Description: "All providers used in resources or data sources are declared in the terraform.required_providers block.",
-		Severity:    "HIGH",
+		Severity:    constants.SeverityMedium,
 		DocsURL:     "core/required_provider_must_be_declared",
 	}
 
