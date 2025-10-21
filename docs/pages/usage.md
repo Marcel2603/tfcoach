@@ -10,8 +10,7 @@ tfcoach [flags]
 ### Options
 
 ```
-  -h, --help     help for tfcoach
-  -t, --toggle   Help message for toggle
+  -h, --help   help for tfcoach
 ```
 
 
