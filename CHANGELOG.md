@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.5.0](https://github.com/Marcel2603/tfcoach/compare/v0.4.0..0.5.0) - 2025-10-21
+
+### Features
+
+- *(app)* Add flag to lint command for pretty output format ([#26](https://github.com/marcel2603/tfcoach/issues/26)) - ([1f0c05f](https://github.com/Marcel2603/tfcoach/commit/1f0c05fb3b514fbe7d39b0868c42d307a6699b3f))  by @Erkenbend
+- *(rules)* Add new rule "core.enforce_variable_description" ([#31](https://github.com/marcel2603/tfcoach/issues/31)) - ([a7df136](https://github.com/Marcel2603/tfcoach/commit/a7df13670fb28f57a1e0d49fc0f836e992c22462))  by @Erkenbend
+
+### Bug Fixes
+
+- *(release)* Version and commit are getting set correctly - ([65f80b7](https://github.com/Marcel2603/tfcoach/commit/65f80b798041e167187eb5e7725879e6437c123a))  by @Marcel2603
+
+### Documentation
+
+- *(README)* Add badges to readme, reoder the first 3 sections - ([b6601b7](https://github.com/Marcel2603/tfcoach/commit/b6601b7c679de3cb4367654915b0b5367de97538))  by @Marcel2603
+- *(changelog)* Add contribute on every commit, add dependency-section - ([df01639](https://github.com/Marcel2603/tfcoach/commit/df01639e61c3f970745ba2c79f54b008e0a91362))  by @Marcel2603
+- *(generation)* Generate usage and rules-overview from code ([#29](https://github.com/marcel2603/tfcoach/issues/29)) - ([2528ce0](https://github.com/Marcel2603/tfcoach/commit/2528ce03b10a862bc5b54909479fa2df180c140f))  by @Marcel2603
+- *(release)* Document release strategy - ([98063aa](https://github.com/Marcel2603/tfcoach/commit/98063aa05d49314021f73c48a5856fe957dd6858))  by @Marcel2603
+- *(usage)* Fix available outputs ([#27](https://github.com/marcel2603/tfcoach/issues/27)) - ([5b57cd0](https://github.com/Marcel2603/tfcoach/commit/5b57cd02872b2cd736b628f50121ad59183d7feb))  by @Marcel2603
+
+### Testing
+
+- *(revive)* Enforce linting of go code, let ci fail if warnings/err… ([#30](https://github.com/marcel2603/tfcoach/issues/30)) - ([4ccbf2e](https://github.com/Marcel2603/tfcoach/commit/4ccbf2ee117fd112cefbbc450a46eada67dd71c9))  by @Marcel2603
+
 ## [0.4.0](https://github.com/Marcel2603/tfcoach/compare/v0.3.0..v0.4.0) - 2025-10-15
 
 ### Features
