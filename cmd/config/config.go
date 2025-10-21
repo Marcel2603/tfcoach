@@ -33,6 +33,7 @@ type RuleConfiguration struct {
 type OutputConfiguration struct {
 	Format string       `json:"format" yaml:"format"`
 	Color  NullableBool `json:"color" yaml:"color"`
+	Emojis NullableBool `json:"emojis" yaml:"emojis"`
 }
 
 func (c *config) Validate() error {
@@ -43,6 +44,10 @@ func (c *config) Validate() error {
 
 	if !c.Output.Color.HasValue {
 		errs = append(errs, fmt.Errorf("invalid color: never set"))
+	}
+
+	if !c.Output.Emojis.HasValue {
+		errs = append(errs, fmt.Errorf("invalid emojis config: never set"))
 	}
 
 	return errors.Join(errs...)

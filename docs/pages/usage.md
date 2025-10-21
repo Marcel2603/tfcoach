@@ -36,6 +36,7 @@ tfcoach lint [path] [flags]
   -f, --format string   Output format. Supported: json|compact|pretty (default "pretty")
   -h, --help            help for lint
       --no-color        Disable color output
+      --no-emojis       Prevent emojis in output
 ```
 
 

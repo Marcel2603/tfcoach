@@ -37,7 +37,7 @@ type jsonOutput struct {
 	Issues     []issueOutput `json:"issues"`
 }
 
-func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error {
+func WriteResults(issues []types.Issue, w io.Writer, outputFormat string, allowEmojis bool) error {
 	switch outputFormat {
 	case "compact":
 		writeTextIssuesCompact(issues, w)
@@ -48,7 +48,7 @@ func WriteResults(issues []types.Issue, w io.Writer, outputFormat string) error 
 			return err
 		}
 	case "pretty":
-		err := writePretty(issues, w)
+		err := writePretty(issues, allowEmojis, w)
 		if err != nil {
 			return err
 		}
@@ -97,7 +97,7 @@ func writeJSON(issues []types.Issue, w io.Writer) error {
 	return nil
 }
 
-func writePretty(issues []types.Issue, w io.Writer) error {
+func writePretty(issues []types.Issue, allowEmojis bool, w io.Writer) error {
 	preparedIssues := toIssueOutputs(issues)
 	issuesGroupedByFile := make(map[string][]issueOutput)
 	longestFilePath := 10 // for padding
@@ -117,6 +117,15 @@ func writePretty(issues []types.Issue, w io.Writer) error {
 	if err != nil {
 		return err
 	}
+
+	var ruleMessagePrefix, docsPrefix string
+	if allowEmojis {
+		ruleMessagePrefix = "💡  "
+		docsPrefix = "📑  "
+	} else {
+		ruleMessagePrefix = ""
+		docsPrefix = "Docs: "
+	}
 	for _, fileName := range slices.Sorted(maps.Keys(issuesGroupedByFile)) {
 		issuesInFile := issuesGroupedByFile[fileName]
 		slices.SortStableFunc(issuesInFile, func(a, b issueOutput) int {
@@ -131,12 +140,14 @@ func writePretty(issues []types.Issue, w io.Writer) error {
 		for _, issue := range issuesInFile {
 			_, err = fmt.Fprintf(
 				w,
-				"  %d:%d\t%s\t%s\n\t💡  %s\n\t📑  %s\n\n",
+				"  %d:%d\t%s\t%s\n\t%s%s\n\t%s%s\n\n",
 				issue.Line,
 				issue.Column,
 				boldFont.Sprint("["+issue.RuleID+"]"),
 				color.New(issue.Severity.Color(), color.Bold).Sprint(issue.Severity),
+				ruleMessagePrefix,
 				issue.Message,
+				docsPrefix,
 				issue.DocsURL,
 			)
 			if err != nil {

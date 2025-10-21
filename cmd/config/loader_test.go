@@ -25,7 +25,9 @@ func resetYamlDefaultData() {
 	yamlDefaultData = []byte(`rules: {}
 output:
   format: pretty
-  color: true`)
+  color: true
+  emojis: true
+`)
 }
 
 func TestLoadDefaultConfig(t *testing.T) {
@@ -89,12 +91,13 @@ func TestLoadConfig_OverriddenByFile(t *testing.T) {
 output:
   format: compact
   color: false
+  emojis: false
 `)
-	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false}}`)
+	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false, "emojis": false}}`)
 
 	want := config{
 		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: true}},
-		Output: OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}},
+		Output: OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: false}},
 	}
 
 	tests := []struct {
@@ -181,7 +184,7 @@ func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
 	contentJSON := []byte(`{"rules": {4}}`)
 
 	want := config{
-		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: true}},
+		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: true}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
 	}
 
 	tests := []struct {
@@ -224,7 +227,7 @@ func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
 }
 
 func TestGetConfigByRuleId(t *testing.T) {
-	content := []byte(`{"rules": {"RULE_1": {"enabled": false, "spec": {"foo":"bar"}}}, "output": {"format": "compact", "color": false}}`)
+	content := []byte(`{"rules": {"RULE_1": {"enabled": false, "spec": {"foo":"bar"}}}, "output": {"format": "compact", "color": false, "emojis": true}}`)
 
 	tests := []struct {
 		ruleID   string
@@ -265,10 +268,11 @@ func TestGetOutputConfiguration(t *testing.T) {
 	configCompactFalseYAML := []byte(`output:
   format: compact
   color: false
+  emojis: true
 `)
-	configCompactFalseJSON := []byte(`{"output": {"format": "compact", "color": false}}`)
+	configCompactFalseJSON := []byte(`{"output": {"format": "compact", "color": false, "emojis": true}}`)
 
-	want := OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}}
+	want := OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}}
 
 	tests := []struct {
 		fileName string

@@ -17,6 +17,7 @@ import (
 var (
 	format              string
 	noColor             bool
+	noEmojis            bool
 	defaultOutputConfig = config.GetOutputConfiguration()
 )
 
@@ -39,7 +40,7 @@ var lintCmd = &cobra.Command{
 		}
 
 		src := engine.FileSystem{SkipDirs: []string{".git", ".terraform"}}
-		code := runner.Lint(target, src, core.EnabledRules(), cmd.OutOrStdout(), format)
+		code := runner.Lint(target, src, core.EnabledRules(), cmd.OutOrStdout(), format, !noEmojis)
 		os.Exit(code)
 		return nil
 	},
@@ -52,6 +53,7 @@ func init() {
 	lintCmd.Flags().StringVarP(&format, "format", "f", defaultOutputConfig.Format, formatUsageHelp)
 
 	lintCmd.Flags().BoolVar(&noColor, "no-color", !defaultOutputConfig.Color.IsTrue, "Disable color output")
+	lintCmd.Flags().BoolVar(&noEmojis, "no-emojis", !defaultOutputConfig.Emojis.IsTrue, "Prevent emojis in output")
 
 	lintCmd.Annotations = map[string]string{
 		"exitCodes": "0:No issues found,1:Issues found,2:Runtime error",

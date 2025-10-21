@@ -43,7 +43,7 @@ func rng(file string, line0, col int) hcl.Range {
 
 func TestWriteResults_CompactSingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "compact")
+	err := format.WriteResults(issues1, &buf, "compact", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -59,7 +59,7 @@ Summary: 1 issue
 
 func TestWriteResults_CompactMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "compact")
+	err := format.WriteResults(issues2, &buf, "compact", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -76,7 +76,7 @@ Summary: 2 issues
 
 func TestWriteResults_JsonSingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "json")
+	err := format.WriteResults(issues1, &buf, "json", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -116,7 +116,7 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 
 func TestWriteResults_JsonMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "json")
+	err := format.WriteResults(issues2, &buf, "json", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -165,7 +165,7 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 
 func TestWriteResults_PrettySingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "pretty")
+	err := format.WriteResults(issues1, &buf, "pretty", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -187,7 +187,7 @@ func TestWriteResults_PrettySingle(t *testing.T) {
 
 func TestWriteResults_PrettyMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "pretty")
+	err := format.WriteResults(issues2, &buf, "pretty", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -215,7 +215,7 @@ func TestWriteResults_PrettyMultiple(t *testing.T) {
 
 func TestWriteResults_PrettySorting(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues3, &buf, "pretty")
+	err := format.WriteResults(issues3, &buf, "pretty", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -249,9 +249,45 @@ func TestWriteResults_PrettySorting(t *testing.T) {
 	}
 }
 
+func TestWriteResults_PrettyNoEmojis(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.WriteResults(issues3, &buf, "pretty", false)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	want := `Summary: 4 issues found in 2 files
+
+─── a.tf ───────────────
+
+  10:2	[core.naming_convention]	HIGH
+	m3
+	Docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+  2:1	[core.file_naming]	LOW
+	m4
+	Docs: https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+  4:7	[core.something_something]	UNKNOWN
+	m1
+	Docs: about:blank
+
+─── b.tf ───────────────
+
+  9:2	[core.naming_convention]	HIGH
+	m2
+	Docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+`
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	}
+}
+
 func TestWriteResults_UnknownFormat(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "abcd")
+	err := format.WriteResults(issues1, &buf, "abcd", true)
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
