@@ -18,7 +18,7 @@ const ruleDocsFormat = "https://marcel2603.github.io/tfcoach/rules/%s"
 
 var (
 	boldFont  = color.New(color.Bold)
-	greyColor = color.RGB(100, 100, 100)
+	greyColor = color.RGB(90, 90, 90)
 )
 
 type issueOutput struct {

@@ -50,9 +50,10 @@ func TestMustLoadConfig(t *testing.T) {
 }
 
 func TestLoadDefaultConfig_Invalid(t *testing.T) {
+	t.Cleanup(resetYamlDefaultData)
+
 	for _, invalidConfig := range invalidDefaultConfigsYAML {
 		t.Run(invalidConfig, func(t *testing.T) {
-			defer resetYamlDefaultData()
 			yamlDefaultData = []byte(invalidConfig)
 
 			_, err := loadConfig()
@@ -64,9 +65,10 @@ func TestLoadDefaultConfig_Invalid(t *testing.T) {
 }
 
 func TestMustLoadConfig_Invalid(t *testing.T) {
+	t.Cleanup(resetYamlDefaultData)
+
 	for _, invalidConfig := range invalidDefaultConfigsYAML {
 		t.Run(invalidConfig, func(t *testing.T) {
-			defer resetYamlDefaultData()
 			defer func() {
 				if r := recover(); r == nil {
 					t.Errorf("mustLoadConfig() did not panic on invalid default config")
