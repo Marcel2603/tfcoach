@@ -48,6 +48,6 @@ func init() {
 	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
 	lintCmd.Flags().StringVarP(&format, "format", "f", "raw", formatUsageHelp)
 	lintCmd.Annotations = map[string]string{
-		"exitCodes": "0:No issues found,1:issues found,2:runtime error",
+		"exitCodes": "0:No issues found,1:Issues found,2:Runtime error",
 	}
 }

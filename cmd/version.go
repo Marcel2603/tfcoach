@@ -22,6 +22,6 @@ var versionCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(versionCmd)
 	versionCmd.Annotations = map[string]string{
-		"exitCodes": "0:ok",
+		"exitCodes": "0:OK",
 	}
 }

@@ -49,7 +49,7 @@ func GenerateUsage(filename string) {
 		}
 
 		commandString := section.String()
-		addReturnCode(command, commandString)
+		commandString += generateReturnCodeDocs(command)
 		out := cleanMarkdown(commandString)
 
 		buf.WriteString(out)
@@ -79,14 +79,16 @@ func cleanMarkdown(s string) string {
 	return strings.TrimSpace(s) + "\n"
 }
 
-func addReturnCode(command *cobra.Command, commandString string) {
+func generateReturnCodeDocs(command *cobra.Command) string {
+	var result string
 	if note, ok := command.Annotations["exitCodes"]; ok {
-		commandString += "### Exit Codes\n\n"
-		commandString += "| Code | Meaning|\n"
-		commandString += "|------|--------|\n"
+		result += "### Exit Codes\n\n"
+		result += "| Code | Meaning|\n"
+		result += "|------|--------|\n"
 		for _, exitStr := range strings.Split(note, ",") {
 			codeAndMeaning := strings.SplitN(exitStr, ":", 2)
-			commandString += fmt.Sprintf("| %s | %s | \n", codeAndMeaning[0], codeAndMeaning[1])
+			result += fmt.Sprintf("| %s | %s |\n", codeAndMeaning[0], codeAndMeaning[1])
 		}
 	}
+	return result
 }

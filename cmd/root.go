@@ -42,6 +42,6 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.Annotations = map[string]string{
-		"exitCodes": "0:ok",
+		"exitCodes": "0:OK",
 	}
 }

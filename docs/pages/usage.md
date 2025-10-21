@@ -14,6 +14,14 @@ tfcoach [flags]
   -t, --toggle   Help message for toggle
 ```
 
+
+
+### Exit Codes
+
+| Code | Meaning|
+|------|--------|
+| 0 | OK |
+
 ## tfcoach lint
 
 Lint Terraform files
@@ -29,6 +37,16 @@ tfcoach lint [path] [flags]
   -h, --help            help for lint
 ```
 
+
+
+### Exit Codes
+
+| Code | Meaning|
+|------|--------|
+| 0 | No issues found |
+| 1 | Issues found |
+| 2 | Runtime error |
+
 ## tfcoach version
 
 Print the version number
@@ -42,4 +60,12 @@ tfcoach version [flags]
 ```
   -h, --help   help for version
 ```
+
+
+
+### Exit Codes
+
+| Code | Meaning|
+|------|--------|
+| 0 | OK |
 
