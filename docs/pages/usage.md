@@ -33,8 +33,9 @@ tfcoach lint [path] [flags]
 ### Options
 
 ```
-  -f, --format string   Output format. Supported: json|raw (default "raw")
+  -f, --format string   Output format. Supported: json|compact|pretty (default "pretty")
   -h, --help            help for lint
+      --no-color        Disable color output
 ```
 
 

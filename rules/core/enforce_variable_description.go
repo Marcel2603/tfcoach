@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -27,7 +28,7 @@ func (n *EnforceVariableDescription) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "Enforce Variable Description",
 		Description: "To understand what that variable does (even if it seems trivial), always add a description",
-		Severity:    "MEDIUM",
+		Severity:    constants.SeverityMedium,
 		DocsURL:     strings.ReplaceAll(n.id, ".", "/"),
 	}
 }
