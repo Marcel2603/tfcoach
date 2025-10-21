@@ -36,7 +36,7 @@ var lintCmd = &cobra.Command{
 		}
 
 		src := engine.FileSystem{SkipDirs: []string{".git", ".terraform"}}
-		code := runner.Lint(target, src, core.All(), cmd.OutOrStdout(), format)
+		code := runner.Lint(target, src, core.EnabledRules(), cmd.OutOrStdout(), format)
 		os.Exit(code)
 		return nil
 	},
@@ -47,4 +47,7 @@ func init() {
 
 	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(supportedOutputFormats, "|"))
 	lintCmd.Flags().StringVarP(&format, "format", "f", "raw", formatUsageHelp)
+	lintCmd.Annotations = map[string]string{
+		"exitCodes": "0:No issues found,1:Issues found,2:Runtime error",
+	}
 }

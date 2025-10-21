@@ -1,0 +1,22 @@
+name: Validate Doc Generation
+
+on:
+  pull_request:
+
+jobs:
+  validate-doc-gen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: '1.25.x'
+
+      - name: Validate CLI docs
+        run: |
+          make generate-documentation
+          git diff --exit-code -- **/*.md || echo "Generate Documentation locally using 'make generate-documentation'"

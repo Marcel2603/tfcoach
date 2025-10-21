@@ -10,7 +10,7 @@ COVERFILE   := coverage.out
 HTMLFILE    := coverage.html
 GOFLAGS     := -race -shuffle=on -tags=test -covermode=$(COVERMODE) -coverprofile=$(COVERFILE)
 
-.PHONY: test cover cover-html build clean docs-rules
+.PHONY: test cover cover-html build clean generate-documentation lint
 
 test:
 	go test $(GOFLAGS) $(PKGS) -cover
@@ -30,8 +30,8 @@ build:
 clean:
 	rm -fv $(COVERFILE) $(HTMLFILE)
 
-doc-rules:
-	@go run ./tools/cmd/gen-rules-doc/main.go > docs/pages/rules/index.md
+generate-documentation:
+	@go run -tags tfcoach_tools ./tools/cmd/gen-docs
 
 format:
 	@gofmt -l -s -w .
