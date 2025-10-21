@@ -1,7 +1,8 @@
-# Rules
-## Core
-| ID | Rule | Summary |
-|------|--------|---------|
-| [core.naming_convention](core/naming_convention.md) | Naming Convention | terraform names should only contain lowercase alphanumeric characters and underscores. |
-| [core.file_naming](core/file_naming.md) | File Naming | File naming should follow a strict convention. |
-| [core.required_provider_must_be_declared](core/required_provider_must_be_declared.md) | Required Provider Must Be Declared | All providers used in resources or data sources are declared in the terraform.required_providers block. |
+# Rules 
+## Core 
+| Rule | Summary | 
+|--------|---------| 
+| [Enforce Variable Description](core/enforce_variable_description.md) | To understand what that variable does (even if it seems trivial), always add a description |
+| [File Naming](core/file_naming.md) | File naming should follow a strict convention. |
+| [Naming Convention](core/naming_convention.md) | Terraform names should only contain lowercase alphanumeric characters and underscores. |
+| [Required Provider Must Be Declared](core/required_provider_must_be_declared.md) | All providers used in resources or data sources are declared in the terraform.required_providers block. |

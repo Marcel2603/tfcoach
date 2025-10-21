@@ -24,7 +24,7 @@ can just open data.tf"
 #### Mapping of Terraform Block
 
 The Terraform Block is separated in different files based on Blocks and Attributes.
-In generell, the "terraform"-Block is allowed to be in following files:
+In general, the "terraform"-Block is allowed to be in following files:
 
 - backend.tf
 - terraform.tf

@@ -1,21 +1,71 @@
-# Usage
+# Usage 
+## tfcoach
 
-```bash
-tfcoach lint [path]
+Tiny Terraform coach
+
+```
+tfcoach [flags]
 ```
 
-Available output formats using the `--format` flag:
+### Options
 
-- `pretty` (default): colorful output with explanation in a human-friendly format and link to docs
-- `compact`: one line per issue with location information and rule explanation in a human-friendly format
-- `json`: more detailed output optimized for machine-parsing
+```
+  -h, --help     help for tfcoach
+  -t, --toggle   Help message for toggle
+```
 
-Additional options:
 
-- `--no-color`: Disable color in output
 
-Exit codes:
+### Exit Codes
 
-- 0: no issues
-- 1: issues found
-- 2: runtime error
+| Code | Meaning|
+|------|--------|
+| 0 | OK |
+
+## tfcoach lint
+
+Lint Terraform files
+
+```
+tfcoach lint [path] [flags]
+```
+
+### Options
+
+```
+  -f, --format string   Output format. Supported: json|raw (default "raw")
+  -h, --help            help for lint
+```
+
+
+
+### Exit Codes
+
+| Code | Meaning|
+|------|--------|
+| 0 | No issues found |
+| 1 | Issues found |
+| 2 | Runtime error |
+
+## tfcoach version
+
+Print the version number
+
+```
+tfcoach version [flags]
+```
+
+### Options
+
+```
+  -h, --help   help for version
+```
+
+
+
+### Exit Codes
+
+| Code | Meaning|
+|------|--------|
+| 0 | OK |
+

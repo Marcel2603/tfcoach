@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -13,14 +14,12 @@ import (
 var nameFormatRegex = regexp.MustCompile(`^[a-z0-9_]+$`)
 
 type NamingConvention struct {
-	id      string
-	message string
+	id string
 }
 
 func NamingConventionRule() *NamingConvention {
 	return &NamingConvention{
-		id:      rulePrefix + ".naming_convention",
-		message: "terraform names should only contain lowercase alphanumeric characters and underscores.",
+		id: rulePrefix + ".naming_convention",
 	}
 }
 
@@ -31,7 +30,7 @@ func (n *NamingConvention) ID() string {
 func (n *NamingConvention) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "Naming Convention",
-		Description: n.message,
+		Description: "Terraform names should only contain lowercase alphanumeric characters and underscores.",
 		Severity:    constants.SeverityHigh,
 		DocsURL:     strings.ReplaceAll(n.id, ".", "/"),
 	}
@@ -49,7 +48,7 @@ func (n *NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
 			out = append(out, types.Issue{
 				File:    file,
 				Range:   blk.Range(),
-				Message: n.message,
+				Message: fmt.Sprintf("Block \"%s\" violates naming convention, it should only contain lowercase alphanumeric characters and underscores.", name),
 				RuleID:  n.id,
 			})
 		}

@@ -12,11 +12,20 @@ const (
 )
 
 var (
-	rules   = []types.Rule{NamingConventionRule(), FileNamingRule(), RequiredProviderMustBeDeclaredRule()}
+	rules = []types.Rule{
+		NamingConventionRule(),
+		FileNamingRule(),
+		RequiredProviderMustBeDeclaredRule(),
+		EnforceVariableDescriptionRule(),
+	}
 	ruleMap = mapRules(rules)
 )
 
 func All() []types.Rule {
+	return rules
+}
+
+func EnabledRules() []types.Rule {
 	var enabledRules []types.Rule
 	for _, rule := range rules {
 		if config.GetConfigByRuleID(rule.ID()).Enabled {
