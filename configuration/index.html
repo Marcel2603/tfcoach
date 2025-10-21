@@ -1022,7 +1022,7 @@
 
 
 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h1>
-<p>You can configure tfcoach via file and partially via env</p>
+<p>You can configure tfcoach via file and partially via env.</p>
 <p>To configure via file, you need to create one of the following files in the same directory where you execute tfcoach:</p>
 <ul>
 <li>.tfcoach</li>
@@ -1030,12 +1030,24 @@
 <li>.tfcoach.y[a]ml</li>
 </ul>
 <p>Syntax for ".tfcoach" is JSON.</p>
+<p>The configurations are applied in the following order, so that each potentially overrides values
+from the previous ones:</p>
+<ul>
+<li>Default config <a href="https://github.com/Marcel2603/tfcoach/blob/main/cmd/config/.tfcoach.default.yml">from the repository</a></li>
+<li>User config using one of the above-mentioned files</li>
+<li>Environment variables</li>
+<li>Command flags</li>
+</ul>
 <h2 id="what-can-you-configure">What can you configure<a class="headerlink" href="#what-can-you-configure" title="Permanent link">&para;</a></h2>
-<p>The default values can be found <a href="https://github.com/marcel2603/tfcoach/cmd/config/.tfcoach.default.yml">in the repository</a>.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">rules</span><span class="p">:</span><span class="w"> </span><span class="c1"># map to restrict rule configurations</span>
-<span class="w">  </span><span class="nt">rule_id</span><span class="p">:</span><span class="w"> </span><span class="c1"># rule_id of the rule you want to configure</span>
-<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span><span class="c1"># decide to enable or disable the rule (enabled by default)</span>
-<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"> </span><span class="c1"># config specific configuration, see rule documentation </span>
+<p>Example <code>.tfcoach.yml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">rules</span><span class="p">:</span><span class="w">  </span><span class="c1"># map to restrict rule configurations</span>
+<span class="w">  </span><span class="nt">rule_id</span><span class="p">:</span><span class="w">  </span><span class="c1"># rule_id of the rule you want to configure</span>
+<span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">  </span><span class="c1"># decide to enable or disable the rule (enabled by default)</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w">  </span><span class="c1"># config specific configuration, see rule documentation</span>
+<span class="nt">output</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pretty</span><span class="w">  </span><span class="c1"># see &quot;--help&quot; for supported output formats</span>
+<span class="w">  </span><span class="nt">color</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># enable or disable color; if set to false, equivalent to the &quot;--no-color&quot; flag</span>
+<span class="w">  </span><span class="nt">emojis</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># enable or disable emojis; if set to false, equivalent to the &quot;--no-emojis&quot; flag</span>
 </code></pre></div>
 
 
@@ -1057,7 +1069,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 21, 2025 12:44:54 UTC">October 21, 2025</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="October 21, 2025 19:05:07 UTC">October 21, 2025</span>
   </span>
 
     
