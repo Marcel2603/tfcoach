@@ -7,11 +7,11 @@ By taking part, you are expected to adhere to this code. If you encounter
 an unacceptable behavior, please report it to us
 [tbd](mailto:tbd).
 
-More details [here](CODE_OF_CONDUCT.md).
+For more details, see [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
 
 ## Issues
 
-Issues are created [here](https://github.com/Marcel2603/ldap-password-change/issues/new).
+Issues are created via [Github](https://github.com/Marcel2603/ldap-password-change/issues/new).
 
 :warning: IF you discover a security issue, please read
 following [guide](SECURITY.md). **DO NOT** create a public
@@ -53,7 +53,7 @@ decide to join our team and receive **push access**.
 - **Use the repo's default branch.** Branch from
   and [submit your pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request-from-a-fork)
   to the repo's default branch (`main`).
-
+<!-- markdownlint-disable MD013 -->
 - **[Resolve any merge conflicts](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/resolving-a-merge-conflict-on-github)** that occur.
 
 - **Promptly address any CI failures**. If your pull request fails to build or pass tests, please push another commit to
