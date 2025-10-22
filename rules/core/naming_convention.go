@@ -32,7 +32,7 @@ func (n *NamingConvention) META() types.RuleMeta {
 		Title:       "Naming Convention",
 		Description: "Terraform names should only contain lowercase alphanumeric characters and underscores.",
 		Severity:    constants.SeverityHigh,
-		DocsURL:     strings.ReplaceAll(n.id, ".", "/"),
+		DocsURI:     strings.ReplaceAll(n.id, ".", "/"),
 	}
 }
 

@@ -28,7 +28,7 @@ func GenerateRulesOverview(filename string) {
 
 	for _, r := range core.All() {
 		meta := r.META()
-		buf.WriteString(fmt.Sprintf("| [%s](%s.md) | %s |\n", meta.Title, meta.DocsURL, meta.Description))
+		buf.WriteString(fmt.Sprintf("| [%s](%s.md) | %s |\n", meta.Title, meta.DocsURI, meta.Description))
 	}
 	if err := os.WriteFile(filename, buf.Bytes(), 0644); err != nil {
 		log.Fatalf("failed to write rules overview: %v", err)

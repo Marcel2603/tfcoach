@@ -17,7 +17,7 @@ func TestEnforceVariableDescription_ExpectedMETA(t *testing.T) {
 		Title:       "Enforce Variable Description",
 		Description: "To understand what that variable does (even if it seems trivial), always add a description",
 		Severity:    constants.SeverityMedium,
-		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
+		DocsURI:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
 
 	if rule.META() != expectedMETA {

@@ -11,8 +11,7 @@ import (
 )
 
 var (
-	// TODO later: educational
-	supportedOutputFormats = []string{"json", "compact", "pretty"}
+	supportedOutputFormats = []string{"json", "compact", "pretty", "educational"}
 )
 
 type NullableBool struct {

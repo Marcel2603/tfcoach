@@ -50,7 +50,7 @@ func (r *FileNaming) META() types.RuleMeta {
 		Title:       "File Naming",
 		Description: "File naming should follow a strict convention.",
 		Severity:    constants.SeverityLow, // TODO #13: revert to HIGH
-		DocsURL:     strings.ReplaceAll(r.id, ".", "/"),
+		DocsURI:     strings.ReplaceAll(r.id, ".", "/"),
 	}
 }
 

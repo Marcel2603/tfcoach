@@ -24,7 +24,7 @@ func (r *AlwaysFlag) META() types.RuleMeta {
 		Title:       "AlwaysFlag",
 		Description: r.Message,
 		Severity:    constants.SeverityHigh,
-		DocsURL:     "tbd",
+		DocsURI:     "tbd",
 	}
 }
 
@@ -65,7 +65,7 @@ func (r *NeverFlag) META() types.RuleMeta {
 		Title:       "NeverFlag",
 		Description: r.Message,
 		Severity:    constants.SeverityHigh,
-		DocsURL:     "tbd",
+		DocsURI:     "tbd",
 	}
 }
 
@@ -93,7 +93,7 @@ func (r *FlagOnFinish) META() types.RuleMeta {
 		Title:       "FlagOnFinish",
 		Description: r.Message,
 		Severity:    constants.SeverityHigh,
-		DocsURL:     "tbd",
+		DocsURI:     "tbd",
 	}
 }
 

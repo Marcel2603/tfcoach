@@ -17,7 +17,7 @@ func TestNameFormat_ExpectedMETA(t *testing.T) {
 		Title:       "Naming Convention",
 		Description: "Terraform names should only contain lowercase alphanumeric characters and underscores.",
 		Severity:    constants.SeverityHigh,
-		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
+		DocsURI:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
 
 	if rule.META() != expectedMETA {

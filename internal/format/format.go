@@ -52,6 +52,11 @@ func WriteResults(issues []types.Issue, w io.Writer, outputFormat string, allowE
 		if err != nil {
 			return err
 		}
+	case "educational":
+		err := writeEducational(issues, allowEmojis, w)
+		if err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("unknown output format: %s", outputFormat)
 	}
@@ -158,6 +163,113 @@ func writePretty(issues []types.Issue, allowEmojis bool, w io.Writer) error {
 	return nil
 }
 
+func writeEducational(issues []types.Issue, allowEmojis bool, w io.Writer) error {
+	preparedIssues := toIssueOutputs(issues)
+	issuesGroupedByRuleID := make(map[string][]issueOutput)
+	longestRuleID := 10 // for padding
+	for _, issue := range preparedIssues {
+		issuesGroupedByRuleID[issue.RuleID] = append(issuesGroupedByRuleID[issue.RuleID], issue)
+		longestRuleID = max(longestRuleID, len(issue.RuleID))
+	}
+
+	_, err := fmt.Fprintf(
+		w,
+		"Summary: %s rule%s broken (%s issue%s total)\n",
+		boldFont.Sprint(len(issuesGroupedByRuleID)),
+		condPlural(len(issuesGroupedByRuleID)),
+		boldFont.Sprint(len(issues)),
+		condPlural(len(issues)),
+	)
+	if err != nil {
+		return err
+	}
+
+	var brokenRules []types.Rule
+	for ruleID := range issuesGroupedByRuleID {
+		var rule types.Rule
+		rule, err = core.FindByID(ruleID)
+		if err != nil {
+			rule = core.UnknownRule{PseudoID: ruleID}
+		}
+		brokenRules = append(brokenRules, rule)
+	}
+	slices.SortStableFunc(brokenRules, func(a, b types.Rule) int {
+		return a.META().Severity.Cmp(b.META().Severity)
+	})
+
+	for _, rule := range brokenRules {
+		ruleID := rule.ID()
+		ruleMeta := rule.META()
+		issuesForRule := issuesGroupedByRuleID[ruleID]
+		slices.SortStableFunc(issuesForRule, func(a, b issueOutput) int {
+			return strings.Compare(a.File, b.File)
+		})
+
+		padding := strings.Repeat("─", longestRuleID-len(ruleID))
+		var explanationPrefix, docsPrefix, idPrefix, brokenListPrefix, ruleMessagePrefix, ruleMessageInfix string
+		if allowEmojis {
+			explanationPrefix = "💡  "
+			idPrefix = "🆔  "
+			docsPrefix = "📑  "
+			brokenListPrefix = "⚠️  "
+			ruleMessagePrefix = "🔹 "
+			ruleMessageInfix = " ➡️  "
+		} else {
+			explanationPrefix = "Explanation: "
+			idPrefix = "ID: "
+			docsPrefix = "Read more: "
+			brokenListPrefix = ""
+			ruleMessagePrefix = "- "
+			ruleMessageInfix = " ─ "
+		}
+
+		var docsURL string
+		if ruleMeta.DocsURI == "about:blank" {
+			docsURL = "about:blank"
+		} else {
+			docsURL = fmt.Sprintf(ruleDocsFormat, ruleMeta.DocsURI)
+		}
+
+		_, err = fmt.Fprintf(
+			w,
+			"\n─── %s (Severity %s) %s─────────\n\n%s%s\n\n%s%s\n%s%s\n\n%sBroken at:\n",
+			boldFont.Sprint(ruleMeta.Title),
+			color.New(ruleMeta.Severity.Color(), color.Bold).Sprint(ruleMeta.Severity),
+			padding,
+			explanationPrefix,
+			ruleMeta.Description,
+			idPrefix,
+			greyColor.Sprint("["+ruleID+"]"),
+			docsPrefix,
+			docsURL,
+			brokenListPrefix,
+		)
+		if err != nil {
+			return err
+		}
+		for _, issue := range issuesForRule {
+			_, err = fmt.Fprintf(
+				w,
+				"%s%s:%d:%d%s%s\n",
+				ruleMessagePrefix,
+				issue.File,
+				issue.Line,
+				issue.Column,
+				ruleMessageInfix,
+				issue.Message,
+			)
+			if err != nil {
+				return err
+			}
+		}
+		_, err = fmt.Fprint(w, "\n")
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func toIssueOutputs(issues []types.Issue) []issueOutput {
 	var result []issueOutput
 
@@ -171,7 +283,7 @@ func toIssueOutputs(issues []types.Issue) []issueOutput {
 		} else {
 			rulesMeta := rule.META()
 			severity = rulesMeta.Severity
-			docsURL = fmt.Sprintf(ruleDocsFormat, rulesMeta.DocsURL)
+			docsURL = fmt.Sprintf(ruleDocsFormat, rulesMeta.DocsURI)
 		}
 
 		result = append(result, issueOutput{

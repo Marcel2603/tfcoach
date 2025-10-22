@@ -285,6 +285,167 @@ func TestWriteResults_PrettyNoEmojis(t *testing.T) {
 	}
 }
 
+func TestWriteResults_EducationalSingle(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.WriteResults(issues1, &buf, "educational", true)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	want := `Summary: 1 rule broken (1 issue total)
+
+─── File Naming (Severity LOW) ─────────
+
+💡  File naming should follow a strict convention.
+
+🆔  [core.file_naming]
+📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+⚠️  Broken at:
+🔹 main.tf:0:1 ➡️  Block "a" should be inside of "b.tf"
+
+`
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got: %q\nwant: %q", got, want)
+	}
+}
+
+func TestWriteResults_EducationalMultiple(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.WriteResults(issues2, &buf, "educational", true)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	want := `Summary: 2 rules broken (2 issues total)
+
+─── Naming Convention (Severity HIGH) ───────────
+
+💡  Terraform names should only contain lowercase alphanumeric characters and underscores.
+
+🆔  [core.naming_convention]
+📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+⚠️  Broken at:
+🔹 b.tf:9:2 ➡️  m2
+
+
+─── Unknown (Severity UNKNOWN) ─────────
+
+💡  Unknown rule
+
+🆔  [core.something_something]
+📑  about:blank
+
+⚠️  Broken at:
+🔹 a.tf:4:7 ➡️  m1
+
+`
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+func TestWriteResults_EducationalSorting(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.WriteResults(issues3, &buf, "educational", true)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	want := `Summary: 3 rules broken (4 issues total)
+
+─── Naming Convention (Severity HIGH) ───────────
+
+💡  Terraform names should only contain lowercase alphanumeric characters and underscores.
+
+🆔  [core.naming_convention]
+📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+⚠️  Broken at:
+🔹 a.tf:10:2 ➡️  m3
+🔹 b.tf:9:2 ➡️  m2
+
+
+─── File Naming (Severity LOW) ─────────────────
+
+💡  File naming should follow a strict convention.
+
+🆔  [core.file_naming]
+📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+⚠️  Broken at:
+🔹 a.tf:2:1 ➡️  m4
+
+
+─── Unknown (Severity UNKNOWN) ─────────
+
+💡  Unknown rule
+
+🆔  [core.something_something]
+📑  about:blank
+
+⚠️  Broken at:
+🔹 a.tf:4:7 ➡️  m1
+
+`
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	}
+}
+
+func TestWriteResults_EducationalNoEmojis(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.WriteResults(issues3, &buf, "educational", false)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	want := `Summary: 3 rules broken (4 issues total)
+
+─── Naming Convention (Severity HIGH) ───────────
+
+Explanation: Terraform names should only contain lowercase alphanumeric characters and underscores.
+
+ID: [core.naming_convention]
+Read more: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+Broken at:
+- a.tf:10:2 ─ m3
+- b.tf:9:2 ─ m2
+
+
+─── File Naming (Severity LOW) ─────────────────
+
+Explanation: File naming should follow a strict convention.
+
+ID: [core.file_naming]
+Read more: https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+Broken at:
+- a.tf:2:1 ─ m4
+
+
+─── Unknown (Severity UNKNOWN) ─────────
+
+Explanation: Unknown rule
+
+ID: [core.something_something]
+Read more: about:blank
+
+Broken at:
+- a.tf:4:7 ─ m1
+
+`
+
+	if got := buf.String(); got != want {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	}
+}
+
 func TestWriteResults_UnknownFormat(t *testing.T) {
 	var buf bytes.Buffer
 	err := format.WriteResults(issues1, &buf, "abcd", true)
