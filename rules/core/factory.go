@@ -57,13 +57,11 @@ type UnknownRule struct {
 	PseudoID string
 }
 
-// TODO #13: why does pointer receiver not work here?
-
-func (r UnknownRule) ID() string {
+func (r *UnknownRule) ID() string {
 	return r.PseudoID
 }
 
-func (r UnknownRule) META() types.RuleMeta {
+func (*UnknownRule) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "Unknown",
 		Description: "Unknown rule",
@@ -72,10 +70,10 @@ func (r UnknownRule) META() types.RuleMeta {
 	}
 }
 
-func (r UnknownRule) Apply(_ string, _ *hcl.File) []types.Issue {
+func (*UnknownRule) Apply(_ string, _ *hcl.File) []types.Issue {
 	return []types.Issue{}
 }
 
-func (r UnknownRule) Finish() []types.Issue {
+func (*UnknownRule) Finish() []types.Issue {
 	return []types.Issue{}
 }

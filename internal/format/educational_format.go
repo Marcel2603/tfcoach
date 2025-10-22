@@ -96,7 +96,7 @@ func extractRulesSortedBySeverity(issuesGroupedByRuleID map[string][]types.Issue
 		var rule types.Rule
 		rule, err = core.FindByID(ruleID)
 		if err != nil {
-			rule = core.UnknownRule{PseudoID: ruleID}
+			rule = &core.UnknownRule{PseudoID: ruleID}
 		}
 		rules = append(rules, rule)
 	}
