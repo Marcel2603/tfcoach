@@ -53,7 +53,7 @@ func TestRequiredProviderMustBeDeclared_ShouldNotComplainWhenRequiredProviderIsP
 		  }
 	    }
 	  }
-	
+
 	  resource "aws_s3_bucket" "this" {}
 `)
 	rule := core.RequiredProviderMustBeDeclaredRule()

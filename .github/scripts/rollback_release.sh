@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="$1"                        
-REPO="$2"                         
+VERSION="$1"
+REPO="$2"
 TOKEN="$3"
 TAG="v${VERSION}"
 

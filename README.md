@@ -1,6 +1,6 @@
 # tfcoach
 
-A lightweight linter for Terraform code.  
+A lightweight linter for Terraform code.
 tfcoach helps teams enforce consistent conventions and avoid common pitfalls by running simple, composable rules against
 `.tf` files.
 
@@ -9,7 +9,8 @@ tfcoach helps teams enforce consistent conventions and avoid common pitfalls by 
 ## Note
 
 This project is currently under heavy development and not yet feature-complete.
-Functionality, APIs, and behavior may change without notice. Use at your own risk — contributions and feedback are welcome!
+Functionality, APIs, and behavior may change without notice. Use at your own risk — contributions and feedback are
+welcome!
 
 ---
 
@@ -49,6 +50,16 @@ go install github.com/Marcel2603/tfcoach@latest
 ```
 
 This will install `tfcoach` into your `$GOPATH/bin` or `$GOBIN`.
+
+### Pre-commit
+
+```yaml
+  - repo: https://github.com/Marcel2603/tfcoach
+    rev: v0.4.0
+    hooks:
+      - id: tfcoach # executes tfcoach via golang
+      - id: tfcoach-docker # executes tfcoach via docker
+```
 
 ---
 
@@ -108,12 +119,12 @@ go run main.go lint examples
 
 ## Roadmap
 
-- [ ] Alternative output formats (See option `--format`) → #13
+- [x] Alternative output formats (See option `--format`) → #13
 - [ ] Baseline support to adopt gradually in large codebases
 - [ ] Additional rule packs (AWS, GCP, Azure)
 - [ ] Auto-fix for selected rules
 - [ ] Pluggable rule engine
-- [ ] Configurable via `.tfcoach.yml` → #15
+- [x] Configurable via `.tfcoach.yml` → #15
 
 ---
 

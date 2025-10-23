@@ -143,17 +143,17 @@ func TestFileNaming_ShouldFailOnFileWithMultipleIssues(t *testing.T) {
 	data "archive_file" "zip" {}
 
 	locals {}
-	
+
 	resource "null_resource" "test" {}
-		
+
 	output "test" {
 	  value = "test"
 	}
-	
+
 	provider "aws" {}
-	
+
 	terraform {}
-	
+
 	variable "test" {}
 	`
 	issues := rule.Apply(filename, testutil.ParseToHcl(t, filename, resource))
