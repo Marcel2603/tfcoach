@@ -29,7 +29,7 @@ func (n *EnforceVariableDescription) META() types.RuleMeta {
 		Title:       "Enforce Variable Description",
 		Description: "To understand what that variable does (even if it seems trivial), always add a description",
 		Severity:    constants.SeverityMedium,
-		DocsURL:     strings.ReplaceAll(n.id, ".", "/"),
+		DocsURI:     strings.ReplaceAll(n.id, ".", "/"),
 	}
 }
 

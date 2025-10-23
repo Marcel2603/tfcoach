@@ -7,7 +7,7 @@ type RuleMeta struct {
 	Title       string
 	Description string
 	Severity    Severity
-	DocsURL     string
+	DocsURI     string
 }
 
 type Rule interface {

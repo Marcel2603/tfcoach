@@ -16,7 +16,7 @@ func TestRequiredProviderMustBeDeclared_ExpectedMeta(t *testing.T) {
 		Title:       "Required Provider Must Be Declared",
 		Description: "All providers used in resources or data sources are declared in the terraform.required_providers block.",
 		Severity:    constants.SeverityMedium,
-		DocsURL:     "core/required_provider_must_be_declared",
+		DocsURI:     "core/required_provider_must_be_declared",
 	}
 
 	actualMeta := rule.META()

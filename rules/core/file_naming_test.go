@@ -18,7 +18,7 @@ func TestFileNaming_ExpectedMeta(t *testing.T) {
 		Title:       "File Naming",
 		Description: "File naming should follow a strict convention.",
 		Severity:    constants.SeverityLow,
-		DocsURL:     strings.ReplaceAll(rule.ID(), ".", "/"),
+		DocsURI:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
 
 	if rule.META() != expectedMETA {

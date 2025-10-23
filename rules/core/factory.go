@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/Marcel2603/tfcoach/cmd/config"
+	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
+	"github.com/hashicorp/hcl/v2"
 )
 
 const (
@@ -49,4 +51,29 @@ func mapRules(rulesList []types.Rule) map[string]types.Rule {
 		result[rule.ID()] = rule
 	}
 	return result
+}
+
+type UnknownRule struct {
+	PseudoID string
+}
+
+func (r *UnknownRule) ID() string {
+	return r.PseudoID
+}
+
+func (*UnknownRule) META() types.RuleMeta {
+	return types.RuleMeta{
+		Title:       "Unknown",
+		Description: "Unknown rule",
+		Severity:    constants.SeverityUnknown,
+		DocsURI:     "about:blank",
+	}
+}
+
+func (*UnknownRule) Apply(_ string, _ *hcl.File) []types.Issue {
+	return []types.Issue{}
+}
+
+func (*UnknownRule) Finish() []types.Issue {
+	return []types.Issue{}
 }
