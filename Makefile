@@ -10,7 +10,7 @@ COVERFILE   := coverage.out
 HTMLFILE    := coverage.html
 GOFLAGS     := -race -shuffle=on -tags=test -covermode=$(COVERMODE) -coverprofile=$(COVERFILE)
 
-.PHONY: test cover cover-html build clean generate-documentation lint
+.PHONY: test cover cover-html build clean generate-documentation lint init-precommit
 
 test:
 	go test $(GOFLAGS) $(PKGS) -cover
@@ -38,3 +38,6 @@ format:
 
 lint: format
 	@go run github.com/mgechev/revive@latest -config config.toml -formatter friendly ./...
+
+init-precommit:
+	@pre-commit install

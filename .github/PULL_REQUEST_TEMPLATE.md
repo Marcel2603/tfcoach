@@ -32,9 +32,11 @@ Please explain step-by-step how to review this PR.
 Example:
 
 - Create these terraform files
+
 ```hcl
 
 ```
+
 - Run tfcoach lint against it
 
 ## Additional Information
