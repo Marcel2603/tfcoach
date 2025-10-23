@@ -5,7 +5,7 @@ Enforces that the [hashicorp/null](https://registry.terraform.io/providers/hashi
 
 ## Why
 
-The **hashicorp/null** provider was widely used in older Terraform versions for “glue logic,” but it’s now
+The **hashicorp/null** provider was widely used in older Terraform versions for "glue locig", but it’s now
 considered obsolete and discouraged.
 
 You should not use it anymore and replace it with `terraform_data` for `null_resource` and `locals` for `null_data_source`
