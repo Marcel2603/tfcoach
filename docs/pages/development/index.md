@@ -12,4 +12,10 @@ Thank you for improving tfcoach!
 ## Semantic Commits
 
 We are using [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.4/) to release this project.
-To streamline the whole process, we have enabled **squash-commits** on merge. So you just need to name your pr correctly.
+To streamline the whole process, we have enabled **squash-commits** on merge. So you just need to name your pr
+correctly.
+
+## Pre-Commit
+
+We also have defined some [pre-commit](https://pre-commit.com/) rules. You can install these hooks via
+`make init-precommit`.
