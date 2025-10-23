@@ -1,6 +1,8 @@
 - id: tfcoach
   name: tfcoach
   entry: tfcoach
+  args:
+    - lint
   language: golang
   types:
     - terraform
@@ -8,6 +10,8 @@
 - id: tfcoach-docker
   name: tfcoach-docker
   entry: ghcr.io/marcel2603/tfcoach/tfcoach
+  args:
+    - lint
   language: docker_image
   types:
     - terraform
