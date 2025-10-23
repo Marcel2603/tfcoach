@@ -1,0 +1,14 @@
+- id: tfcoach
+  name: tfcoach
+  entry: tfcoach
+  language: golang
+  types:
+    - terraform
+  pass_filenames: true
+- id: tfcoach-docker
+  name: tfcoach-docker
+  entry: ghcr.io/marcel2603/tfcoach/tfcoach
+  language: docker_image
+  types:
+    - terraform
+  pass_filenames: true
