@@ -20,10 +20,12 @@ repos:
         name: Run Go lint
         entry: bash -c "make lint"
         language: golang
+        types: [go]
         pass_filenames: false
 
       - id: generate-docs
         name: Generate docs
         entry: bash -c "make generate-documentation"
         language: golang
+        types: [ go ]
         pass_filenames: false
