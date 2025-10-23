@@ -1,5 +1,5 @@
 rules: {}
 output:
-  format: pretty
+  format: educational
   color: true
   emojis: true
