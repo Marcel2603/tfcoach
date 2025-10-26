@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://marcel2603.github.io/tfcoach/development/tools/hcl-test/">
+        <link rel="canonical" href="https://marcel2603.github.io/tfcoach/rules/core/avoid_null_provider/">
       
       
-        <link rel="prev" href="../gen-docs/">
+        <link rel="prev" href="../../">
       
       
-        <link rel="next" href="../../../about/security/">
+        <link rel="next" href="../enforce_variable_description/">
       
       
       <link rel="icon" href="../../../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>HCL Testing - tfcoach</title>
+        <title>core.avoid_null_provider - tfcoach</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#hcl-testing" class="md-skip">
+        <a href="#coreavoid_null_provider" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              HCL Testing
+              core.avoid_null_provider
             
           </span>
         </div>
@@ -351,6 +351,8 @@
       
   
   
+    
+  
   
   
     
@@ -371,15 +373,15 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../rules/" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -398,7 +400,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Rules
@@ -411,8 +413,10 @@
                 
   
   
+    
   
   
+  
     
     
       
@@ -432,11 +436,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" checked>
         
           
           <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
@@ -452,7 +456,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5_2">
             <span class="md-nav__icon md-icon"></span>
             Core
@@ -463,10 +467,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../rules/core/avoid_null_provider/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    core.avoid_null_provider
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -477,6 +503,86 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Triggers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bad" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bad
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#good" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -489,7 +595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../rules/core/enforce_variable_description/" class="md-nav__link">
+      <a href="../enforce_variable_description/" class="md-nav__link">
         
   
   
@@ -512,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../rules/core/file_naming/" class="md-nav__link">
+      <a href="../file_naming/" class="md-nav__link">
         
   
   
@@ -535,7 +641,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../rules/core/naming_convention/" class="md-nav__link">
+      <a href="../naming_convention/" class="md-nav__link">
         
   
   
@@ -558,7 +664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../rules/core/required_provider_must_be_declared/" class="md-nav__link">
+      <a href="../required_provider_must_be_declared/" class="md-nav__link">
         
   
   
@@ -593,8 +699,6 @@
       
   
   
-    
-  
   
   
     
@@ -619,15 +723,15 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../../../development/" class="md-nav__link ">
               
   
   
@@ -646,7 +750,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Development
@@ -662,7 +766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../rule-conventions/" class="md-nav__link">
+      <a href="../../../development/rule-conventions/" class="md-nav__link">
         
   
   
@@ -685,7 +789,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../release/" class="md-nav__link">
+      <a href="../../../development/release/" class="md-nav__link">
         
   
   
@@ -705,8 +809,6 @@
                 
   
   
-    
-  
   
   
     
@@ -726,15 +828,15 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../../development/tools/" class="md-nav__link ">
               
   
   
@@ -753,7 +855,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6_4">
             <span class="md-nav__icon md-icon"></span>
             Tools
@@ -769,7 +871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gen-docs/" class="md-nav__link">
+      <a href="../../../development/tools/gen-docs/" class="md-nav__link">
         
   
   
@@ -789,32 +891,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    HCL Testing
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../development/tools/hcl-test/" class="md-nav__link">
         
   
   
@@ -825,35 +905,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-execute" class="md-nav__link">
-    <span class="md-ellipsis">
-      How to execute
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1025,9 +1076,60 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-to-execute" class="md-nav__link">
+  <a href="#why" class="md-nav__link">
     <span class="md-ellipsis">
-      How to execute
+      Why
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Triggers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bad" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bad
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#good" class="md-nav__link">
+    <span class="md-ellipsis">
+      Good
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
     </span>
   </a>
   
@@ -1052,14 +1154,42 @@
   
 
 
-<h1 id="hcl-testing">HCL Testing<a class="headerlink" href="#hcl-testing" title="Permanent link">&para;</a></h1>
-<p>This tool helps to understand the hcl-syntax api.</p>
-<h2 id="how-to-execute">How to execute<a class="headerlink" href="#how-to-execute" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>go<span class="w"> </span>run<span class="w"> </span>tools/cmd/hcl-test/main.go<span class="w"> </span>examples/compliant/main.tf<span class="w">  </span>
-</code></pre></div>
+<h1 id="coreavoid_null_provider">core.avoid_null_provider<a class="headerlink" href="#coreavoid_null_provider" title="Permanent link">&para;</a></h1>
+<p>Enforces that the <a href="https://registry.terraform.io/providers/hashicorp/null/latest/docs">hashicorp/null</a>
+ provider is not used.</p>
+<h2 id="why">Why<a class="headerlink" href="#why" title="Permanent link">&para;</a></h2>
+<p>The <strong>hashicorp/null</strong> provider was widely used in older Terraform versions for "glue logic", but it's now
+considered obsolete and discouraged.</p>
+<p>You should not use it anymore and replace it with <code>terraform_data</code> for <code>null_resource</code> and <code>locals</code> for <code>null_data_source</code>.</p>
+<h2 id="triggers">Triggers<a class="headerlink" href="#triggers" title="Permanent link">&para;</a></h2>
 <ul>
-<li>It will print what hcl will parse, so that you can test with the syntax tree</li>
+<li>Any usage of <code>null_resource</code> or <code>null_data_source</code></li>
 </ul>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h2>
+<h3 id="bad">Bad<a class="headerlink" href="#bad" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;null_resource&quot;</span><span class="w"> </span><span class="nv">&quot;config&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">triggers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.config</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="kr">data</span><span class="w"> </span><span class="nc">&quot;null_data_source&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">inputs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="na">full_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;${var.name}-${var.region}&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="good">Good<a class="headerlink" href="#good" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;terraform_data&quot;</span><span class="w"> </span><span class="nv">&quot;config&quot;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">var.config</span>
+<span class="p">}</span>
+
+<span class="nb">locals</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="na">full_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;${var.name}-${var.region}&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<p>There is currently no configuration flags for that rule, beside the option to enable or disable the rule</p>
 
 
 
