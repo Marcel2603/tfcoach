@@ -71,12 +71,12 @@ func TestAvoidNullProvider_FailOnUsingHashicorpNull(t *testing.T) {
 		{"null_resource",
 			"main.tf",
 			`resource "null_resource" "this" {}`,
-			"Use terraform_data, instead of null_resource",
+			"Use terraform_data instead of null_resource",
 		},
 		{"null_data_source",
 			"data.tf",
 			`data "null_data_source" "this" {}`,
-			"Use locals, instead of null_data_source",
+			"Use locals instead of null_data_source",
 		},
 	}
 
