@@ -1,6 +1,21 @@
 # Changelog
 
-## [0.5.0](https://github.com/Marcel2603/tfcoach/compare/v0.4.0..0.5.0) - 2025-10-21
+## [0.6.0](https://github.com/Marcel2603/tfcoach/compare/v0.5.0..0.6.0) - 2025-10-26
+
+### Features
+
+- *(app)* Add educational output format (grouped by rule and ordered by severity) ([#33](https://github.com/marcel2603/tfcoach/issues/33)) - ([16c9d03](https://github.com/Marcel2603/tfcoach/commit/16c9d03a09d1584235b70232047a4cf552272f82))  by @Erkenbend
+- *(rule)* Adding 'avoid_null_provider' rule ([#37](https://github.com/marcel2603/tfcoach/issues/37)) - ([f6cb4c9](https://github.com/Marcel2603/tfcoach/commit/f6cb4c983fb0eaa9791df336912b4c303265e9f1))  by @Marcel2603
+
+### Performance
+
+- *(formatting)* Format the whole repo ([#35](https://github.com/marcel2603/tfcoach/issues/35)) - ([e97c89c](https://github.com/Marcel2603/tfcoach/commit/e97c89ca1f1135cc7b32dc96201c738df0f39b21))  by @Marcel2603
+
+### Miscellaneous Tasks
+
+- *(precommit)* Enable precommit ([#34](https://github.com/marcel2603/tfcoach/issues/34)) - ([9cd8c2c](https://github.com/Marcel2603/tfcoach/commit/9cd8c2cd3d7b05dafc92596eca95829da5773da3))  by @Marcel2603
+
+## [0.5.0](https://github.com/Marcel2603/tfcoach/compare/v0.4.0..v0.5.0) - 2025-10-21
 
 ### Features
 
@@ -126,3 +141,4 @@
 ## New Contributors ❤️
 
 * @Marcel2603 made their first contribution
+
