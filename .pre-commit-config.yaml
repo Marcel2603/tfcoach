@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.18.1
+    hooks:
+      - id: markdownlint-cli2
+        args: [--fix]
+
+  - repo: local
+    hooks:
+      - id: go-lint
+        name: Run Go lint
+        entry: bash -c "make lint"
+        language: golang
+        types: [go]
+        pass_filenames: false
+
+      - id: generate-docs
+        name: Generate docs
+        entry: bash -c "make generate-documentation"
+        language: golang
+        types: [ go ]
+        pass_filenames: false
