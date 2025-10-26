@@ -1,6 +1,6 @@
 # tfcoach
 
-A lightweight linter for Terraform code.  
+A lightweight linter for Terraform code.
 tfcoach helps teams enforce consistent conventions and avoid common pitfalls by running simple, composable rules against
 `.tf` files.
 
@@ -9,7 +9,8 @@ tfcoach helps teams enforce consistent conventions and avoid common pitfalls by 
 ## Note
 
 This project is currently under heavy development and not yet feature-complete.
-Functionality, APIs, and behavior may change without notice. Use at your own risk — contributions and feedback are welcome!
+Functionality, APIs, and behavior may change without notice. Use at your own risk — contributions and feedback are
+welcome!
 
 ---
 
@@ -50,6 +51,16 @@ go install github.com/Marcel2603/tfcoach@latest
 
 This will install `tfcoach` into your `$GOPATH/bin` or `$GOBIN`.
 
+### Pre-commit
+
+```yaml
+  - repo: https://github.com/Marcel2603/tfcoach
+    rev: v0.5.0
+    hooks:
+      - id: tfcoach # executes tfcoach via golang
+      - id: tfcoach-docker # executes tfcoach via docker
+```
+
 ---
 
 ## Usage
@@ -62,12 +73,14 @@ tfcoach lint .
 
 ### Example output
 
+<!-- markdownlint-disable MD013 -->
 ```shell
-main.tf:12:3: resource name must be "this" (core.naming.require_this)
-versions.tf:1:1: terraform block must declare "required_version" (core.terraform.require_version)
+H main.tf:7:1: Block "test-123" violates naming convention, it should only contain lowercase alphanumericcharacters and underscores. [core.naming_convention]
+M data.tf:1:1: Use locals instead of null_data_source [core.avoid_null_provider]
 ```
 
-Alternative CI-friendly output format available with `--format json` (see `tfcoach lint --help` for all options).
+Alternative output formats (e.g. CI-friendly JSON) available with the `--format` flags (see `tfcoach lint --help`
+for all options).
 
 Exit codes:
 
@@ -77,13 +90,13 @@ Exit codes:
 
 ### Configuration
 
-The behavoíour of tfcoach can be configured by environment variables or by one of these files:
+The behavíour of tfcoach can be configured by environment variables or by one of these files:
 
 - .tfcoach (json syntax)
 - .tfcoach.json
 - .tfcoach.y[a]ml
 
-More about the configuration [here](link to mkdocs)
+More about the configuration [in the docs](https://marcel2603.github.io/tfcoach/configuration/)
 
 ---
 
@@ -108,12 +121,12 @@ go run main.go lint examples
 
 ## Roadmap
 
-- [ ] Alternative output formats (See option `--format`) → #13
+- [x] Alternative output formats (See option `--format`) → #13
 - [ ] Baseline support to adopt gradually in large codebases
 - [ ] Additional rule packs (AWS, GCP, Azure)
 - [ ] Auto-fix for selected rules
 - [ ] Pluggable rule engine
-- [ ] Configurable via `.tfcoach.yml` → #15
+- [x] Configurable via `.tfcoach.yml` → #15
 
 ---
 
