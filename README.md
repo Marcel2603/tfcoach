@@ -55,7 +55,7 @@ This will install `tfcoach` into your `$GOPATH/bin` or `$GOBIN`.
 
 ```yaml
   - repo: https://github.com/Marcel2603/tfcoach
-    rev: v0.4.0
+    rev: v0.5.0
     hooks:
       - id: tfcoach # executes tfcoach via golang
       - id: tfcoach-docker # executes tfcoach via docker
@@ -73,12 +73,14 @@ tfcoach lint .
 
 ### Example output
 
+<!-- markdownlint-disable MD013 -->
 ```shell
-main.tf:12:3: resource name must be "this" (core.naming.require_this)
-versions.tf:1:1: terraform block must declare "required_version" (core.terraform.require_version)
+H main.tf:7:1: Block "test-123" violates naming convention, it should only contain lowercase alphanumericcharacters and underscores. [core.naming_convention]
+M data.tf:1:1: Use locals instead of null_data_source [core.avoid_null_provider]
 ```
 
-Alternative CI-friendly output format available with `--format json` (see `tfcoach lint --help` for all options).
+Alternative output formats (e.g. CI-friendly JSON) available with the `--format` flags (see `tfcoach lint --help`
+for all options).
 
 Exit codes:
 
@@ -88,13 +90,13 @@ Exit codes:
 
 ### Configuration
 
-The behavoíour of tfcoach can be configured by environment variables or by one of these files:
+The behavíour of tfcoach can be configured by environment variables or by one of these files:
 
 - .tfcoach (json syntax)
 - .tfcoach.json
 - .tfcoach.y[a]ml
 
-More about the configuration [here](link to mkdocs)
+More about the configuration [in the docs](https://marcel2603.github.io/tfcoach/configuration/)
 
 ---
 
