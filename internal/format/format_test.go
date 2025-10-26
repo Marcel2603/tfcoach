@@ -320,7 +320,7 @@ func TestWriteResults_EducationalMultiple(t *testing.T) {
 
 	want := `Summary: 2 rules broken (2 issues total)
 
-─── Naming Convention (Severity HIGH) ───────────
+─── Naming Convention (Severity HIGH) ─────────
 
 💡  Terraform names should only contain lowercase alphanumeric characters and underscores.
 
@@ -331,7 +331,7 @@ func TestWriteResults_EducationalMultiple(t *testing.T) {
 🔹 b.tf:9:2 ➡️  m2
 
 
-─── Unknown (Severity UNKNOWN) ─────────
+─── Unknown (Severity UNKNOWN) ────────────────
 
 💡  Unknown rule
 
@@ -357,7 +357,7 @@ func TestWriteResults_EducationalSorting(t *testing.T) {
 
 	want := `Summary: 3 rules broken (4 issues total)
 
-─── Naming Convention (Severity HIGH) ───────────
+─── Naming Convention (Severity HIGH) ─────────
 
 💡  Terraform names should only contain lowercase alphanumeric characters and underscores.
 
@@ -369,7 +369,7 @@ func TestWriteResults_EducationalSorting(t *testing.T) {
 🔹 b.tf:9:2 ➡️  m2
 
 
-─── File Naming (Severity LOW) ─────────────────
+─── File Naming (Severity LOW) ────────────────
 
 💡  File naming should follow a strict convention.
 
@@ -380,7 +380,7 @@ func TestWriteResults_EducationalSorting(t *testing.T) {
 🔹 a.tf:2:1 ➡️  m4
 
 
-─── Unknown (Severity UNKNOWN) ─────────
+─── Unknown (Severity UNKNOWN) ────────────────
 
 💡  Unknown rule
 
@@ -406,7 +406,7 @@ func TestWriteResults_EducationalNoEmojis(t *testing.T) {
 
 	want := `Summary: 3 rules broken (4 issues total)
 
-─── Naming Convention (Severity HIGH) ───────────
+─── Naming Convention (Severity HIGH) ─────────
 
 Explanation: Terraform names should only contain lowercase alphanumeric characters and underscores.
 
@@ -418,7 +418,7 @@ Broken at:
 - b.tf:9:2 ─ m2
 
 
-─── File Naming (Severity LOW) ─────────────────
+─── File Naming (Severity LOW) ────────────────
 
 Explanation: File naming should follow a strict convention.
 
@@ -429,7 +429,7 @@ Broken at:
 - a.tf:2:1 ─ m4
 
 
-─── Unknown (Severity UNKNOWN) ─────────
+─── Unknown (Severity UNKNOWN) ────────────────
 
 Explanation: Unknown rule
 

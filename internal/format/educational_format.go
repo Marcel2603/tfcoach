@@ -26,13 +26,15 @@ func writeEducational(issues []types.Issue, allowEmojis bool, w io.Writer) error
 		return err
 	}
 
-	longestRuleID := 10 // min for padding
-	for ruleID := range issuesGroupedByRuleID {
-		longestRuleID = max(longestRuleID, len(ruleID))
+	brokenRules := extractRulesSortedBySeverity(issuesGroupedByRuleID, err)
+
+	longestRuleTitle := 10 // min for padding
+	for _, rule := range brokenRules {
+		ruleMeta := rule.META()
+		longestRuleTitle = max(longestRuleTitle, len(ruleMeta.Title)+len(ruleMeta.Severity.String()))
 	}
 	symbols := getEducationalFormatSymbols(allowEmojis)
 
-	brokenRules := extractRulesSortedBySeverity(issuesGroupedByRuleID, err)
 	for _, rule := range brokenRules {
 		ruleID := rule.ID()
 		ruleMeta := rule.META()
@@ -41,7 +43,7 @@ func writeEducational(issues []types.Issue, allowEmojis bool, w io.Writer) error
 			return strings.Compare(a.File, b.File)
 		})
 
-		padding := strings.Repeat("─", longestRuleID-len(ruleID))
+		padding := strings.Repeat("─", longestRuleTitle-len(ruleMeta.Title)-len(ruleMeta.Severity.String()))
 
 		var docsURL string
 		if ruleMeta.DocsURI == "about:blank" {
