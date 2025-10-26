@@ -19,6 +19,7 @@ var (
 		FileNamingRule(),
 		RequiredProviderMustBeDeclaredRule(),
 		EnforceVariableDescriptionRule(),
+		AvoidNullProviderRule(),
 	}
 	ruleMap = mapRules(rules)
 )

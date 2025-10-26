@@ -33,7 +33,7 @@ func RequiredProviderMustBeDeclaredRule() *RequiredProviderMustBeDeclared {
 	return &RequiredProviderMustBeDeclared{
 		id:                rulePrefix + ".required_provider_must_be_declared",
 		requiredProviders: requiredProviders{m: make(map[string][]detectedBlock)},
-		foundProviders:    make([]string, 0),
+		foundProviders:    []string{"terraform"}, // built-in provider "terraform" always counts as present
 	}
 }
 
@@ -81,11 +81,11 @@ func (r *RequiredProviderMustBeDeclared) Finish() []types.Issue {
 		if slices.Contains(r.foundProviders, requiredProvider) {
 			continue
 		}
-		for _, detectedBlock := range detectedBlocks {
+		for _, block := range detectedBlocks {
 			issues = append(issues, types.Issue{
-				File:    detectedBlock.file,
-				Range:   detectedBlock.blockRange,
-				Message: fmt.Sprintf("Block \"%s\" requires provider \"%s\" which is not declared.", detectedBlock.resourceName, requiredProvider),
+				File:    block.file,
+				Range:   block.blockRange,
+				Message: fmt.Sprintf("Block \"%s\" requires provider \"%s\" which is not declared.", block.resourceName, requiredProvider),
 				RuleID:  r.id,
 			})
 		}

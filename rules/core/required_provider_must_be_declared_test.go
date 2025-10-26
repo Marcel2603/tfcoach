@@ -131,6 +131,17 @@ func TestRequiredProviderMustBeDeclared_ShouldNotComplainForMultipleProviders(t 
 	}
 }
 
+func TestRequiredProviderMustBeDeclared_ShouldNotComplainForTerraformProvider(t *testing.T) {
+	f := testutil.ParseToHcl(t, "a.tf", `resource "terraform_data" "this" {}`)
+	rule := core.RequiredProviderMustBeDeclaredRule()
+	rule.Apply("a.tf", f)
+	issues := rule.Finish()
+
+	if len(issues) != 0 {
+		t.Fatalf("Issues found; expected none; got %d: %#v", len(issues), issues)
+	}
+}
+
 func TestRequiredProviderMustBeDeclared_ShouldFindOneIssuePerBlockUsingUndeclaredProvider(t *testing.T) {
 	f := testutil.ParseToHcl(t, "a.tf", `
 		terraform {

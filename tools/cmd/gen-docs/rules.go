@@ -16,10 +16,10 @@ import (
 
 func GenerateRulesOverview(filename string) {
 	var buf bytes.Buffer
-	buf.WriteString("# Rules \n")
-	buf.WriteString("## Core \n")
-	buf.WriteString("| Rule | Summary | \n")
-	buf.WriteString("|--------|---------| \n")
+	buf.WriteString("# Rules\n")
+	buf.WriteString("## Core\n")
+	buf.WriteString("| Rule | Summary |\n")
+	buf.WriteString("|--------|---------|\n")
 	rules := core.All()
 
 	slices.SortStableFunc(rules, func(a, b types.Rule) int {
