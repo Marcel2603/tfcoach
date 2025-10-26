@@ -15,7 +15,7 @@ func TestAvoidNullProvider_ExpectedMETA(t *testing.T) {
 
 	expectedMETA := types.RuleMeta{
 		Title:       "Avoid using hashicorp/null provider",
-		Description: "With never Terraform version, use locals and terraform_data as native replacement for hashicorp/null",
+		Description: "With newer Terraform version, use locals and terraform_data as native replacement for hashicorp/null",
 		Severity:    constants.SeverityMedium,
 		DocsURI:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}

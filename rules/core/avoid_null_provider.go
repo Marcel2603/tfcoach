@@ -27,7 +27,7 @@ func (r *AvoidNullProvider) ID() string {
 func (r *AvoidNullProvider) META() types.RuleMeta {
 	return types.RuleMeta{
 		Title:       "Avoid using hashicorp/null provider",
-		Description: "With never Terraform version, use locals and terraform_data as native replacement for hashicorp/null",
+		Description: "With newer Terraform version, use locals and terraform_data as native replacement for hashicorp/null",
 		Severity:    constants.SeverityMedium,
 		DocsURI:     strings.ReplaceAll(r.id, ".", "/"),
 	}
@@ -64,7 +64,7 @@ func (r *AvoidNullProvider) checkConfigurationType(configurationType string, fil
 		return &types.Issue{
 			File:    file,
 			Range:   blk.Range(),
-			Message: fmt.Sprintf("Use locals, instead of %s", configurationType),
+			Message: fmt.Sprintf("Use locals instead of %s", configurationType),
 			RuleID:  r.id,
 		}
 	}
@@ -73,7 +73,7 @@ func (r *AvoidNullProvider) checkConfigurationType(configurationType string, fil
 		return &types.Issue{
 			File:    file,
 			Range:   blk.Range(),
-			Message: fmt.Sprintf("Use terraform_data, instead of %s", configurationType),
+			Message: fmt.Sprintf("Use terraform_data instead of %s", configurationType),
 			RuleID:  r.id,
 		}
 	}
