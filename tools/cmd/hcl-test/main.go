@@ -25,6 +25,16 @@ func main() {
 		fmt.Fprintln(os.Stderr, diags.Error())
 		os.Exit(1)
 	}
+	toks, _ := hclsyntax.LexConfig(file.Bytes, filename, hcl.InitialPos)
+	if len(toks) > 0 {
+		fmt.Println("--- Comments ---")
+	}
+	for _, tok := range toks {
+		if tok.Type == hclsyntax.TokenComment {
+			fmt.Printf("Comment: %s\n", tok.Bytes)
+		}
+	}
+	fmt.Println("------")
 
 	body, ok := file.Body.(*hclsyntax.Body)
 	if !ok {
