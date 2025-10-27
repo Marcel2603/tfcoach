@@ -102,6 +102,7 @@ func extractRulesSortedBySeverity(issuesGroupedByRuleID map[string][]types.Issue
 		}
 		rules = append(rules, rule)
 	}
+	// FIXME: ensure rules are sorted consistently within a same severity
 	slices.SortStableFunc(rules, func(a, b types.Rule) int {
 		return a.META().Severity.Cmp(b.META().Severity)
 	})

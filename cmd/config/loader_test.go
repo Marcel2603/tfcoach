@@ -9,6 +9,14 @@ import (
 	"testing"
 )
 
+type navigatorMock struct {
+	tempDir string
+}
+
+func (n *navigatorMock) GetHomeDir() (string, error) {
+	return n.tempDir, nil
+}
+
 var invalidDefaultConfigsYAML = []string{
 	// invalid YAML
 	`rules: {::: {"enabled": false}}`,
@@ -24,13 +32,20 @@ output:
 func resetYamlDefaultData() {
 	yamlDefaultData = []byte(`rules: {}
 output:
-  format: pretty
+  format: educational
   color: true
   emojis: true
 `)
 }
 
+func resetNavigator() {
+	navig = &defaultNavigator{}
+}
+
 func TestLoadDefaultConfig(t *testing.T) {
+	t.Cleanup(resetNavigator)
+	navig = &navigatorMock{tempDir: t.TempDir()}
+
 	configData, err := loadConfig()
 	if err != nil {
 		t.Errorf("loadConfig() error = %v", err)
@@ -53,6 +68,8 @@ func TestMustLoadConfig(t *testing.T) {
 
 func TestLoadDefaultConfig_Invalid(t *testing.T) {
 	t.Cleanup(resetYamlDefaultData)
+	t.Cleanup(resetNavigator)
+	navig = &navigatorMock{tempDir: t.TempDir()}
 
 	for _, invalidConfig := range invalidDefaultConfigsYAML {
 		t.Run(invalidConfig, func(t *testing.T) {
@@ -68,6 +85,8 @@ func TestLoadDefaultConfig_Invalid(t *testing.T) {
 
 func TestMustLoadConfig_Invalid(t *testing.T) {
 	t.Cleanup(resetYamlDefaultData)
+	t.Cleanup(resetNavigator)
+	navig = &navigatorMock{tempDir: t.TempDir()}
 
 	for _, invalidConfig := range invalidDefaultConfigsYAML {
 		t.Run(invalidConfig, func(t *testing.T) {
@@ -85,6 +104,9 @@ func TestMustLoadConfig_Invalid(t *testing.T) {
 }
 
 func TestLoadConfig_OverriddenByFile(t *testing.T) {
+	t.Cleanup(resetNavigator)
+	navig = &navigatorMock{tempDir: t.TempDir()}
+
 	contentYAML := []byte(`rules:
   RULE_1:
     "enabled": false
@@ -96,7 +118,7 @@ output:
 	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false, "emojis": false}}`)
 
 	want := config{
-		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: true}},
+		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: false}},
 		Output: OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: false}},
 	}
 
@@ -131,7 +153,83 @@ output:
 				t.Errorf("loadConfig() error = %v", err)
 			}
 
-			if reflect.DeepEqual(configData, want) {
+			if !reflect.DeepEqual(configData, want) {
+				t.Errorf("Wanted %v, got %v", want, configData)
+			}
+		})
+	}
+}
+
+func TestLoadConfig_DoubleOverrideInHomeThenCustom(t *testing.T) {
+	t.Cleanup(resetNavigator)
+	homeDir := t.TempDir()
+	navig = &navigatorMock{tempDir: homeDir}
+
+	contentHomeYAML := []byte(`rules:
+  RULE_1:
+    enabled: false
+output:
+  format: compact
+  color: false
+  emojis: false
+`)
+	contentHomeJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false, "emojis": false}}`)
+
+	contentCustomYAML := []byte(`rules:
+  RULE_2:
+    enabled: false
+output:
+  format: pretty
+  emojis: true
+`)
+	contentCustomJSON := []byte(`{"rules": {"RULE_2": {"enabled": false}}, "output": {"format": "pretty", "emojis": true}}`)
+
+	want := config{
+		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: false}, "RULE_2": {Enabled: false}},
+		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+	}
+
+	tests := []struct {
+		filename      string
+		contentHome   []byte
+		contentCustom []byte
+	}{
+		{
+			filename:      ".tfcoach.yml",
+			contentHome:   contentHomeYAML,
+			contentCustom: contentCustomYAML,
+		},
+		{
+			filename:      ".tfcoach.yaml",
+			contentHome:   contentHomeYAML,
+			contentCustom: contentCustomYAML,
+		},
+		{
+			filename:      ".tfcoach.json",
+			contentHome:   contentHomeJSON,
+			contentCustom: contentCustomJSON,
+		},
+		{
+			filename:      ".tfcoach",
+			contentHome:   contentHomeJSON,
+			contentCustom: contentCustomJSON,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.filename, func(t *testing.T) {
+			homeConfigDir := filepath.Join(homeDir, ".config", "tfcoach")
+			_ = os.MkdirAll(homeConfigDir, 0777)
+			err := os.WriteFile(filepath.Join(homeConfigDir, tt.filename), tt.contentHome, 0644)
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.contentCustom, 0644)
+			configData, err := loadConfig()
+			if err != nil {
+				t.Errorf("loadConfig() error = %v", err)
+			}
+
+			if !reflect.DeepEqual(configData, want) {
 				t.Errorf("Wanted %v, got %v", want, configData)
 			}
 		})
@@ -180,11 +278,15 @@ func TestLoadConfig_InvalidOverride(t *testing.T) {
 }
 
 func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
+	t.Cleanup(resetNavigator)
+	navig = &navigatorMock{tempDir: t.TempDir()}
+
 	contentYAML := []byte(`rules: {::: {"enabled": false}}`)
 	contentJSON := []byte(`{"rules": {4}}`)
 
 	want := config{
-		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: true}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+		Rules:  make(map[string]RuleConfiguration),
+		Output: OutputConfiguration{Format: "educational", Color: NullableBool{HasValue: true, IsTrue: true}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
 	}
 
 	tests := []struct {
@@ -219,7 +321,7 @@ func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
 				t.Errorf("loadConfig() error = %v", err)
 			}
 
-			if reflect.DeepEqual(configData, want) {
+			if !reflect.DeepEqual(configData, want) {
 				t.Errorf("Wanted %v, got %v", want, configData)
 			}
 		})
