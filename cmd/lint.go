@@ -15,23 +15,40 @@ import (
 )
 
 var (
-	format              string
-	noColor             bool
-	noEmojis            bool
-	defaultOutputConfig = config.GetOutputConfiguration()
+	formatFlag     string
+	noColorFlag    bool
+	noEmojisFlag   bool
+	configPathFlag string
+
+	defaultOutputConfig config.OutputConfiguration
+	finalOutputConfig   config.OutputConfiguration
 )
 
 var lintCmd = &cobra.Command{
 	Use:   "lint [path]",
 	Short: "Lint Terraform files",
 	Args:  cobra.ArbitraryArgs,
-	PreRunE: func(_ *cobra.Command, _ []string) error {
-		color.NoColor = noColor
+	PreRunE: func(cmd *cobra.Command, _ []string) error {
+		// TODO #16: use configPathFlag to influence custom config loading
+		config.MustLoadConfig(&config.DefaultNavigator{})
 
-		if slices.Contains(defaultOutputConfig.SupportedFormats(), format) {
+		if cmd.Flags().Changed("format") {
+			config.OverrideFormat(formatFlag)
+		}
+		if cmd.Flags().Changed("no-color") {
+			config.OverrideColor(!noColorFlag)
+		}
+		if cmd.Flags().Changed("no-emojis") {
+			config.OverrideEmojis(!noEmojisFlag)
+		}
+
+		finalOutputConfig = config.GetOutputConfiguration()
+		color.NoColor = !finalOutputConfig.Color.IsTrue
+
+		if slices.Contains(config.SupportedFormats(), finalOutputConfig.Format) {
 			return nil
 		}
-		return fmt.Errorf("invalid --format: %s (want %s)", format, strings.Join(defaultOutputConfig.SupportedFormats(), "|"))
+		return fmt.Errorf("invalid --format: %s (want %s)", finalOutputConfig.Format, strings.Join(config.SupportedFormats(), "|"))
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		target := "."
@@ -40,7 +57,7 @@ var lintCmd = &cobra.Command{
 		}
 
 		src := engine.FileSystem{SkipDirs: []string{".git", ".terraform"}}
-		code := runner.Lint(target, src, core.EnabledRules(), cmd.OutOrStdout(), format, !noEmojis)
+		code := runner.Lint(target, src, core.EnabledRules(), cmd.OutOrStdout(), finalOutputConfig.Format, finalOutputConfig.Emojis.IsTrue)
 		os.Exit(code)
 		return nil
 	},
@@ -49,11 +66,16 @@ var lintCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lintCmd)
 
-	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(defaultOutputConfig.SupportedFormats(), "|"))
-	lintCmd.Flags().StringVarP(&format, "format", "f", defaultOutputConfig.Format, formatUsageHelp)
+	config.MustLoadDefaultConfig()
+	defaultOutputConfig = config.GetOutputConfiguration()
 
-	lintCmd.Flags().BoolVar(&noColor, "no-color", !defaultOutputConfig.Color.IsTrue, "Disable color output")
-	lintCmd.Flags().BoolVar(&noEmojis, "no-emojis", !defaultOutputConfig.Emojis.IsTrue, "Prevent emojis in output")
+	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(config.SupportedFormats(), "|"))
+	lintCmd.Flags().StringVarP(&formatFlag, "format", "f", defaultOutputConfig.Format, formatUsageHelp)
+
+	lintCmd.Flags().BoolVar(&noColorFlag, "no-color", !defaultOutputConfig.Color.IsTrue, "Disable color output")
+	lintCmd.Flags().BoolVar(&noEmojisFlag, "no-emojis", !defaultOutputConfig.Emojis.IsTrue, "Prevent emojis in output")
+
+	lintCmd.Flags().StringVarP(&configPathFlag, "config", "c", "", "Custom config file path (default current directory)")
 
 	lintCmd.Annotations = map[string]string{
 		"exitCodes": "0:No issues found,1:Issues found,2:Runtime error",

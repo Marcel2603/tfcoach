@@ -13,7 +13,7 @@ type navigatorMock struct {
 	tempDir string
 }
 
-func (n *navigatorMock) GetHomeDir() (string, error) {
+func (n *navigatorMock) HomeDir() (string, error) {
 	return n.tempDir, nil
 }
 
@@ -39,7 +39,7 @@ output:
 }
 
 func resetNavigator() {
-	navig = &defaultNavigator{}
+	navig = &DefaultNavigator{}
 }
 
 func TestLoadDefaultConfig(t *testing.T) {
@@ -59,11 +59,11 @@ func TestLoadDefaultConfig(t *testing.T) {
 func TestMustLoadConfig(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
-			t.Errorf("mustLoadConfig() did panic on default config")
+			t.Errorf("MustLoadConfig() did panic on default config")
 		}
 	}()
 
-	_ = mustLoadConfig()
+	_ = MustLoadConfig()
 }
 
 func TestLoadDefaultConfig_Invalid(t *testing.T) {
@@ -92,13 +92,13 @@ func TestMustLoadConfig_Invalid(t *testing.T) {
 		t.Run(invalidConfig, func(t *testing.T) {
 			defer func() {
 				if r := recover(); r == nil {
-					t.Errorf("mustLoadConfig() did not panic on invalid default config")
+					t.Errorf("MustLoadConfig() did not panic on invalid default config")
 				}
 			}()
 
 			yamlDefaultData = []byte(invalidConfig)
 
-			_ = mustLoadConfig()
+			_ = MustLoadConfig()
 		})
 	}
 }

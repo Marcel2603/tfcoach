@@ -24,7 +24,6 @@ func collectCommands(cmd *cobra.Command) []*cobra.Command {
 	return cmds
 }
 
-// FIXME: make this independent of the developer's config
 func GenerateUsage(filename string) {
 	var buf bytes.Buffer
 	buf.WriteString("# Usage \n")

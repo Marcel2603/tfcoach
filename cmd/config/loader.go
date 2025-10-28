@@ -18,21 +18,8 @@ var (
 	//go:embed .tfcoach.default.yml
 	yamlDefaultData []byte
 
-	navig         navigator = &defaultNavigator{}
-	configuration           = mustLoadConfig()
+	configuration config
 )
-
-// TODO #36: use dependency injection here to make testing easier
-
-type navigator interface {
-	GetHomeDir() (string, error)
-}
-
-type defaultNavigator struct{}
-
-func (*defaultNavigator) GetHomeDir() (string, error) {
-	return os.UserHomeDir()
-}
 
 func GetConfigByRuleID(ruleID string) RuleConfiguration {
 	ruleConfiguration, ok := configuration.Rules[ruleID]
@@ -47,15 +34,24 @@ func GetOutputConfiguration() OutputConfiguration {
 	return configuration.Output
 }
 
-func mustLoadConfig() config {
-	configData, err := loadConfig()
+func MustLoadDefaultConfig() {
+	var configData config
+	err := loadConfigFromYaml(yamlDefaultData, &configData)
+	if err != nil {
+		panic("Could not load default config: " + err.Error())
+	}
+	configuration = configData
+}
+
+func MustLoadConfig(navigator Navigator) {
+	configData, err := loadConfig(navigator)
 	if err != nil {
 		panic("Could not load config: " + err.Error())
 	}
-	return configData
+	configuration = configData
 }
 
-func loadConfig() (config, error) {
+func loadConfig(navigator Navigator) (config, error) {
 	// 1. default config from repo
 	var configData config
 	err := loadConfigFromYaml(yamlDefaultData, &configData)
@@ -65,7 +61,7 @@ func loadConfig() (config, error) {
 
 	// 2. config from home dir
 	var homeDir string
-	homeDir, err = navig.GetHomeDir()
+	homeDir, err = navigator.HomeDir()
 	if err != nil {
 		// TODO later: add debug log, home dir not defined
 		_, _ = fmt.Fprintf(os.Stderr, "Could not get home directory: %s\n", err.Error())
