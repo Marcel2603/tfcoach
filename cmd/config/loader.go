@@ -40,6 +40,12 @@ func MustLoadDefaultConfig() {
 	if err != nil {
 		panic("Could not load default config: " + err.Error())
 	}
+
+	err = configData.Validate()
+	if err != nil {
+		panic("Invalid default config: " + err.Error())
+	}
+
 	configuration = configData
 }
 

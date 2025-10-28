@@ -38,7 +38,7 @@ output:
 `)
 }
 
-func TestLoadDefaultConfig(t *testing.T) {
+func TestLoadConfig_NoOverrides(t *testing.T) {
 	configData, err := loadConfig(&navigatorMock{tempDir: t.TempDir()})
 	if err != nil {
 		t.Errorf("loadConfig() error = %v", err)
@@ -47,6 +47,16 @@ func TestLoadDefaultConfig(t *testing.T) {
 	if len(configData.Rules) != 0 {
 		t.Errorf("Expected 0 rules, got %d", len(configData.Rules))
 	}
+}
+
+func TestMustLoadDefaultConfig(t *testing.T) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("MustLoadDefaultConfig() did panic on default config")
+		}
+	}()
+
+	MustLoadDefaultConfig()
 }
 
 func TestMustLoadConfig(t *testing.T) {
@@ -59,7 +69,7 @@ func TestMustLoadConfig(t *testing.T) {
 	MustLoadConfig(&navigatorMock{tempDir: t.TempDir()})
 }
 
-func TestLoadDefaultConfig_Invalid(t *testing.T) {
+func TestLoadConfig_InvalidDefaultConfig(t *testing.T) {
 	t.Cleanup(resetYamlDefaultData)
 
 	for _, invalidConfig := range invalidDefaultConfigsYAML {
@@ -74,7 +84,25 @@ func TestLoadDefaultConfig_Invalid(t *testing.T) {
 	}
 }
 
-func TestMustLoadConfig_Invalid(t *testing.T) {
+func TestMustLoadDefaultConfig_Invalid(t *testing.T) {
+	t.Cleanup(resetYamlDefaultData)
+
+	for _, invalidConfig := range invalidDefaultConfigsYAML {
+		t.Run(invalidConfig, func(t *testing.T) {
+			defer func() {
+				if r := recover(); r == nil {
+					t.Errorf("MustLoadConfig() did not panic on invalid default config")
+				}
+			}()
+
+			yamlDefaultData = []byte(invalidConfig)
+
+			MustLoadDefaultConfig()
+		})
+	}
+}
+
+func TestMustLoadConfig_InvalidDefaultConfig(t *testing.T) {
 	t.Cleanup(resetYamlDefaultData)
 
 	for _, invalidConfig := range invalidDefaultConfigsYAML {
