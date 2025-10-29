@@ -128,7 +128,89 @@ func TestMustLoadConfig_InvalidDefaultConfig(t *testing.T) {
 	}
 }
 
-func TestLoadConfig_OverriddenByFile(t *testing.T) {
+func TestLoadConfig_OverriddenByHomeConfigFile(t *testing.T) {
+	contentHomeYAML := []byte(`rules:
+  RULE_1:
+    enabled: false
+output:
+  format: compact
+  color: false
+`)
+	contentHomeJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false}}`)
+
+	want := config{
+		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: false}},
+		Output: OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+	}
+
+	tests := []struct {
+		filename             string
+		relativeLocationHome string
+		content              []byte
+	}{
+		{
+			filename:             ".tfcoach.yml",
+			relativeLocationHome: filepath.Join(".config", "tfcoach"),
+			content:              contentHomeYAML,
+		},
+		{
+			filename:             ".tfcoach.yml",
+			relativeLocationHome: ".tfcoach",
+			content:              contentHomeYAML,
+		},
+		{
+			filename:             ".tfcoach.yaml",
+			relativeLocationHome: filepath.Join(".config", "tfcoach"),
+			content:              contentHomeYAML,
+		},
+		{
+			filename:             ".tfcoach.yaml",
+			relativeLocationHome: ".tfcoach",
+			content:              contentHomeYAML,
+		},
+		{
+			filename:             ".tfcoach.json",
+			relativeLocationHome: filepath.Join(".config", "tfcoach"),
+			content:              contentHomeJSON,
+		},
+		{
+			filename:             ".tfcoach.json",
+			relativeLocationHome: ".tfcoach",
+			content:              contentHomeJSON,
+		},
+		{
+			filename:             ".tfcoach",
+			relativeLocationHome: filepath.Join(".config", "tfcoach"),
+			content:              contentHomeJSON,
+		},
+		{
+			filename:             ".tfcoach",
+			relativeLocationHome: ".tfcoach",
+			content:              contentHomeJSON,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.filename, func(t *testing.T) {
+			homeDir := t.TempDir()
+			homeConfigDir := filepath.Join(homeDir, tt.relativeLocationHome)
+			_ = os.MkdirAll(homeConfigDir, 0777)
+			err := os.WriteFile(filepath.Join(homeConfigDir, tt.filename), tt.content, 0644)
+			dir := t.TempDir()
+			_ = os.Chdir(dir)
+			configData, err := loadConfig(&navigatorMock{homeDir: homeDir})
+			if err != nil {
+				t.Errorf("loadConfig() error = %v", err)
+			}
+
+			if !reflect.DeepEqual(configData, want) {
+				t.Errorf("Wanted %v, got %v", want, configData)
+			}
+		})
+	}
+}
+
+func TestLoadConfig_OverriddenByLocalConfigFile(t *testing.T) {
 	contentYAML := []byte(`rules:
   RULE_1:
     "enabled": false

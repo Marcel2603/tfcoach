@@ -173,14 +173,24 @@ func getHomeConfigPath(navigator Navigator) (string, bool) {
 		return "", false
 	}
 
-	baseDir := filepath.Join(homeDir, ".config", "tfcoach")
+	candidateBaseDirs := []string{
+		filepath.Join(homeDir, ".config", "tfcoach"),
+		filepath.Join(homeDir, ".tfcoach"),
+	}
 
-	return getFirstMatchingPath(baseDir, []string{
-		".tfcoach.yml",
-		".tfcoach.yaml",
-		".tfcoach.json",
-		".tfcoach",
-	})
+	for _, baseDir := range candidateBaseDirs {
+		path, found := getFirstMatchingPath(baseDir, []string{
+			".tfcoach.yml",
+			".tfcoach.yaml",
+			".tfcoach.json",
+			".tfcoach",
+		})
+		if found {
+			return path, true
+		}
+	}
+
+	return "", false
 }
 
 func getCustomConfigPath(navigator Navigator) (string, bool) {
