@@ -67,7 +67,7 @@ func loadConfig(navigator Navigator) (config, error) {
 
 	// 2. config from home dir
 	var homeDir string
-	homeDir, err = navigator.HomeDir()
+	homeDir, err = navigator.GetHomeDir()
 	if err != nil {
 		// TODO later: add debug log, home dir not defined
 		_, _ = fmt.Fprintf(os.Stderr, "Could not get home directory: %s\n", err.Error())
@@ -88,7 +88,7 @@ func loadConfig(navigator Navigator) (config, error) {
 	}
 
 	// 3. config from current dir
-	customConfigPath, found := getCustomConfigPath()
+	customConfigPath, found := getCustomConfigPath(navigator)
 	var customConfigData config
 	if found {
 		customConfigData, err = loadCustomConfigFromFile(customConfigPath)
@@ -163,23 +163,37 @@ func getHomeConfigPath(homeDir string) (string, bool) {
 	})
 }
 
-func getCustomConfigPath() (string, bool) {
-	cwd, err := os.Getwd()
+func getCustomConfigPath(navigator Navigator) (string, bool) {
+	path, err := navigator.GetCustomConfigPath()
 	if err != nil {
 		return "", false
 	}
 
-	return getFirstMatchingPath(cwd, []string{
-		".tfcoach.yml",
-		".tfcoach.yaml",
-		".tfcoach.json",
-		".tfcoach",
-	})
+	var fi os.FileInfo
+	fi, err = os.Stat(path)
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Could not read custom config file at '%s': %s\n", path, err.Error())
+		return "", false
+	}
+
+	switch mode := fi.Mode(); {
+	case mode.IsDir():
+		return getFirstMatchingPath(path, []string{
+			".tfcoach.yml",
+			".tfcoach.yaml",
+			".tfcoach.json",
+			".tfcoach",
+		})
+	case mode.IsRegular():
+		return path, true
+	}
+
+	return "", false
 }
 
-func getFirstMatchingPath(baseDir string, paths []string) (string, bool) {
-	for _, path := range paths {
-		fullPath := filepath.Join(baseDir, path)
+func getFirstMatchingPath(baseDir string, fileNames []string) (string, bool) {
+	for _, fileName := range fileNames {
+		fullPath := filepath.Join(baseDir, fileName)
 		if _, err := os.Stat(fullPath); err == nil {
 			return fullPath, true
 		}

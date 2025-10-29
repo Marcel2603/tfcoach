@@ -29,8 +29,7 @@ var lintCmd = &cobra.Command{
 	Short: "Lint Terraform files",
 	Args:  cobra.ArbitraryArgs,
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
-		// TODO #16: use configPathFlag to influence custom config loading
-		config.MustLoadConfig(&config.DefaultNavigator{})
+		config.MustLoadConfig(&config.DefaultNavigator{CustomConfigPath: configPathFlag})
 
 		if cmd.Flags().Changed("format") {
 			config.OverrideFormat(formatFlag)
