@@ -1,3 +1,4 @@
+# tfcoach-ignore: rule1, rule2
 terraform {
   required_version = "1.0"
   experiments = ["<feature-name>"]
