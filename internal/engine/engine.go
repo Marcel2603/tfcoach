@@ -89,14 +89,13 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		return strings.Compare(a.Message, b.Message)
 	})
 
-	postProcessor.ProcessIssues(&issues)
+	issues = postProcessor.ProcessIssues(issues)
 
 	return issues, nil
 }
 
 func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postProcessor *Postprocessor) {
 	bytes, err := e.src.ReadFile(path)
-	postProcessor.ScanFile(bytes, path)
 	if err != nil {
 		issuesChan <- types.Issue{
 			File:    path,
@@ -116,6 +115,7 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postPro
 		return
 	}
 
+	postProcessor.ScanFile(bytes, hclFile, path)
 	var fileWg sync.WaitGroup
 	ruleApplyDoneChan := make(chan struct{})
 	for _, rule := range e.rules {
