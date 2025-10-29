@@ -1,7 +1,9 @@
 package engine
 
 import (
-	"sort"
+	"cmp"
+	"slices"
+	"strings"
 	"sync"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
@@ -70,21 +72,20 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	wg.Wait()
 
 	// sort for deterministic output
-	sort.SliceStable(issues, func(i, j int) bool {
-		a, b := issues[i], issues[j]
+	slices.SortStableFunc(issues, func(a, b types.Issue) int {
 		if a.File != b.File {
-			return a.File < b.File
+			strings.Compare(a.File, b.File)
 		}
 		if a.Range.Start.Line != b.Range.Start.Line {
-			return a.Range.Start.Line < b.Range.Start.Line
+			return cmp.Compare(a.Range.Start.Line, b.Range.Start.Line)
 		}
 		if a.Range.Start.Column != b.Range.Start.Column {
-			return a.Range.Start.Column < b.Range.Start.Column
+			return cmp.Compare(a.Range.Start.Column, b.Range.Start.Column)
 		}
 		if a.RuleID != b.RuleID {
-			return a.RuleID < b.RuleID
+			return strings.Compare(a.RuleID, b.RuleID)
 		}
-		return a.Message < b.Message
+		return strings.Compare(a.Message, b.Message)
 	})
 
 	return issues, nil
