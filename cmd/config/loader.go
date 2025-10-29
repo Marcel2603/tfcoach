@@ -3,6 +3,7 @@ package config
 import (
 	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -66,39 +67,24 @@ func loadConfig(navigator Navigator) (config, error) {
 	}
 
 	// 2. config from home dir
-	var homeDir string
-	homeDir, err = navigator.GetHomeDir()
-	if err != nil {
-		// TODO later: add debug log, home dir not defined
-		_, _ = fmt.Fprintf(os.Stderr, "Could not get home directory: %s\n", err.Error())
-	} else {
-		homeConfigPath, found := getHomeConfigPath(homeDir)
-		var homeConfigData config
-		if found {
-			homeConfigData, err = loadCustomConfigFromFile(homeConfigPath)
-			if err != nil {
-				_, _ = fmt.Fprintf(os.Stderr, "Could not load config from home config file %s: %s\n", homeConfigPath, err.Error())
-			} else {
-				mergeErr := mergo.Merge(&configData, homeConfigData, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
-				if mergeErr != nil {
-					return config{}, mergeErr
-				}
-			}
+	var homeConfigData config
+	homeConfigData, err = loadConfigFromHomeDir(navigator)
+	// TODO later: print error in debug log if err != nil
+	if err == nil {
+		mergeErr := mergeInto(&configData, homeConfigData)
+		if mergeErr != nil {
+			return config{}, mergeErr
 		}
 	}
 
 	// 3. config from current dir
-	customConfigPath, found := getCustomConfigPath(navigator)
 	var customConfigData config
-	if found {
-		customConfigData, err = loadCustomConfigFromFile(customConfigPath)
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Could not load config from custom config file %s: %s\n", customConfigPath, err.Error())
-		} else {
-			mergeErr := mergo.Merge(&configData, customConfigData, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
-			if mergeErr != nil {
-				return config{}, mergeErr
-			}
+	customConfigData, err = loadConfigFromLocalFile(navigator)
+	// TODO later: print error in debug log if err != nil
+	if err == nil {
+		mergeErr := mergeInto(&configData, customConfigData)
+		if mergeErr != nil {
+			return config{}, mergeErr
 		}
 	}
 
@@ -108,17 +94,46 @@ func loadConfig(navigator Navigator) (config, error) {
 	if err != nil {
 		return config{}, err
 	}
-	mergeErr := mergo.Merge(&configData, envData, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
+	mergeErr := mergeInto(&configData, envData)
 	if mergeErr != nil {
 		return config{}, mergeErr
 	}
 
+	// 5. validate
 	validationErr := configData.Validate()
 	if validationErr != nil {
 		return config{}, validationErr
 	}
 
 	return configData, nil
+}
+
+func loadConfigFromHomeDir(navigator Navigator) (config, error) {
+	homeConfigPath, found := getHomeConfigPath(navigator)
+	if !found {
+		return config{}, errors.New("no config found in home directory")
+	}
+
+	homeConfigData, err := loadCustomConfigFromFile(homeConfigPath)
+	if err != nil {
+		return config{}, fmt.Errorf("could load config from home directory: %v", err)
+	}
+
+	return homeConfigData, nil
+}
+
+func loadConfigFromLocalFile(navigator Navigator) (config, error) {
+	customConfigPath, found := getCustomConfigPath(navigator)
+	if !found {
+		return config{}, errors.New("no config found in local directory")
+	}
+
+	customConfigData, err := loadCustomConfigFromFile(customConfigPath)
+	if err != nil {
+		return config{}, fmt.Errorf("could load config from local directory: %v", err)
+	}
+
+	return customConfigData, nil
 }
 
 func loadCustomConfigFromFile(configPath string) (config, error) {
@@ -152,7 +167,12 @@ func loadConfigFromJSON(data []byte, mapData *config) error {
 	return json.Unmarshal(data, mapData)
 }
 
-func getHomeConfigPath(homeDir string) (string, bool) {
+func getHomeConfigPath(navigator Navigator) (string, bool) {
+	homeDir, err := navigator.GetHomeDir()
+	if err != nil {
+		return "", false
+	}
+
 	baseDir := filepath.Join(homeDir, ".config", "tfcoach")
 
 	return getFirstMatchingPath(baseDir, []string{
@@ -200,4 +220,8 @@ func getFirstMatchingPath(baseDir string, fileNames []string) (string, bool) {
 	}
 
 	return "", false
+}
+
+func mergeInto(target *config, updated config) error {
+	return mergo.Merge(target, updated, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
 }
