@@ -16,3 +16,4 @@ data "aws_s3_bucket" "ignored" {}
 
 
 data "aws_s3_bucket" "ignored" {}
+data "aws_s3_bucket" "NotIgnored" {}
