@@ -29,7 +29,10 @@ var lintCmd = &cobra.Command{
 	Short: "Lint Terraform files",
 	Args:  cobra.ArbitraryArgs,
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
-		config.MustLoadConfig(&config.DefaultNavigator{CustomConfigPath: configPathFlag})
+		err := config.LoadConfig(&config.DefaultNavigator{CustomConfigPath: configPathFlag})
+		if err != nil {
+			return err
+		}
 
 		if cmd.Flags().Changed("format") {
 			config.OverrideFormat(formatFlag)
@@ -65,7 +68,10 @@ var lintCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lintCmd)
 
-	config.MustLoadDefaultConfig()
+	err := config.LoadDefaultConfig()
+	if err != nil {
+		panic(err)
+	}
 	defaultOutputConfig = config.GetOutputConfiguration()
 
 	formatUsageHelp := fmt.Sprintf("Output format. Supported: %s", strings.Join(config.SupportedFormats(), "|"))

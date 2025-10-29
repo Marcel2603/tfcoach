@@ -1,5 +1,5 @@
 // in order to keep the prod package clean
-// need to embed this test inside the config package (access on private methods)
+// need to embed this test inside the config package (access on private state)
 package config
 
 import (
@@ -46,35 +46,38 @@ output:
 `)
 }
 
-func TestLoadConfig_NoOverrides(t *testing.T) {
-	configData, err := loadConfig(&navigatorMock{homeDir: t.TempDir()})
+func TestLoadDefaultConfig(t *testing.T) {
+	err := LoadDefaultConfig()
+
 	if err != nil {
-		t.Errorf("loadConfig() error = %v", err)
-	}
-
-	if len(configData.Rules) != 0 {
-		t.Errorf("Expected 0 rules, got %d", len(configData.Rules))
+		t.Errorf("LoadDefaultConfig() error = %v", err)
 	}
 }
 
-func TestMustLoadDefaultConfig(t *testing.T) {
-	defer func() {
-		if r := recover(); r != nil {
-			t.Errorf("MustLoadDefaultConfig() did panic on default config")
-		}
-	}()
+func TestLoadDefaultConfig_Invalid(t *testing.T) {
+	t.Cleanup(resetYamlDefaultData)
 
-	MustLoadDefaultConfig()
+	for _, invalidConfig := range invalidDefaultConfigsYAML {
+		t.Run(invalidConfig, func(t *testing.T) {
+			yamlDefaultData = []byte(invalidConfig)
+
+			err := LoadDefaultConfig()
+			if err == nil {
+				t.Errorf("expected error, got none")
+			}
+		})
+	}
 }
 
-func TestMustLoadConfig(t *testing.T) {
-	defer func() {
-		if r := recover(); r != nil {
-			t.Errorf("MustLoadConfig() did panic on default config")
-		}
-	}()
+func TestLoadConfig_NoOverrides(t *testing.T) {
+	err := LoadConfig(&navigatorMock{homeDir: t.TempDir()})
+	if err != nil {
+		t.Errorf("LoadConfig() error = %v", err)
+	}
 
-	MustLoadConfig(&navigatorMock{homeDir: t.TempDir()})
+	if len(configuration.Rules) != 0 {
+		t.Errorf("Expected 0 rules, got %d", len(configuration.Rules))
+	}
 }
 
 func TestLoadConfig_InvalidDefaultConfig(t *testing.T) {
@@ -84,46 +87,10 @@ func TestLoadConfig_InvalidDefaultConfig(t *testing.T) {
 		t.Run(invalidConfig, func(t *testing.T) {
 			yamlDefaultData = []byte(invalidConfig)
 
-			_, err := loadConfig(&navigatorMock{homeDir: t.TempDir()})
+			err := LoadConfig(&navigatorMock{homeDir: t.TempDir()})
 			if err == nil {
 				t.Errorf("expected error, got none")
 			}
-		})
-	}
-}
-
-func TestMustLoadDefaultConfig_Invalid(t *testing.T) {
-	t.Cleanup(resetYamlDefaultData)
-
-	for _, invalidConfig := range invalidDefaultConfigsYAML {
-		t.Run(invalidConfig, func(t *testing.T) {
-			defer func() {
-				if r := recover(); r == nil {
-					t.Errorf("MustLoadConfig() did not panic on invalid default config")
-				}
-			}()
-
-			yamlDefaultData = []byte(invalidConfig)
-
-			MustLoadDefaultConfig()
-		})
-	}
-}
-
-func TestMustLoadConfig_InvalidDefaultConfig(t *testing.T) {
-	t.Cleanup(resetYamlDefaultData)
-
-	for _, invalidConfig := range invalidDefaultConfigsYAML {
-		t.Run(invalidConfig, func(t *testing.T) {
-			defer func() {
-				if r := recover(); r == nil {
-					t.Errorf("MustLoadConfig() did not panic on invalid default config")
-				}
-			}()
-
-			yamlDefaultData = []byte(invalidConfig)
-
-			MustLoadConfig(&navigatorMock{homeDir: t.TempDir()})
 		})
 	}
 }
@@ -198,13 +165,13 @@ output:
 			err := os.WriteFile(filepath.Join(homeConfigDir, tt.filename), tt.content, 0644)
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
-			configData, err := loadConfig(&navigatorMock{homeDir: homeDir})
+			err = LoadConfig(&navigatorMock{homeDir: homeDir})
 			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
+				t.Errorf("LoadConfig() error = %v", err)
 			}
 
-			if !reflect.DeepEqual(configData, want) {
-				t.Errorf("Wanted %v, got %v", want, configData)
+			if !reflect.DeepEqual(configuration, want) {
+				t.Errorf("Wanted %v, got %v", want, configuration)
 			}
 		})
 	}
@@ -252,13 +219,13 @@ output:
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.content, 0644)
-			configData, err := loadConfig(&navigatorMock{homeDir: t.TempDir()})
+			err := LoadConfig(&navigatorMock{homeDir: t.TempDir()})
 			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
+				t.Errorf("LoadConfig() error = %v", err)
 			}
 
-			if !reflect.DeepEqual(configData, want) {
-				t.Errorf("Wanted %v, got %v", want, configData)
+			if !reflect.DeepEqual(configuration, want) {
+				t.Errorf("Wanted %v, got %v", want, configuration)
 			}
 		})
 	}
@@ -325,13 +292,13 @@ output:
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.contentCustom, 0644)
-			configData, err := loadConfig(&navigatorMock{homeDir: homeDir})
+			err = LoadConfig(&navigatorMock{homeDir: homeDir})
 			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
+				t.Errorf("LoadConfig() error = %v", err)
 			}
 
-			if !reflect.DeepEqual(configData, want) {
-				t.Errorf("Wanted %v, got %v", want, configData)
+			if !reflect.DeepEqual(configuration, want) {
+				t.Errorf("Wanted %v, got %v", want, configuration)
 			}
 		})
 	}
@@ -397,13 +364,13 @@ output:
 			dirCustom := t.TempDir()
 			_ = os.WriteFile(filepath.Join(dirCustom, tt.filename), tt.contentCustom, 0644)
 
-			configData, err := loadConfig(&navigatorMock{homeDir: t.TempDir(), customConfigPath: dirCustom})
+			err := LoadConfig(&navigatorMock{homeDir: t.TempDir(), customConfigPath: dirCustom})
 			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
+				t.Errorf("LoadConfig() error = %v", err)
 			}
 
-			if !reflect.DeepEqual(configData, want) {
-				t.Errorf("Wanted %v, got %v", want, configData)
+			if !reflect.DeepEqual(configuration, want) {
+				t.Errorf("Wanted %v, got %v", want, configuration)
 			}
 		})
 	}
@@ -451,13 +418,13 @@ output:
 			dirCustom := t.TempDir()
 			_ = os.WriteFile(filepath.Join(dirCustom, tt.filename), tt.content, 0644)
 
-			configData, err := loadConfig(&navigatorMock{homeDir: t.TempDir(), customConfigPath: filepath.Join(dirCustom, tt.filename)})
+			err := LoadConfig(&navigatorMock{homeDir: t.TempDir(), customConfigPath: filepath.Join(dirCustom, tt.filename)})
 			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
+				t.Errorf("LoadConfig() error = %v", err)
 			}
 
-			if !reflect.DeepEqual(configData, want) {
-				t.Errorf("Wanted %v, got %v", want, configData)
+			if !reflect.DeepEqual(configuration, want) {
+				t.Errorf("Wanted %v, got %v", want, configuration)
 			}
 		})
 	}
@@ -496,7 +463,7 @@ func TestLoadConfig_InvalidOverride(t *testing.T) {
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.content, 0644)
-			_, err := loadConfig(&navigatorMock{homeDir: t.TempDir()})
+			err := LoadConfig(&navigatorMock{homeDir: t.TempDir()})
 			if err == nil {
 				t.Errorf("Expected error, got none")
 			}
@@ -540,13 +507,13 @@ func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.filename), tt.content, 0644)
-			configData, err := loadConfig(&navigatorMock{homeDir: t.TempDir()})
+			err := LoadConfig(&navigatorMock{homeDir: t.TempDir()})
 			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
+				t.Errorf("LoadConfig() error = %v", err)
 			}
 
-			if !reflect.DeepEqual(configData, want) {
-				t.Errorf("Wanted %v, got %v", want, configData)
+			if !reflect.DeepEqual(configuration, want) {
+				t.Errorf("Wanted %v, got %v", want, configuration)
 			}
 		})
 	}
@@ -573,12 +540,11 @@ func TestGetConfigByRuleId(t *testing.T) {
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, ".tfcoach.json"), content, 0644)
-			configData, err := loadConfig(&navigatorMock{homeDir: t.TempDir()})
+			err := LoadConfig(&navigatorMock{homeDir: t.TempDir()})
 			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
+				t.Errorf("LoadConfig() error = %v", err)
 			}
 
-			configuration = configData
 			ruleConfig := GetConfigByRuleID(tt.ruleID)
 			if ruleConfig.Enabled != tt.expected.Enabled {
 				t.Errorf("Expected %+v, got %+v", tt.expected, ruleConfig)
@@ -626,12 +592,11 @@ func TestGetOutputConfiguration(t *testing.T) {
 			dir := t.TempDir()
 			_ = os.Chdir(dir)
 			_ = os.WriteFile(filepath.Join(dir, tt.fileName), tt.content, 0644)
-			configData, err := loadConfig(&navigatorMock{homeDir: t.TempDir()})
+			err := LoadConfig(&navigatorMock{homeDir: t.TempDir()})
 			if err != nil {
-				t.Errorf("loadConfig() error = %v", err)
+				t.Errorf("LoadConfig() error = %v", err)
 			}
 
-			configuration = configData
 			var got OutputConfiguration
 			got = GetOutputConfiguration()
 			if got != want {

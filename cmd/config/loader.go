@@ -35,35 +35,28 @@ func GetOutputConfiguration() OutputConfiguration {
 	return configuration.Output
 }
 
-func MustLoadDefaultConfig() {
+func LoadDefaultConfig() error {
 	var configData config
 	err := loadConfigFromYaml(yamlDefaultData, &configData)
 	if err != nil {
-		panic("Could not load default config: " + err.Error())
+		return fmt.Errorf("could not load default config: %s", err)
 	}
 
 	err = configData.Validate()
 	if err != nil {
-		panic("Invalid default config: " + err.Error())
+		return fmt.Errorf("invalid default config: %s", err)
 	}
 
 	configuration = configData
+	return nil
 }
 
-func MustLoadConfig(navigator Navigator) {
-	configData, err := loadConfig(navigator)
-	if err != nil {
-		panic("Could not load config: " + err.Error())
-	}
-	configuration = configData
-}
-
-func loadConfig(navigator Navigator) (config, error) {
+func LoadConfig(navigator Navigator) error {
 	// 1. default config from repo
 	var configData config
 	err := loadConfigFromYaml(yamlDefaultData, &configData)
 	if err != nil {
-		return config{}, err
+		return err
 	}
 
 	// 2. config from home dir
@@ -73,7 +66,7 @@ func loadConfig(navigator Navigator) (config, error) {
 	if err == nil {
 		mergeErr := mergeInto(&configData, homeConfigData)
 		if mergeErr != nil {
-			return config{}, mergeErr
+			return mergeErr
 		}
 	}
 
@@ -84,7 +77,7 @@ func loadConfig(navigator Navigator) (config, error) {
 	if err == nil {
 		mergeErr := mergeInto(&configData, customConfigData)
 		if mergeErr != nil {
-			return config{}, mergeErr
+			return mergeErr
 		}
 	}
 
@@ -92,20 +85,21 @@ func loadConfig(navigator Navigator) (config, error) {
 	var envData config
 	err = loadConfigFromEnv(&envData)
 	if err != nil {
-		return config{}, err
+		return err
 	}
 	mergeErr := mergeInto(&configData, envData)
 	if mergeErr != nil {
-		return config{}, mergeErr
+		return mergeErr
 	}
 
 	// 5. validate
 	validationErr := configData.Validate()
 	if validationErr != nil {
-		return config{}, validationErr
+		return validationErr
 	}
 
-	return configData, nil
+	configuration = configData
+	return nil
 }
 
 func loadConfigFromHomeDir(navigator Navigator) (config, error) {
