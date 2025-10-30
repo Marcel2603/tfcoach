@@ -20,6 +20,18 @@ var (
 	yamlDefaultData []byte
 
 	configuration config
+
+	homeDirConfigRelativePaths = []string{
+		filepath.Join(".config", "tfcoach"),
+		".tfcoach",
+	}
+
+	standardConfigFileNames = []string{
+		".tfcoach.yml",
+		".tfcoach.yaml",
+		".tfcoach.json",
+		".tfcoach",
+	}
 )
 
 func GetConfigByRuleID(ruleID string) RuleConfiguration {
@@ -167,18 +179,8 @@ func getHomeConfigPath(navigator Navigator) (string, bool) {
 		return "", false
 	}
 
-	candidateBaseDirs := []string{
-		filepath.Join(homeDir, ".config", "tfcoach"),
-		filepath.Join(homeDir, ".tfcoach"),
-	}
-
-	for _, baseDir := range candidateBaseDirs {
-		path, found := getFirstMatchingPath(baseDir, []string{
-			".tfcoach.yml",
-			".tfcoach.yaml",
-			".tfcoach.json",
-			".tfcoach",
-		})
+	for _, homeDirConfigRelativePath := range homeDirConfigRelativePaths {
+		path, found := getFirstMatchingPath(filepath.Join(homeDir, homeDirConfigRelativePath), standardConfigFileNames)
 		if found {
 			return path, true
 		}
@@ -202,12 +204,7 @@ func getCustomConfigPath(navigator Navigator) (string, bool) {
 
 	switch mode := fi.Mode(); {
 	case mode.IsDir():
-		return getFirstMatchingPath(path, []string{
-			".tfcoach.yml",
-			".tfcoach.yaml",
-			".tfcoach.json",
-			".tfcoach",
-		})
+		return getFirstMatchingPath(path, standardConfigFileNames)
 	case mode.IsRegular():
 		return path, true
 	}
