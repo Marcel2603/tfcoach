@@ -52,7 +52,7 @@ func LoadDefaultConfig() error {
 }
 
 func LoadConfig(navigator Navigator) error {
-	// 1. default config from repo
+	// 1. default config from ".tfcoach.default.yml"
 	var configData config
 	err := loadConfigFromYaml(yamlDefaultData, &configData)
 	if err != nil {
