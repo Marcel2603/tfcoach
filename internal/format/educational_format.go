@@ -102,8 +102,14 @@ func extractRulesSortedBySeverity(issuesGroupedByRuleID map[string][]types.Issue
 		}
 		rules = append(rules, rule)
 	}
+
 	slices.SortStableFunc(rules, func(a, b types.Rule) int {
-		return a.META().Severity.Cmp(b.META().Severity)
+		aMeta := a.META()
+		bMeta := b.META()
+		if aMeta.Severity != bMeta.Severity {
+			return aMeta.Severity.Cmp(bMeta.Severity)
+		}
+		return strings.Compare(aMeta.Title, bMeta.Title)
 	})
 	return rules
 }

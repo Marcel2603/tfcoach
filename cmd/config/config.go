@@ -52,7 +52,7 @@ func (c *config) Validate() error {
 	return errors.Join(errs...)
 }
 
-func (o *OutputConfiguration) SupportedFormats() []string {
+func SupportedFormats() []string {
 	return slices.Clone(supportedOutputFormats)
 }
 
@@ -97,4 +97,22 @@ func (t NullableBoolTransformer) Transformer(typ reflect.Type) func(dst, src ref
 		}
 	}
 	return nil
+}
+
+func OverrideFormat(format string) {
+	configuration.Output.Format = format
+}
+
+func OverrideColor(allowColor bool) {
+	configuration.Output.Color = NullableBool{
+		HasValue: true,
+		IsTrue:   allowColor,
+	}
+}
+
+func OverrideEmojis(allowEmojis bool) {
+	configuration.Output.Emojis = NullableBool{
+		HasValue: true,
+		IsTrue:   allowEmojis,
+	}
 }

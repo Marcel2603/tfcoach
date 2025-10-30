@@ -32,6 +32,7 @@ tfcoach lint [path] [flags]
 ### Options
 
 ```
+  -c, --config string   Custom config file path (default current directory)
   -f, --format string   Output format. Supported: json|compact|pretty|educational (default "educational")
   -h, --help            help for lint
       --no-color        Disable color output

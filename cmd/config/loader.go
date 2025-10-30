@@ -3,6 +3,7 @@ package config
 import (
 	_ "embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -18,7 +19,19 @@ var (
 	//go:embed .tfcoach.default.yml
 	yamlDefaultData []byte
 
-	configuration = mustLoadConfig()
+	configuration config
+
+	homeDirConfigRelativePaths = []string{
+		filepath.Join(".config", "tfcoach"),
+		".tfcoach",
+	}
+
+	standardConfigFileNames = []string{
+		".tfcoach.yml",
+		".tfcoach.yaml",
+		".tfcoach.json",
+		".tfcoach",
+	}
 )
 
 func GetConfigByRuleID(ruleID string) RuleConfiguration {
@@ -34,51 +47,99 @@ func GetOutputConfiguration() OutputConfiguration {
 	return configuration.Output
 }
 
-func mustLoadConfig() config {
-	configData, err := loadConfig()
-	if err != nil {
-		panic("Could not load config: " + err.Error())
-	}
-	return configData
-}
-
-func loadConfig() (config, error) {
+func LoadDefaultConfig() error {
 	var configData config
 	err := loadConfigFromYaml(yamlDefaultData, &configData)
 	if err != nil {
-		return config{}, err
+		return fmt.Errorf("could not load default config: %s", err)
 	}
 
-	customConfigPath, found := getCustomConfigPath()
-	var appData config
-	if found {
-		appData, err = loadCustomConfigFromFile(customConfigPath)
-		if err != nil {
-			_, _ = fmt.Fprintf(os.Stderr, "Could not load config from custom config file %s: %s\n", customConfigPath, err.Error())
-		} else {
-			mergeErr := mergo.Merge(&configData, appData, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
-			if mergeErr != nil {
-				return config{}, mergeErr
-			}
+	err = configData.Validate()
+	if err != nil {
+		return fmt.Errorf("invalid default config: %s", err)
+	}
+
+	configuration = configData
+	return nil
+}
+
+func LoadConfig(navigator Navigator) error {
+	// 1. default config from ".tfcoach.default.yml"
+	var configData config
+	err := loadConfigFromYaml(yamlDefaultData, &configData)
+	if err != nil {
+		return err
+	}
+
+	// 2. config from home dir
+	var homeConfigData config
+	homeConfigData, err = loadConfigFromHomeDir(navigator)
+	// TODO later: print error in debug log if err != nil
+	if err == nil {
+		mergeErr := mergeInto(&configData, homeConfigData)
+		if mergeErr != nil {
+			return mergeErr
 		}
 	}
 
+	// 3. config from current dir
+	var customConfigData config
+	customConfigData, err = loadConfigFromLocalFile(navigator)
+	// TODO later: print error in debug log if err != nil
+	if err == nil {
+		mergeErr := mergeInto(&configData, customConfigData)
+		if mergeErr != nil {
+			return mergeErr
+		}
+	}
+
+	// 4. config from env
 	var envData config
 	err = loadConfigFromEnv(&envData)
 	if err != nil {
-		return config{}, err
+		return err
 	}
-	mergeErr := mergo.Merge(&configData, envData, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
+	mergeErr := mergeInto(&configData, envData)
 	if mergeErr != nil {
-		return config{}, mergeErr
+		return mergeErr
 	}
 
+	// 5. validate
 	validationErr := configData.Validate()
 	if validationErr != nil {
-		return config{}, validationErr
+		return validationErr
 	}
 
-	return configData, nil
+	configuration = configData
+	return nil
+}
+
+func loadConfigFromHomeDir(navigator Navigator) (config, error) {
+	homeConfigPath, found := getHomeConfigPath(navigator)
+	if !found {
+		return config{}, errors.New("no config found in home directory")
+	}
+
+	homeConfigData, err := loadCustomConfigFromFile(homeConfigPath)
+	if err != nil {
+		return config{}, fmt.Errorf("could load config from home directory: %v", err)
+	}
+
+	return homeConfigData, nil
+}
+
+func loadConfigFromLocalFile(navigator Navigator) (config, error) {
+	customConfigPath, found := getCustomConfigPath(navigator)
+	if !found {
+		return config{}, errors.New("no config found in local directory")
+	}
+
+	customConfigData, err := loadCustomConfigFromFile(customConfigPath)
+	if err != nil {
+		return config{}, fmt.Errorf("could load config from local directory: %v", err)
+	}
+
+	return customConfigData, nil
 }
 
 func loadCustomConfigFromFile(configPath string) (config, error) {
@@ -112,19 +173,56 @@ func loadConfigFromJSON(data []byte, mapData *config) error {
 	return json.Unmarshal(data, mapData)
 }
 
-func getCustomConfigPath() (string, bool) {
-	files := []string{
-		".tfcoach.yml",
-		".tfcoach.yaml",
-		".tfcoach.json",
-		".tfcoach",
+func getHomeConfigPath(navigator Navigator) (string, bool) {
+	homeDir, err := navigator.GetHomeDir()
+	if err != nil {
+		return "", false
 	}
 
-	for _, f := range files {
-		if _, err := os.Stat(f); err == nil {
-			return f, true
+	for _, homeDirConfigRelativePath := range homeDirConfigRelativePaths {
+		path, found := getFirstMatchingPath(filepath.Join(homeDir, homeDirConfigRelativePath), standardConfigFileNames)
+		if found {
+			return path, true
 		}
 	}
 
 	return "", false
+}
+
+func getCustomConfigPath(navigator Navigator) (string, bool) {
+	path, err := navigator.GetCustomConfigPath()
+	if err != nil {
+		return "", false
+	}
+
+	var fi os.FileInfo
+	fi, err = os.Stat(path)
+	if err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "Could not read custom config file at '%s': %s\n", path, err.Error())
+		return "", false
+	}
+
+	switch mode := fi.Mode(); {
+	case mode.IsDir():
+		return getFirstMatchingPath(path, standardConfigFileNames)
+	case mode.IsRegular():
+		return path, true
+	}
+
+	return "", false
+}
+
+func getFirstMatchingPath(baseDir string, fileNames []string) (string, bool) {
+	for _, fileName := range fileNames {
+		fullPath := filepath.Join(baseDir, fileName)
+		if _, err := os.Stat(fullPath); err == nil {
+			return fullPath, true
+		}
+	}
+
+	return "", false
+}
+
+func mergeInto(target *config, updated config) error {
+	return mergo.Merge(target, updated, mergo.WithOverride, mergo.WithTransformers(NullableBoolTransformer{}))
 }
