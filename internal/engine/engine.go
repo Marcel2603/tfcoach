@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
-const issuesChanBufSize = 3 // TODO later: choose appropriate buffer size (balance performance vs resource usage)
+const issuesChanBufSize = 5 // TODO later: choose appropriate buffer size (balance performance vs resource usage)
 
 type Engine struct {
 	src   Source
@@ -114,9 +114,12 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postPro
 		}
 		return
 	}
-
-	postProcessor.ScanFile(bytes, hclFile, path)
+	var postProcessWg sync.WaitGroup
 	var fileWg sync.WaitGroup
+
+	postProcessWg.Go(func() {
+		postProcessor.ScanFile(bytes, hclFile, path)
+	})
 	ruleApplyDoneChan := make(chan struct{})
 	for _, rule := range e.rules {
 		fileWg.Go(func() {
@@ -132,6 +135,7 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postPro
 	})
 
 	fileWg.Wait()
+	postProcessWg.Wait()
 }
 
 func closeAfterSignalCount(target int, signalChannel chan struct{}) {
