@@ -11,7 +11,7 @@ import (
 )
 
 func TestEngine_WithStubRule(t *testing.T) {
-	src := testutil.MemSource{Files: map[string]string{"a.tf": `# empty file`}}
+	src := testutil.MemSource{Files: map[string]string{"a.tf": `resource "test" "test" {}`}}
 	e := engine.New(src)
 	e.Register(&testutil.AlwaysFlag{RuleID: "t.id", Message: "m"})
 	issues, err := e.Run(".")
@@ -69,7 +69,7 @@ func TestEngine_WithHclParsingError(t *testing.T) {
 func TestEngine_WithMultipleFilesAndManyStubRules(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{
 		"a.tf": `locals {}`,
-		"b.tf": `# empty file`,
+		"b.tf": `resource "test" "test"{}`,
 		"c.tf": `terraform {}`,
 	}}
 	e := engine.New(src)

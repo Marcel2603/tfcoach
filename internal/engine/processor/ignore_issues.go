@@ -66,8 +66,6 @@ func (*IgnoreIssuesProcessor) appendUniqueRuleIgnores(ignoredRules []ruleIgnore,
 
 func (p *IgnoreIssuesProcessor) ProcessIssues(issues []types.Issue) []types.Issue {
 	filteredIssues := issues[:0]
-	fmt.Printf("Ignored Files %+v \n", p.ignoreFiles)
-	fmt.Printf("Ignored Rules %+v \n", p.ignoreRules)
 	for _, issue := range issues {
 		if p.containsFileIgnoreRule(issue) {
 			fmt.Printf("Ignored Issue %s on File %s \n", issue.RuleID, issue.File)
