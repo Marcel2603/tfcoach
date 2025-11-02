@@ -42,7 +42,7 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	issuesChan := make(chan types.Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
 	ruleFinishDoneChan := make(chan struct{})
-	postProcessor := processor.NewPostProcessor()
+	postProcessor := processor.NewIgnoreIssuesProcessor()
 	var wg sync.WaitGroup
 
 	for _, path := range files {
@@ -95,7 +95,7 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	return issues, nil
 }
 
-func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postProcessor *processor.Postprocessor) {
+func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postProcessor *processor.IgnoreIssuesProcessor) {
 	bytes, err := e.src.ReadFile(path)
 	if err != nil {
 		issuesChan <- types.Issue{

@@ -2,6 +2,7 @@ package processor
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
@@ -20,16 +21,16 @@ type ruleIgnore struct {
 	path     string
 }
 
-type Postprocessor struct {
+type IgnoreIssuesProcessor struct {
 	ignoreFiles []ruleIgnore
 	ignoreRules []ruleIgnore
 }
 
-func NewPostProcessor() *Postprocessor {
-	return &Postprocessor{ignoreFiles: []ruleIgnore{}, ignoreRules: []ruleIgnore{}}
+func NewIgnoreIssuesProcessor() *IgnoreIssuesProcessor {
+	return &IgnoreIssuesProcessor{ignoreFiles: []ruleIgnore{}, ignoreRules: []ruleIgnore{}}
 }
 
-func (p *Postprocessor) ScanFile(bytes []byte, hclFile *hcl.File, path string) {
+func (p *IgnoreIssuesProcessor) ScanFile(bytes []byte, hclFile *hcl.File, path string) {
 	tokens, _ := hclsyntax.LexConfig(bytes, path, hcl.InitialPos)
 	body, _ := hclFile.Body.(*hclsyntax.Body)
 	for _, tok := range tokens {
@@ -39,14 +40,13 @@ func (p *Postprocessor) ScanFile(bytes []byte, hclFile *hcl.File, path string) {
 			if strings.HasPrefix(comment, ignoreFileWord) {
 				ignoredFileRules := p.processIgnoreFile(comment, path)
 				if len(ignoredFileRules) > 0 {
-					p.ignoreFiles = append(p.ignoreFiles, ignoredFileRules...)
+					p.ignoreFiles = p.appendUniqueRuleIgnores(p.ignoreFiles, ignoredFileRules)
 				}
 			} else {
-
 				if strings.HasPrefix(comment, ignoreRuleWord) {
 					ignoredRules := p.processIgnoreRule(comment, path, tok.Range, body)
 					if len(ignoredRules) > 0 {
-						p.ignoreRules = append(p.ignoreRules, ignoredRules...)
+						p.ignoreRules = p.appendUniqueRuleIgnores(p.ignoreRules, ignoredRules)
 					}
 				}
 			}
@@ -54,7 +54,35 @@ func (p *Postprocessor) ScanFile(bytes []byte, hclFile *hcl.File, path string) {
 	}
 }
 
-func (p *Postprocessor) processIgnoreFile(comment string, path string) []ruleIgnore {
+func (*IgnoreIssuesProcessor) appendUniqueRuleIgnores(ignoredRules []ruleIgnore, newRules []ruleIgnore) []ruleIgnore {
+	for _, newRule := range newRules {
+		if slices.Contains(ignoredRules, newRule) {
+			continue
+		}
+		ignoredRules = append(ignoredRules, newRule)
+	}
+	return ignoredRules
+}
+
+func (p *IgnoreIssuesProcessor) ProcessIssues(issues []types.Issue) []types.Issue {
+	filteredIssues := issues[:0]
+	fmt.Printf("Ignored Files %+v \n", p.ignoreFiles)
+	fmt.Printf("Ignored Rules %+v \n", p.ignoreRules)
+	for _, issue := range issues {
+		if p.containsFileIgnoreRule(issue) {
+			fmt.Printf("Ignored Issue %s on File %s \n", issue.RuleID, issue.File)
+			continue
+		}
+		if p.containsRuleIgnoreComment(issue) {
+			fmt.Printf("Ignored Issue %s on Range %d \n", issue.RuleID, issue.Range.Start.Line)
+			continue
+		}
+		filteredIssues = append(filteredIssues, issue)
+	}
+	return filteredIssues
+}
+
+func (p *IgnoreIssuesProcessor) processIgnoreFile(comment string, path string) []ruleIgnore {
 	commentSplit := strings.SplitN(comment, ":", 2)
 	if len(commentSplit) != 2 {
 		return []ruleIgnore{}
@@ -66,7 +94,7 @@ func (p *Postprocessor) processIgnoreFile(comment string, path string) []ruleIgn
 	return ignoredRules
 }
 
-func (p *Postprocessor) findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) hcl.Range {
+func (p *IgnoreIssuesProcessor) findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) hcl.Range {
 	var nearestRange hcl.Range
 
 	for _, block := range body.Blocks {
@@ -84,7 +112,7 @@ func (p *Postprocessor) findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) hcl.
 	return nearestRange
 }
 
-func (p *Postprocessor) processIgnoreRule(comment string, path string, hclRange hcl.Range, body *hclsyntax.Body) []ruleIgnore {
+func (p *IgnoreIssuesProcessor) processIgnoreRule(comment string, path string, hclRange hcl.Range, body *hclsyntax.Body) []ruleIgnore {
 	commentSplit := strings.SplitN(comment, ":", 2)
 	if len(commentSplit) != 2 {
 		return []ruleIgnore{}
@@ -100,23 +128,7 @@ func (p *Postprocessor) processIgnoreRule(comment string, path string, hclRange 
 	return ignoredRules
 }
 
-func (p *Postprocessor) ProcessIssues(issues []types.Issue) []types.Issue {
-	filteredIssues := issues[:0]
-	for _, issue := range issues {
-		if p.ContainsFileIgnoreRule(issue) {
-			fmt.Printf("Ignored Issue %s on File %s \n", issue.RuleID, issue.File)
-			continue
-		}
-		if p.ContainsRuleIgnoreComment(issue) {
-			fmt.Printf("Ignored Issue %s on Range %d \n", issue.RuleID, issue.Range.Start.Line)
-			continue
-		}
-		filteredIssues = append(filteredIssues, issue)
-	}
-	return filteredIssues
-}
-
-func (p *Postprocessor) ContainsFileIgnoreRule(issue types.Issue) bool {
+func (p *IgnoreIssuesProcessor) containsFileIgnoreRule(issue types.Issue) bool {
 	for _, ignoredRule := range p.ignoreFiles {
 		if ignoredRule.path == issue.File && ignoredRule.ruleID == issue.RuleID {
 			return true
@@ -125,7 +137,7 @@ func (p *Postprocessor) ContainsFileIgnoreRule(issue types.Issue) bool {
 	return false
 }
 
-func (p *Postprocessor) ContainsRuleIgnoreComment(issue types.Issue) bool {
+func (p *IgnoreIssuesProcessor) containsRuleIgnoreComment(issue types.Issue) bool {
 	for _, ignoredRule := range p.ignoreRules {
 		if ignoredRule.path != issue.File {
 			continue
