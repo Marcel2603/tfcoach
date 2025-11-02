@@ -122,11 +122,11 @@ go run main.go lint examples
 ## Roadmap
 
 - [x] Alternative output formats (See option `--format`) → #13
-- [ ] Baseline support to adopt gradually in large codebases
-- [ ] Additional rule packs (AWS, GCP, Azure)
-- [ ] Auto-fix for selected rules
-- [ ] Pluggable rule engine
 - [x] Configurable via `.tfcoach.yml` → #15
+- [ ] Baseline support to adopt gradually in large codebases → <https://marcel2603.github.io/tfcoach/rule-ideas/>
+- [ ] Auto-fix for selected rules
+- [ ] Pluggable rule engine (do we need this?)
+- [ ] Additional rule packs (AWS, GCP, Azure)
 
 ---
 

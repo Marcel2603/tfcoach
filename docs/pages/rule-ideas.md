@@ -4,13 +4,13 @@ This page contains ideas about up-coming rules.
 
 ## Core
 
-- Required Provider in terraform block
+- [x] Required Provider in terraform block
 - naming
   - plural for lists
   - no resource-type in name
-  - name_convention (done)
+  - [x] name_convention
   - output-format {name}_{type}_{attribute}
-- file names
+- [x] file names
   - variables in variables.tf
   - outputs in output.tf
   - etc
@@ -18,6 +18,5 @@ This page contains ideas about up-coming rules.
   - tags
   - for_each / count
 - remote_backend?
-- terraform_data instead of null
-- only one tf block
-- variables always needs description
+- [x] terraform_data instead of null
+- [x] variables always needs description
