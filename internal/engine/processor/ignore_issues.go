@@ -1,4 +1,4 @@
-package engine
+package processor
 
 import (
 	"fmt"
@@ -30,9 +30,9 @@ func NewPostProcessor() *Postprocessor {
 }
 
 func (p *Postprocessor) ScanFile(bytes []byte, hclFile *hcl.File, path string) {
-	toks, _ := hclsyntax.LexConfig(bytes, path, hcl.InitialPos)
+	tokens, _ := hclsyntax.LexConfig(bytes, path, hcl.InitialPos)
 	body, _ := hclFile.Body.(*hclsyntax.Body)
-	for _, tok := range toks {
+	for _, tok := range tokens {
 		if tok.Type == hclsyntax.TokenComment {
 			comment := string(tok.Bytes)
 			comment = strings.Join(strings.Fields(comment), "")
@@ -59,7 +59,7 @@ func (p *Postprocessor) processIgnoreFile(comment string, path string) []ruleIgn
 	if len(commentSplit) != 2 {
 		return []ruleIgnore{}
 	}
-	ignoredRules := []ruleIgnore{}
+	var ignoredRules []ruleIgnore
 	for id := range strings.SplitSeq(commentSplit[1], ",") {
 		ignoredRules = append(ignoredRules, ruleIgnore{ruleID: id, path: path})
 	}
@@ -93,7 +93,7 @@ func (p *Postprocessor) processIgnoreRule(comment string, path string, hclRange 
 	if nearestRange == (hcl.Range{}) {
 		return []ruleIgnore{}
 	}
-	ignoredRules := []ruleIgnore{}
+	var ignoredRules []ruleIgnore
 	for id := range strings.SplitSeq(commentSplit[1], ",") {
 		ignoredRules = append(ignoredRules, ruleIgnore{ruleID: id, path: path, hclRange: nearestRange})
 	}
@@ -131,7 +131,6 @@ func (p *Postprocessor) ContainsRuleIgnoreComment(issue types.Issue) bool {
 			continue
 		}
 
-		// Check if issue falls within the ignored HCL range
 		if ignoredRule.hclRange.ContainsPos(issue.Range.Start) && ignoredRule.ruleID == issue.RuleID {
 			return true
 		}

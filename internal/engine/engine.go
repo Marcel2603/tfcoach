@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/Marcel2603/tfcoach/internal/engine/processor"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
@@ -41,7 +42,7 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	issuesChan := make(chan types.Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
 	ruleFinishDoneChan := make(chan struct{})
-	postProcessor := NewPostProcessor()
+	postProcessor := processor.NewPostProcessor()
 	var wg sync.WaitGroup
 
 	for _, path := range files {
@@ -94,7 +95,7 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	return issues, nil
 }
 
-func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postProcessor *Postprocessor) {
+func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postProcessor *processor.Postprocessor) {
 	bytes, err := e.src.ReadFile(path)
 	if err != nil {
 		issuesChan <- types.Issue{
