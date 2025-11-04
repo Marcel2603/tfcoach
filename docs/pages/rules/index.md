@@ -1,9 +1,9 @@
 # Rules
 ## Ignore Rules
-To ignore rules, you have 2 options: 
+To ignore rules, you have 2 options:
 
- - Add a comment on top of the file `# tfcoach-ignore-file:core.rule_id1,core.rule_id2`
- - Add a comment above the Terraform block to exclude the next block from issuing an error `# tfcoach-ignore:core.rule_id1,core.rule_id2`
+- Add a comment on top of the file `# tfcoach-ignore-file: core.rule_id1,core.rule_id2`
+- Add a comment above the Terraform block to exclude the next block from issuing an error `# tfcoach-ignore: core.rule_id1,core.rule_id2`
 ## Core
 | Rule | Summary |
 |--------|---------|

@@ -38,7 +38,7 @@ func GenerateRulesOverview(filename string) {
 
 func getIgnorationDescription() string {
 	return "## Ignore Rules\n" +
-		"To ignore rules, you have 2 options: \n\n" +
-		" - Add a comment on top of the file `# tfcoach-ignore-file:core.rule_id1,core.rule_id2`\n" +
-		" - Add a comment above the Terraform block to exclude the next block from issuing an error `# tfcoach-ignore:core.rule_id1,core.rule_id2`\n"
+		"To ignore rules, you have 2 options:\n\n" +
+		"- Add a comment on top of the file `# tfcoach-ignore-file: core.rule_id1,core.rule_id2`\n" +
+		"- Add a comment above the Terraform block to exclude the next block from issuing an error `# tfcoach-ignore: core.rule_id1,core.rule_id2`\n"
 }
