@@ -115,15 +115,14 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postPro
 		}
 		return
 	}
-	var postProcessWg sync.WaitGroup
-	var fileWg sync.WaitGroup
+	var fileProcessingGroup sync.WaitGroup
 
-	postProcessWg.Go(func() {
+	fileProcessingGroup.Go(func() {
 		postProcessor.ScanFile(bytes, hclFile, path)
 	})
 	ruleApplyDoneChan := make(chan struct{})
 	for _, rule := range e.rules {
-		fileWg.Go(func() {
+		fileProcessingGroup.Go(func() {
 			for _, issue := range rule.Apply(path, hclFile) {
 				issuesChan <- issue
 			}
@@ -131,12 +130,11 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postPro
 		})
 	}
 
-	fileWg.Go(func() {
+	fileProcessingGroup.Go(func() {
 		closeAfterSignalCount(len(e.rules), ruleApplyDoneChan)
 	})
 
-	fileWg.Wait()
-	postProcessWg.Wait()
+	fileProcessingGroup.Wait()
 }
 
 func closeAfterSignalCount(target int, signalChannel chan struct{}) {
