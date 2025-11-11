@@ -1,7 +1,6 @@
 package processor
 
 import (
-	"slices"
 	"strings"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
@@ -49,14 +48,20 @@ func (p *IgnoreIssuesProcessor) ScanFile(bytes []byte, hclFile *hcl.File, path s
 	}
 }
 
-func (*IgnoreIssuesProcessor) appendUniqueRuleIgnores(ignoredRules []ruleIgnore, newRules []ruleIgnore) []ruleIgnore {
-	for _, newRule := range newRules {
-		if slices.Contains(ignoredRules, newRule) {
-			continue
-		}
-		ignoredRules = append(ignoredRules, newRule)
+func (*IgnoreIssuesProcessor) appendUniqueRuleIgnores(base []ruleIgnore, additionallyRuleIgnores []ruleIgnore) []ruleIgnore {
+	set := make(map[ruleIgnore]struct{}, len(base))
+	for _, r := range base {
+		set[r] = struct{}{}
 	}
-	return ignoredRules
+
+	for _, r := range additionallyRuleIgnores {
+		if _, exists := set[r]; !exists {
+			set[r] = struct{}{}
+			base = append(base, r)
+		}
+	}
+
+	return base
 }
 
 func (p *IgnoreIssuesProcessor) ProcessIssues(issues []types.Issue) []types.Issue {
