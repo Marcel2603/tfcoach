@@ -95,7 +95,7 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	return issues, nil
 }
 
-func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postProcessor *processor.IgnoreIssuesProcessor) {
+func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postProcessor processor.IgnoreIssuesProcessor) {
 	bytes, err := e.src.ReadFile(path)
 	if err != nil {
 		issuesChan <- types.Issue{
