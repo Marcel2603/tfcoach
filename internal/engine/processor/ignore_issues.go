@@ -1,7 +1,6 @@
 package processor
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 
@@ -67,12 +66,10 @@ func (*IgnoreIssuesProcessor) appendUniqueRuleIgnores(ignoredRules []ruleIgnore,
 func (p *IgnoreIssuesProcessor) ProcessIssues(issues []types.Issue) []types.Issue {
 	filteredIssues := issues[:0]
 	for _, issue := range issues {
-		if p.containsFileIgnoreRule(issue) {
-			fmt.Printf("Ignored Issue %s on File %s \n", issue.RuleID, issue.File)
+		if p.shouldIgnoreAtFileLevel(issue) {
 			continue
 		}
-		if p.containsRuleIgnoreComment(issue) {
-			fmt.Printf("Ignored Issue %s on Range %d \n", issue.RuleID, issue.Range.Start.Line)
+		if p.shouldIgnoreAtBlockLevel(issue) {
 			continue
 		}
 		filteredIssues = append(filteredIssues, issue)
@@ -92,7 +89,45 @@ func (p *IgnoreIssuesProcessor) processIgnoreFile(comment string, path string) [
 	return ignoredRules
 }
 
-func (p *IgnoreIssuesProcessor) findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) hcl.Range {
+func (p *IgnoreIssuesProcessor) processIgnoreRule(comment string, path string, hclRange hcl.Range, body *hclsyntax.Body) []ruleIgnore {
+	commentSplit := strings.SplitN(comment, ":", 2)
+	if len(commentSplit) != 2 {
+		return []ruleIgnore{}
+	}
+	nearestRange := findNearestBlock(body, hclRange.Start)
+	if nearestRange == (hcl.Range{}) {
+		return []ruleIgnore{}
+	}
+	var ignoredRules []ruleIgnore
+	for id := range strings.SplitSeq(commentSplit[1], ",") {
+		ignoredRules = append(ignoredRules, ruleIgnore{ruleID: id, path: path, hclRange: nearestRange})
+	}
+	return ignoredRules
+}
+
+func (p *IgnoreIssuesProcessor) shouldIgnoreAtFileLevel(issue types.Issue) bool {
+	for _, ignoredRule := range p.ignoreFiles {
+		if ignoredRule.path == issue.File && ignoredRule.ruleID == issue.RuleID {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *IgnoreIssuesProcessor) shouldIgnoreAtBlockLevel(issue types.Issue) bool {
+	for _, ignoredRule := range p.ignoreRules {
+		if ignoredRule.path != issue.File {
+			continue
+		}
+
+		if ignoredRule.hclRange.ContainsPos(issue.Range.Start) && ignoredRule.ruleID == issue.RuleID {
+			return true
+		}
+	}
+	return false
+}
+
+func findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) hcl.Range {
 	var nearestRange hcl.Range
 
 	for _, block := range body.Blocks {
@@ -108,42 +143,4 @@ func (p *IgnoreIssuesProcessor) findNearestBlock(body *hclsyntax.Body, pos hcl.P
 		return block.Range()
 	}
 	return nearestRange
-}
-
-func (p *IgnoreIssuesProcessor) processIgnoreRule(comment string, path string, hclRange hcl.Range, body *hclsyntax.Body) []ruleIgnore {
-	commentSplit := strings.SplitN(comment, ":", 2)
-	if len(commentSplit) != 2 {
-		return []ruleIgnore{}
-	}
-	nearestRange := p.findNearestBlock(body, hclRange.Start)
-	if nearestRange == (hcl.Range{}) {
-		return []ruleIgnore{}
-	}
-	var ignoredRules []ruleIgnore
-	for id := range strings.SplitSeq(commentSplit[1], ",") {
-		ignoredRules = append(ignoredRules, ruleIgnore{ruleID: id, path: path, hclRange: nearestRange})
-	}
-	return ignoredRules
-}
-
-func (p *IgnoreIssuesProcessor) containsFileIgnoreRule(issue types.Issue) bool {
-	for _, ignoredRule := range p.ignoreFiles {
-		if ignoredRule.path == issue.File && ignoredRule.ruleID == issue.RuleID {
-			return true
-		}
-	}
-	return false
-}
-
-func (p *IgnoreIssuesProcessor) containsRuleIgnoreComment(issue types.Issue) bool {
-	for _, ignoredRule := range p.ignoreRules {
-		if ignoredRule.path != issue.File {
-			continue
-		}
-
-		if ignoredRule.hclRange.ContainsPos(issue.Range.Start) && ignoredRule.ruleID == issue.RuleID {
-			return true
-		}
-	}
-	return false
 }
