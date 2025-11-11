@@ -38,15 +38,11 @@ func (p *IgnoreIssuesProcessor) ScanFile(bytes []byte, hclFile *hcl.File, path s
 			comment = strings.Join(strings.Fields(comment), "")
 			if strings.HasPrefix(comment, ignoreFileWord) {
 				ignoredFileRules := p.processIgnoreFile(comment, path)
-				if len(ignoredFileRules) > 0 {
-					p.ignoreFiles = p.appendUniqueRuleIgnores(p.ignoreFiles, ignoredFileRules)
-				}
+				p.ignoreFiles = p.appendUniqueRuleIgnores(p.ignoreFiles, ignoredFileRules)
 			} else {
 				if strings.HasPrefix(comment, ignoreRuleWord) {
 					ignoredRules := p.processIgnoreRule(comment, path, tok.Range, body)
-					if len(ignoredRules) > 0 {
-						p.ignoreRules = p.appendUniqueRuleIgnores(p.ignoreRules, ignoredRules)
-					}
+					p.ignoreRules = p.appendUniqueRuleIgnores(p.ignoreRules, ignoredRules)
 				}
 			}
 		}
