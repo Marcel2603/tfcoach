@@ -90,8 +90,8 @@ func (p *IgnoreIssuesProcessor) processIgnoreRule(comment string, path string, h
 	if len(commentSplit) != 2 {
 		return []ruleIgnore{}
 	}
-	nearestRange := findNearestBlock(body, hclRange.Start)
-	if nearestRange == (hcl.Range{}) {
+	nearestRange, found := findNearestBlock(body, hclRange.Start)
+	if !found {
 		return []ruleIgnore{}
 	}
 	var ignoredRules []ruleIgnore
@@ -123,7 +123,7 @@ func (p *IgnoreIssuesProcessor) shouldIgnoreAtBlockLevel(issue types.Issue) bool
 	return false
 }
 
-func findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) hcl.Range {
+func findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) (hcl.Range, bool) {
 	var nearestRange hcl.Range
 
 	for _, block := range body.Blocks {
@@ -131,12 +131,12 @@ func findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) hcl.Range {
 
 		if pos.Line > start.Line {
 			if block.Range().End.Line > pos.Line {
-				return nearestRange
+				return nearestRange, false
 			}
 			continue
 		}
 
-		return block.Range()
+		return block.Range(), true
 	}
-	return nearestRange
+	return nearestRange, false
 }
