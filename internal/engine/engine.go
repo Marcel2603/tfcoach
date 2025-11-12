@@ -6,12 +6,13 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/Marcel2603/tfcoach/internal/engine/processor"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
-const issuesChanBufSize = 3 // TODO later: choose appropriate buffer size (balance performance vs resource usage)
+const issuesChanBufSize = 5 // TODO later: choose appropriate buffer size (balance performance vs resource usage)
 
 type Engine struct {
 	src   Source
@@ -41,11 +42,12 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	issuesChan := make(chan types.Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
 	ruleFinishDoneChan := make(chan struct{})
+	ignoreIssuesProcessor := processor.NewIgnoreIssuesProcessor()
 	var wg sync.WaitGroup
 
 	for _, path := range files {
 		wg.Go(func() {
-			e.processFile(path, issuesChan)
+			e.processFile(path, issuesChan, ignoreIssuesProcessor)
 			fileDoneChan <- struct{}{}
 		})
 	}
@@ -88,10 +90,12 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		return strings.Compare(a.Message, b.Message)
 	})
 
+	issues = ignoreIssuesProcessor.ProcessIssues(issues)
+
 	return issues, nil
 }
 
-func (e *Engine) processFile(path string, issuesChan chan<- types.Issue) {
+func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postProcessor processor.IgnoreIssuesProcessor) {
 	bytes, err := e.src.ReadFile(path)
 	if err != nil {
 		issuesChan <- types.Issue{
@@ -111,11 +115,14 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue) {
 		}
 		return
 	}
+	var fileProcessingGroup sync.WaitGroup
 
-	var fileWg sync.WaitGroup
+	fileProcessingGroup.Go(func() {
+		postProcessor.ScanFile(bytes, hclFile, path)
+	})
 	ruleApplyDoneChan := make(chan struct{})
 	for _, rule := range e.rules {
-		fileWg.Go(func() {
+		fileProcessingGroup.Go(func() {
 			for _, issue := range rule.Apply(path, hclFile) {
 				issuesChan <- issue
 			}
@@ -123,11 +130,11 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue) {
 		})
 	}
 
-	fileWg.Go(func() {
+	fileProcessingGroup.Go(func() {
 		closeAfterSignalCount(len(e.rules), ruleApplyDoneChan)
 	})
 
-	fileWg.Wait()
+	fileProcessingGroup.Wait()
 }
 
 func closeAfterSignalCount(target int, signalChannel chan struct{}) {

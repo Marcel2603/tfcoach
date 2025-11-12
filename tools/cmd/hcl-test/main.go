@@ -25,12 +25,23 @@ func main() {
 		fmt.Fprintln(os.Stderr, diags.Error())
 		os.Exit(1)
 	}
-
+	toks, _ := hclsyntax.LexConfig(file.Bytes, filename, hcl.InitialPos)
 	body, ok := file.Body.(*hclsyntax.Body)
 	if !ok {
 		fmt.Fprintf(os.Stderr, "file %q is not native HCL syntax (maybe JSON?)\n", filename)
 		os.Exit(1)
 	}
+
+	if len(toks) > 0 {
+		fmt.Println("--- Comments ---")
+	}
+	for _, tok := range toks {
+		if tok.Type == hclsyntax.TokenComment {
+			fmt.Printf("Comment: %s %s\n", tok.Bytes, tok.Range.Start.Line)
+			fmt.Printf("NearestBlock: %d \n", findNearestBlock(body, tok.Range.Start))
+		}
+	}
+	fmt.Println("------")
 
 	fmt.Printf("FILE %s\n", filename)
 	printBody(body, 0)
@@ -41,6 +52,22 @@ type item struct {
 	rng  hcl.Range
 	attr *hclsyntax.Attribute
 	blk  *hclsyntax.Block
+}
+
+func findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) int {
+	for _, block := range body.Blocks {
+		start := block.Range().Start
+
+		if pos.Line > start.Line {
+			if block.Range().End.Line > pos.Line {
+				return -1
+			}
+			continue
+		}
+
+		return block.Range().Start.Line
+	}
+	return -1
 }
 
 func printBody(body *hclsyntax.Body, indent int) {

@@ -34,19 +34,18 @@ func (r *AlwaysFlag) Apply(file string, f *hcl.File) []types.Issue {
 		return nil
 	}
 
-	src := ""
+	var issues []types.Issue
 	for _, b := range body.Blocks {
-		src += b.DefRange().String()
+		if r.Match == "" || strings.Contains(strings.Join(b.Labels, ""), r.Match) {
+			issues = append(issues, types.Issue{
+				File:    file,
+				Range:   b.Range(),
+				Message: r.Message,
+				RuleID:  r.RuleID,
+			})
+		}
 	}
-	if r.Match == "" || strings.Contains(src, r.Match) {
-		return []types.Issue{{
-			File:    file,
-			Range:   body.Range(),
-			Message: r.Message,
-			RuleID:  r.RuleID,
-		}}
-	}
-	return nil
+	return issues
 }
 
 func (r *AlwaysFlag) Finish() []types.Issue {

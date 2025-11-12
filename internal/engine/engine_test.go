@@ -11,7 +11,7 @@ import (
 )
 
 func TestEngine_WithStubRule(t *testing.T) {
-	src := testutil.MemSource{Files: map[string]string{"a.tf": `# empty file`}}
+	src := testutil.MemSource{Files: map[string]string{"a.tf": `resource "test" "test" {}`}}
 	e := engine.New(src)
 	e.Register(&testutil.AlwaysFlag{RuleID: "t.id", Message: "m"})
 	issues, err := e.Run(".")
@@ -69,7 +69,7 @@ func TestEngine_WithHclParsingError(t *testing.T) {
 func TestEngine_WithMultipleFilesAndManyStubRules(t *testing.T) {
 	src := testutil.MemSource{Files: map[string]string{
 		"a.tf": `locals {}`,
-		"b.tf": `# empty file`,
+		"b.tf": `resource "test" "test"{}`,
 		"c.tf": `terraform {}`,
 	}}
 	e := engine.New(src)
@@ -101,5 +101,28 @@ func TestEngine_WithRuleThatPublishesIssuesOnFinish(t *testing.T) {
 	}
 	if len(issues) != 1 {
 		t.Fatalf("wanted 1, got %d", len(issues))
+	}
+}
+
+func TestEngine_WithRuleThatShouldBeIgnored(t *testing.T) {
+	src := testutil.MemSource{Files: map[string]string{
+		"a.tf": `# tfcoach-ignore:rule-0
+resource "test" "test" {}`,
+		"b.tf": `# tfcoach-ignore-file:rule-1
+resource "test" "test" {}`,
+	}}
+	e := engine.New(src)
+	var rules []types.Rule
+	for i := range 2 {
+		rules = append(rules, &testutil.AlwaysFlag{RuleID: "rule-" + strconv.Itoa(i), Message: "m"})
+	}
+	e.RegisterMany(rules)
+	issues, err := e.Run(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(issues) != 2 {
+		// a.tf violates rule-1 and b.tf violates rule-0
+		t.Fatalf("wanted 2, got %d", len(issues))
 	}
 }
