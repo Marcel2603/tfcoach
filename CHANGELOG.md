@@ -1,6 +1,13 @@
 # Changelog
 
-## [0.6.0](https://github.com/Marcel2603/tfcoach/compare/v0.5.0..0.6.0) - 2025-10-26
+## [0.7.0](https://github.com/Marcel2603/tfcoach/compare/v0.6.0..0.7.0) - 2025-11-12
+
+### Features
+
+- *(app)* Add config from home directory in loader hierarchy, add flag for custom config location ([#39](https://github.com/marcel2603/tfcoach/issues/39)) - ([5c1509f](https://github.com/Marcel2603/tfcoach/commit/5c1509f5f2b569775ce5760f35bb000044c3ba24))  by @Erkenbend
+- *(rule)* Ignore rules based on comments ([#40](https://github.com/marcel2603/tfcoach/issues/40)) - ([3c2bc9c](https://github.com/Marcel2603/tfcoach/commit/3c2bc9c99141b73d243a4a9398fcc11a4de9becb))  by @Marcel2603
+
+## [0.6.0](https://github.com/Marcel2603/tfcoach/compare/v0.5.0..v0.6.0) - 2025-10-26
 
 ### Features
 
