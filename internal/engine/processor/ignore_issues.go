@@ -6,6 +6,7 @@ import (
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"golang.org/x/sync/syncmap"
 )
 
 const (
@@ -19,18 +20,42 @@ type ruleIgnore struct {
 	path     string
 }
 
+type ruleIgnoreSet struct {
+	m syncmap.Map
+}
+
+func (r *ruleIgnoreSet) add(i ruleIgnore) {
+	r.m.Store(i, struct{}{})
+}
+
+func (r *ruleIgnoreSet) values() []ruleIgnore {
+	var result []ruleIgnore
+	r.m.Range(func(k, _ interface{}) bool {
+		rule, ok := k.(ruleIgnore)
+		if !ok {
+			return false
+		}
+		result = append(result, rule)
+		return true
+	})
+	return result
+}
+
 type IgnoreIssuesProcessor interface {
 	ProcessIssues(issues []types.Issue) []types.Issue
 	ScanFile(bytes []byte, hclFile *hcl.File, path string)
 }
 
 type ignoreIssuesProcessorImpl struct {
-	ignoreFiles []ruleIgnore
-	ignoreRules []ruleIgnore
+	ignoreFiles *ruleIgnoreSet
+	ignoreRules *ruleIgnoreSet
 }
 
 func NewIgnoreIssuesProcessor() IgnoreIssuesProcessor {
-	return &ignoreIssuesProcessorImpl{ignoreFiles: []ruleIgnore{}, ignoreRules: []ruleIgnore{}}
+	return &ignoreIssuesProcessorImpl{
+		ignoreFiles: &ruleIgnoreSet{},
+		ignoreRules: &ruleIgnoreSet{},
+	}
 }
 
 func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, path string) {
@@ -42,31 +67,15 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 			comment = strings.Join(strings.Fields(comment), "")
 			if strings.HasPrefix(comment, ignoreFileWord) {
 				ignoredFileRules := p.processIgnoreFile(comment, path)
-				p.ignoreFiles = p.appendUniqueRuleIgnores(p.ignoreFiles, ignoredFileRules)
+				p.appendUniqueRuleIgnores(p.ignoreFiles, ignoredFileRules)
 			} else {
 				if strings.HasPrefix(comment, ignoreRuleWord) {
 					ignoredRules := p.processIgnoreRule(comment, path, tok.Range, body)
-					p.ignoreRules = p.appendUniqueRuleIgnores(p.ignoreRules, ignoredRules)
+					p.appendUniqueRuleIgnores(p.ignoreRules, ignoredRules)
 				}
 			}
 		}
 	}
-}
-
-func (*ignoreIssuesProcessorImpl) appendUniqueRuleIgnores(base []ruleIgnore, additionallyRuleIgnores []ruleIgnore) []ruleIgnore {
-	set := make(map[ruleIgnore]struct{}, len(base))
-	for _, r := range base {
-		set[r] = struct{}{}
-	}
-
-	for _, r := range additionallyRuleIgnores {
-		if _, exists := set[r]; !exists {
-			set[r] = struct{}{}
-			base = append(base, r)
-		}
-	}
-
-	return base
 }
 
 func (p *ignoreIssuesProcessorImpl) ProcessIssues(issues []types.Issue) []types.Issue {
@@ -83,36 +92,47 @@ func (p *ignoreIssuesProcessorImpl) ProcessIssues(issues []types.Issue) []types.
 	return filteredIssues
 }
 
-func (p *ignoreIssuesProcessorImpl) processIgnoreFile(comment string, path string) []ruleIgnore {
-	commentSplit := strings.SplitN(comment, ":", 2)
-	if len(commentSplit) != 2 {
-		return []ruleIgnore{}
+func (*ignoreIssuesProcessorImpl) appendUniqueRuleIgnores(current *ruleIgnoreSet, additionalRuleIgnores *ruleIgnoreSet) {
+	for _, r := range additionalRuleIgnores.values() {
+		current.add(r)
 	}
-	var ignoredRules []ruleIgnore
-	for id := range strings.SplitSeq(commentSplit[1], ",") {
-		ignoredRules = append(ignoredRules, ruleIgnore{ruleID: id, path: path})
-	}
-	return ignoredRules
 }
 
-func (p *ignoreIssuesProcessorImpl) processIgnoreRule(comment string, path string, hclRange hcl.Range, body *hclsyntax.Body) []ruleIgnore {
+func (p *ignoreIssuesProcessorImpl) processIgnoreFile(comment string, path string) *ruleIgnoreSet {
+	ignoredRules := ruleIgnoreSet{}
+
 	commentSplit := strings.SplitN(comment, ":", 2)
 	if len(commentSplit) != 2 {
-		return []ruleIgnore{}
+		return &ignoredRules
 	}
+
+	for id := range strings.SplitSeq(commentSplit[1], ",") {
+		ignoredRules.add(ruleIgnore{ruleID: id, path: path})
+	}
+	return &ignoredRules
+}
+
+func (p *ignoreIssuesProcessorImpl) processIgnoreRule(comment string, path string, hclRange hcl.Range, body *hclsyntax.Body) *ruleIgnoreSet {
+	ignoredRules := ruleIgnoreSet{}
+
+	commentSplit := strings.SplitN(comment, ":", 2)
+	if len(commentSplit) != 2 {
+		return &ignoredRules
+	}
+
 	nearestRange, found := findNearestBlock(body, hclRange.Start)
 	if !found {
-		return []ruleIgnore{}
+		return &ignoredRules
 	}
-	var ignoredRules []ruleIgnore
+
 	for id := range strings.SplitSeq(commentSplit[1], ",") {
-		ignoredRules = append(ignoredRules, ruleIgnore{ruleID: id, path: path, hclRange: nearestRange})
+		ignoredRules.add(ruleIgnore{ruleID: id, path: path, hclRange: nearestRange})
 	}
-	return ignoredRules
+	return &ignoredRules
 }
 
 func (p *ignoreIssuesProcessorImpl) shouldIgnoreAtFileLevel(issue types.Issue) bool {
-	for _, ignoredRule := range p.ignoreFiles {
+	for _, ignoredRule := range p.ignoreFiles.values() {
 		if ignoredRule.path == issue.File && ignoredRule.ruleID == issue.RuleID {
 			return true
 		}
@@ -121,7 +141,7 @@ func (p *ignoreIssuesProcessorImpl) shouldIgnoreAtFileLevel(issue types.Issue) b
 }
 
 func (p *ignoreIssuesProcessorImpl) shouldIgnoreAtBlockLevel(issue types.Issue) bool {
-	for _, ignoredRule := range p.ignoreRules {
+	for _, ignoredRule := range p.ignoreRules.values() {
 		if ignoredRule.path != issue.File {
 			continue
 		}
