@@ -6,8 +6,8 @@ resource "aws_s3_bucket" "This" {}
 
 
 
-
-data "aws_s3_bucket" "ignored" {}
+# tfcoach-ignore:core.avoid_type_in_name
+data "aws_s3_bucket" "ignored_s3" {}
 
 # tfcoach-ignore: core.required_provider_must_be_declared
 # tfcoach-ignore:core.file_naming

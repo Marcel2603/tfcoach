@@ -20,3 +20,7 @@ resource "azurerm_resource_group" "this" {
   location = "test"
   name = "hello"
 }
+
+resource "aws_s3_bucket" "s3" {
+  bucket = "non-compliant-naming"
+}

@@ -20,6 +20,7 @@ var (
 		RequiredProviderMustBeDeclaredRule(),
 		EnforceVariableDescriptionRule(),
 		AvoidNullProviderRule(),
+		AvoidTypeInNameRule(),
 	}
 	ruleMap = mapRules(rules)
 )
