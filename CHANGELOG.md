@@ -1,6 +1,24 @@
 # Changelog
 
-## [0.7.0](https://github.com/Marcel2603/tfcoach/compare/v0.6.0..0.7.0) - 2025-11-12
+## [0.8.0](https://github.com/Marcel2603/tfcoach/compare/v0.7.0..0.8.0) - 2025-12-21
+
+### Features
+
+- *(rule)* Add 'avoid_type_in_name' rule ([#48](https://github.com/marcel2603/tfcoach/issues/48)) - ([ad697ef](https://github.com/Marcel2603/tfcoach/commit/ad697ef50189c55d97196795a5ec41a9e62f6cf3))  by @Marcel2603
+
+### Bug Fixes
+
+- *(deps)* Update module golang.org/x/sync to v0.19.0 ([#49](https://github.com/marcel2603/tfcoach/issues/49)) - ([72e3f02](https://github.com/Marcel2603/tfcoach/commit/72e3f02bc08a13cb78e61e575518906173fc574d))  by @renovate[bot]
+- *(deps)* Update module github.com/spf13/cobra to v1.10.2 ([#45](https://github.com/marcel2603/tfcoach/issues/45)) - ([c26dbc7](https://github.com/Marcel2603/tfcoach/commit/c26dbc76c8fce4b130bef0e1691592897d109ac2))  by @renovate[bot]
+
+### Dependencies
+
+- *(deps)* Update actions/cache action to v5 ([#47](https://github.com/marcel2603/tfcoach/issues/47)) - ([99011f2](https://github.com/Marcel2603/tfcoach/commit/99011f2fc71aff473cf72c848759d1e7d0fab2b8))  by @renovate[bot]
+- *(deps)* Update davidanson/markdownlint-cli2-action action to v22 ([#46](https://github.com/marcel2603/tfcoach/issues/46)) - ([36fd3f1](https://github.com/Marcel2603/tfcoach/commit/36fd3f19be099c72407f7dd88ea89a7cfdb2111a))  by @renovate[bot]
+- *(deps)* Update actions/checkout action to v6 ([#44](https://github.com/marcel2603/tfcoach/issues/44)) - ([64af937](https://github.com/Marcel2603/tfcoach/commit/64af93719723cfd458e62f63a5716060104a3c55))  by @renovate[bot]
+- *(deps)* Update davidanson/markdownlint-cli2-action action to v21 ([#43](https://github.com/marcel2603/tfcoach/issues/43)) - ([c8b56e2](https://github.com/Marcel2603/tfcoach/commit/c8b56e2af15ff6be3ce96804cc141395755aa41f))  by @renovate[bot]
+
+## [0.7.0](https://github.com/Marcel2603/tfcoach/compare/v0.6.0..v0.7.0) - 2025-11-12
 
 ### Features
 
