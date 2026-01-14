@@ -1,14 +1,20 @@
 # Changelog
 
-## [0.9.1] - 2026-01-14
+## [0.10.0](https://github.com/Marcel2603/tfcoach/compare/v0.9.1..0.10.0) - 2026-01-14
 
-Fix Github Zombie Tags
+### Features
 
-## [0.9.0](https://github.com/Marcel2603/tfcoach/compare/v0.8.0..0.9.0) - 2026-01-14 --> Deleted
+- *(release)* Add homebrew release (second try) - ([b518ea8](https://github.com/Marcel2603/tfcoach/commit/b518ea85b0088ed2ac7ba1bab945bcffbd604fe6))  by @Marcel2603
+
+## [0.9.1](https://github.com/Marcel2603/tfcoach/compare/v0.8.0..v0.9.1) - 2026-01-14
 
 ### Features
 
 - *(release)* Add homebrew release - ([a9d9218](https://github.com/Marcel2603/tfcoach/commit/a9d921812fc6a0464fd829ca220bdaa82e420b98))  by @Marcel2603
+
+### Bug Fixes
+
+- *(release)* Bump version because of zombie tags in github - ([6dcd009](https://github.com/Marcel2603/tfcoach/commit/6dcd009bb04a4888e602b0be132298c5dc4a71fd))  by @Marcel2603
 
 ### Miscellaneous Tasks
 
@@ -181,3 +187,4 @@ Fix Github Zombie Tags
 ## New Contributors ❤️
 
 * @Marcel2603 made their first contribution
+
