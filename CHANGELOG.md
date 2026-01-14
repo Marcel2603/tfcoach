@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.9.0](https://github.com/Marcel2603/tfcoach/compare/v0.8.0..0.9.0) - 2026-01-14
+## [0.9.1] - 2026-01-14
+
+Fix Github Zombie Tags
+
+## [0.9.0](https://github.com/Marcel2603/tfcoach/compare/v0.8.0..0.9.0) - 2026-01-14 --> Deleted
 
 ### Features
 
@@ -177,4 +181,3 @@
 ## New Contributors ❤️
 
 * @Marcel2603 made their first contribution
-

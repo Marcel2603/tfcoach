@@ -132,7 +132,7 @@ go run main.go lint examples
 - [x] Configurable via `.tfcoach.yml` → #15
 - [ ] Baseline support to adopt gradually in large codebases → <https://marcel2603.github.io/tfcoach/rule-ideas/>
 - [ ] Auto-fix for selected rules
-- [ ] Pluggable rule engine (do we need this?)
+- [ ] Third party ruleset support
 - [ ] Additional rule packs (AWS, GCP, Azure)
 
 ---
