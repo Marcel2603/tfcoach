@@ -1,9 +1,3 @@
-# Usage:
-#   make test            # run tests with coverage printed inline
-#   make cover           # write coverage profile to coverage.out
-#   make cover-html      # openable HTML report at coverage.html
-#   make clean           # remove coverage artifacts
-
 PKGS        := $(shell go list ./...)
 COVERMODE   := atomic
 COVERFILE   := coverage.out
