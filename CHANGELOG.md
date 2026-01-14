@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.8.0](https://github.com/Marcel2603/tfcoach/compare/v0.7.0..0.8.0) - 2025-12-21
+## [0.9.0](https://github.com/Marcel2603/tfcoach/compare/v0.8.0..0.9.0) - 2026-01-14
+
+### Features
+
+- *(release)* Add homebrew release - ([a9d9218](https://github.com/Marcel2603/tfcoach/commit/a9d921812fc6a0464fd829ca220bdaa82e420b98))  by @Marcel2603
+
+### Miscellaneous Tasks
+
+- *(release)* Add homebrew as Release - ([3afec10](https://github.com/Marcel2603/tfcoach/commit/3afec100bc6c20f8b8320da8e726c81c369a00d8))  by @Marcel2603
+
+## [0.8.0](https://github.com/Marcel2603/tfcoach/compare/v0.7.0..v0.8.0) - 2025-12-21
 
 ### Features
 
