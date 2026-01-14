@@ -8,6 +8,9 @@ runs:
       with:
         app-id: ${{ env.APP_ID }}
         private-key: ${{ env.PRIVATE_KEY }}
+        repositories: |
+          tfcoach
+          homebrew-tap
 
     - name: Checkout
       uses: actions/checkout@v6
