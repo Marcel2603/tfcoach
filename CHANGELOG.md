@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/Marcel2603/tfcoach/compare/v0.9.1..0.10.0) - 2026-01-14
+
+### Features
+
+- *(release)* Add homebrew release (second try) - ([4bec280](https://github.com/Marcel2603/tfcoach/commit/4bec28021a62904b9dd2d76900b707f291499562))  by @Marcel2603
+- *(release)* Add homebrew release (second try) - ([b518ea8](https://github.com/Marcel2603/tfcoach/commit/b518ea85b0088ed2ac7ba1bab945bcffbd604fe6))  by @Marcel2603
+
 ## [0.9.1](https://github.com/Marcel2603/tfcoach/compare/v0.8.0..v0.9.1) - 2026-01-14
 
 ### Features
@@ -181,3 +188,4 @@
 ## New Contributors ❤️
 
 * @Marcel2603 made their first contribution
+
