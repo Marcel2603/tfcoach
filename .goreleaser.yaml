@@ -30,10 +30,19 @@ builds:
       - -s -w -X github.com/Marcel2603/tfcoach/cmd.BuildCommit={{.Commit}}
 
 archives:
-  - formats: [binary]
+  - id: homebrew-tar
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+
+  - id: binary-release
+    formats: [binary]
     name_template: "{{.ProjectName}}_{{ .Os }}_{{ .Arch }}"
     builds_info:
       mode: 0755
+
 dockers_v2:
   - images:
       - ghcr.io/marcel2603/tfcoach/tfcoach
@@ -53,3 +62,20 @@ changelog:
 
 release:
   mode: keep-existing
+
+homebrew_casks:
+  - ids:
+      - homebrew-tar
+
+    repository:
+      owner: Marcel2603
+      name: homebrew-tap
+
+    directory: Casks
+
+    homepage: "https://marcel2603.github.io/tfcoach"
+    description: "Tiny Terraform coach"
+    license: "Apache-2.0"
+
+    binaries:
+      - tfcoach
