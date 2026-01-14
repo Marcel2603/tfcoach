@@ -31,6 +31,13 @@ welcome!
 
 ## Installation
 
+### Homebrew
+
+```shell
+brew tap Marcel2603/tap
+brew install tfcoach
+```
+
 ### From release
 
 Download the latest binary from the [Releases](https://github.com/Marcel2603/tfcoach/releases) page and place it in your
