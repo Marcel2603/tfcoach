@@ -32,7 +32,8 @@ var invalidDefaultConfigsYAML = []string{
 	`rules: {}
 output:
   format: abcd
-  color: false`,
+  color: false
+  include_terragrunt_cache: false`,
 	// incomplete config,
 	`rules: {}`,
 }
@@ -43,6 +44,7 @@ output:
   format: educational
   color: true
   emojis: true
+  include_terragrunt_cache: false
 `)
 }
 
@@ -106,8 +108,13 @@ output:
 	contentHomeJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false}}`)
 
 	want := config{
-		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: false}},
-		Output: OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+		Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: false}},
+		Output: OutputConfiguration{
+			Format:                 "compact",
+			Color:                  NullableBool{HasValue: true, IsTrue: false},
+			Emojis:                 NullableBool{HasValue: true, IsTrue: true},
+			IncludeTerragruntCache: NullableBool{HasValue: true, IsTrue: false},
+		},
 	}
 
 	tests := []struct {
@@ -185,12 +192,18 @@ output:
   format: compact
   color: false
   emojis: false
+  include_terragrunt_cache: true
 `)
-	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false, "emojis": false}}`)
+	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false, "emojis": false, "include_terragrunt_cache": true}}`)
 
 	want := config{
-		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: false}},
-		Output: OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: false}},
+		Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: false}},
+		Output: OutputConfiguration{
+			Format:                 "compact",
+			Color:                  NullableBool{HasValue: true, IsTrue: false},
+			Emojis:                 NullableBool{HasValue: true, IsTrue: false},
+			IncludeTerragruntCache: NullableBool{HasValue: true, IsTrue: true},
+		},
 	}
 
 	tests := []struct {
@@ -239,8 +252,9 @@ output:
   format: compact
   color: false
   emojis: false
+  include_terragrunt_cache: true
 `)
-	contentHomeJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false, "emojis": false}}`)
+	contentHomeJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "color": false, "emojis": false, "include_terragrunt_cache": true}}`)
 
 	contentCustomYAML := []byte(`rules:
   RULE_2:
@@ -248,12 +262,18 @@ output:
 output:
   format: pretty
   emojis: true
+  include_terragrunt_cache: false
 `)
-	contentCustomJSON := []byte(`{"rules": {"RULE_2": {"enabled": false}}, "output": {"format": "pretty", "emojis": true}}`)
+	contentCustomJSON := []byte(`{"rules": {"RULE_2": {"enabled": false}}, "output": {"format": "pretty", "emojis": true, "include_terragrunt_cache": false}}`)
 
 	want := config{
-		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: false}, "RULE_2": {Enabled: false}},
-		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+		Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: false}, "RULE_2": {Enabled: false}},
+		Output: OutputConfiguration{
+			Format:                 "pretty",
+			Color:                  NullableBool{HasValue: true, IsTrue: false},
+			Emojis:                 NullableBool{HasValue: true, IsTrue: true},
+			IncludeTerragruntCache: NullableBool{HasValue: true, IsTrue: false},
+		},
 	}
 
 	tests := []struct {
@@ -311,8 +331,9 @@ func TestLoadConfig_OverriddenByFileInNonStandardLocation(t *testing.T) {
 output:
   format: compact
   emojis: false
+  include_terragrunt_cache: true
 `)
-	contentIgnoredJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "emojis": false}}`)
+	contentIgnoredJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "compact", "emojis": false, "ignore_terragrunt_cache": true}}`)
 
 	contentCustomYAML := []byte(`rules:
   RULE_2:
@@ -324,8 +345,13 @@ output:
 	contentCustomJSON := []byte(`{"rules": {"RULE_2": {"enabled": false}}, "output": {"format": "pretty", "color": false}}`)
 
 	want := config{
-		Rules:  map[string]RuleConfiguration{"RULE_2": {Enabled: false}},
-		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+		Rules: map[string]RuleConfiguration{"RULE_2": {Enabled: false}},
+		Output: OutputConfiguration{
+			Format:                 "pretty",
+			Color:                  NullableBool{HasValue: true, IsTrue: false},
+			Emojis:                 NullableBool{HasValue: true, IsTrue: true},
+			IncludeTerragruntCache: NullableBool{HasValue: true, IsTrue: false},
+		},
 	}
 
 	tests := []struct {
@@ -387,8 +413,13 @@ output:
 	contentJSON := []byte(`{"rules": {"RULE_1": {"enabled": false}}, "output": {"format": "pretty", "color": false}}`)
 
 	want := config{
-		Rules:  map[string]RuleConfiguration{"RULE_1": {Enabled: false}},
-		Output: OutputConfiguration{Format: "pretty", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+		Rules: map[string]RuleConfiguration{"RULE_1": {Enabled: false}},
+		Output: OutputConfiguration{
+			Format:                 "pretty",
+			Color:                  NullableBool{HasValue: true, IsTrue: false},
+			Emojis:                 NullableBool{HasValue: true, IsTrue: true},
+			IncludeTerragruntCache: NullableBool{HasValue: true, IsTrue: false},
+		},
 	}
 
 	tests := []struct {
@@ -476,8 +507,13 @@ func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
 	contentJSON := []byte(`{"rules": {4}}`)
 
 	want := config{
-		Rules:  make(map[string]RuleConfiguration),
-		Output: OutputConfiguration{Format: "educational", Color: NullableBool{HasValue: true, IsTrue: true}, Emojis: NullableBool{HasValue: true, IsTrue: true}},
+		Rules: make(map[string]RuleConfiguration),
+		Output: OutputConfiguration{
+			Format:                 "educational",
+			Color:                  NullableBool{HasValue: true, IsTrue: true},
+			Emojis:                 NullableBool{HasValue: true, IsTrue: true},
+			IncludeTerragruntCache: NullableBool{HasValue: true, IsTrue: false},
+		},
 	}
 
 	tests := []struct {
@@ -520,7 +556,7 @@ func TestLoadConfig_InvalidCustomFileIsIgnored(t *testing.T) {
 }
 
 func TestGetConfigByRuleId(t *testing.T) {
-	content := []byte(`{"rules": {"RULE_1": {"enabled": false, "spec": {"foo":"bar"}}}, "output": {"format": "compact", "color": false, "emojis": true}}`)
+	content := []byte(`{"rules": {"RULE_1": {"enabled": false, "spec": {"foo":"bar"}}}, "output": {"format": "compact", "color": false, "emojis": true, "ignore_terragrunt_cache": true}}`)
 
 	tests := []struct {
 		ruleID   string
@@ -561,10 +597,16 @@ func TestGetOutputConfiguration(t *testing.T) {
   format: compact
   color: false
   emojis: true
+  include_terragrunt_cache: false
 `)
-	configCompactFalseJSON := []byte(`{"output": {"format": "compact", "color": false, "emojis": true}}`)
+	configCompactFalseJSON := []byte(`{"output": {"format": "compact", "color": false, "emojis": true, "include_terragrunt_cache": false}}`)
 
-	want := OutputConfiguration{Format: "compact", Color: NullableBool{HasValue: true, IsTrue: false}, Emojis: NullableBool{HasValue: true, IsTrue: true}}
+	want := OutputConfiguration{
+		Format:                 "compact",
+		Color:                  NullableBool{HasValue: true, IsTrue: false},
+		Emojis:                 NullableBool{HasValue: true, IsTrue: true},
+		IncludeTerragruntCache: NullableBool{HasValue: true, IsTrue: false},
+	}
 
 	tests := []struct {
 		fileName string

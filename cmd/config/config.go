@@ -30,9 +30,10 @@ type RuleConfiguration struct {
 }
 
 type OutputConfiguration struct {
-	Format string       `json:"format" yaml:"format"`
-	Color  NullableBool `json:"color" yaml:"color"`
-	Emojis NullableBool `json:"emojis" yaml:"emojis"`
+	Format                 string       `json:"format" yaml:"format"`
+	Color                  NullableBool `json:"color" yaml:"color"`
+	Emojis                 NullableBool `json:"emojis" yaml:"emojis"`
+	IncludeTerragruntCache NullableBool `json:"include_terragrunt_cache" yaml:"include_terragrunt_cache"`
 }
 
 func (c *config) Validate() error {
@@ -114,5 +115,12 @@ func OverrideEmojis(allowEmojis bool) {
 	configuration.Output.Emojis = NullableBool{
 		HasValue: true,
 		IsTrue:   allowEmojis,
+	}
+}
+
+func OverrideIncludeTgCache(includeTgCache bool) {
+	configuration.Output.IncludeTerragruntCache = NullableBool{
+		HasValue: true,
+		IsTrue:   includeTgCache,
 	}
 }

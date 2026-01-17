@@ -26,7 +26,7 @@ func collectCommands(cmd *cobra.Command) []*cobra.Command {
 
 func GenerateUsage(filename string) {
 	var buf bytes.Buffer
-	buf.WriteString("# Usage \n")
+	buf.WriteString("# Usage\n")
 
 	cmds := collectCommands(cmd.GetRootCommand())
 	slices.SortStableFunc(cmds, func(a, b *cobra.Command) int {
@@ -34,6 +34,7 @@ func GenerateUsage(filename string) {
 	})
 
 	for _, command := range cmds {
+		buf.WriteString("\n")
 		var section bytes.Buffer
 
 		err := doc.GenMarkdownCustom(
@@ -53,7 +54,6 @@ func GenerateUsage(filename string) {
 		out := cleanMarkdown(commandString)
 
 		buf.WriteString(out)
-		buf.WriteString("\n")
 	}
 
 	if err := os.WriteFile(filename, buf.Bytes(), 0644); err != nil {

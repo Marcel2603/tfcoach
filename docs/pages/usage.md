@@ -1,4 +1,5 @@
-# Usage 
+# Usage
+
 ## tfcoach
 
 Tiny Terraform coach
@@ -32,11 +33,12 @@ tfcoach lint [path] [flags]
 ### Options
 
 ```
-  -c, --config string   Custom config file path (default current directory)
-  -f, --format string   Output format. Supported: json|compact|pretty|educational (default "educational")
-  -h, --help            help for lint
-      --no-color        Disable color output
-      --no-emojis       Prevent emojis in output
+  -c, --config string              Custom config file path (default current directory)
+  -f, --format string              Output format. Supported: json|compact|pretty|educational (default "educational")
+  -h, --help                       help for lint
+      --include-terragrunt-cache   Include Terragrunt cache in scanned files
+      --no-color                   Disable color output
+      --no-emojis                  Prevent emojis in output
 ```
 
 
@@ -70,4 +72,3 @@ tfcoach version [flags]
 | Code | Meaning|
 |------|--------|
 | 0 | OK |
-
