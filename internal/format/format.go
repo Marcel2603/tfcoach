@@ -1,6 +1,7 @@
 package format
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -28,24 +29,42 @@ type issueOutput struct {
 	DocsURL  string         `json:"docs_url"`
 }
 
+type jsonOutput struct {
+	IssueCount int           `json:"issue_count"`
+	Issues     []issueOutput `json:"issues"`
+}
+
 func WriteResults(issues []types.Issue, w io.Writer, outputFormat string, allowEmojis bool) error {
 	preparedIssues := toIssueOutputs(issues)
+	return writeResultsFromPrepared(preparedIssues, w, outputFormat, allowEmojis)
+}
+
+func ReformatResults(srcReport []byte, w io.Writer, outputFormat string, allowEmojis bool) error {
+	var report jsonOutput
+	err := json.Unmarshal(srcReport, &report)
+	if err != nil {
+		return err
+	}
+	return writeResultsFromPrepared(report.Issues, w, outputFormat, allowEmojis)
+}
+
+func writeResultsFromPrepared(issues []issueOutput, w io.Writer, outputFormat string, allowEmojis bool) error {
 	switch outputFormat {
 	case "compact":
-		writeTextIssuesCompact(preparedIssues, w)
-		writeTextSummaryCompact(preparedIssues, w)
+		writeTextIssuesCompact(issues, w)
+		writeTextSummaryCompact(issues, w)
 	case "json":
-		err := writeJSON(preparedIssues, w)
+		err := writeJSON(issues, w)
 		if err != nil {
 			return err
 		}
 	case "pretty":
-		err := writePretty(preparedIssues, allowEmojis, w)
+		err := writePretty(issues, allowEmojis, w)
 		if err != nil {
 			return err
 		}
 	case "educational":
-		err := writeEducational(preparedIssues, allowEmojis, w)
+		err := writeEducational(issues, allowEmojis, w)
 		if err != nil {
 			return err
 		}

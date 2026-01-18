@@ -90,7 +90,10 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 	  "column": 1,
 	  "message": "Block \"a\" should be inside of \"b.tf\"",
 	  "rule_id": "core.file_naming",
-	  "severity": "LOW",
+	  "severity": {
+	    "str": "LOW",
+        "priority": 3
+      },
 	  "category": "",
 	  "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/file_naming"
 	}
@@ -130,7 +133,10 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 	  "column": 7,
 	  "message": "m1",
 	  "rule_id": "core.something_something",
-	  "severity": "UNKNOWN",
+      "severity": {
+	    "str": "UNKNOWN",
+        "priority": 99
+      },
 	  "category": "",
 	  "docs_url": "about:blank"
 	},
@@ -140,7 +146,10 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 	  "column": 2,
 	  "message": "m2",
 	  "rule_id": "core.naming_convention",
-	  "severity": "HIGH",
+	  "severity": {
+	    "str": "HIGH",
+        "priority": 1
+      },
 	  "category": "",
 	  "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/naming_convention"
 	}

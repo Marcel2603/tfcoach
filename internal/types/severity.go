@@ -3,14 +3,13 @@ package types
 
 import (
 	"cmp"
-	"encoding/json"
 
 	"github.com/fatih/color"
 )
 
 type Severity struct {
-	Str      string
-	Priority int
+	Str      string `json:"str"`
+	Priority int    `json:"priority"`
 }
 
 func (s Severity) Cmp(other Severity) int {
@@ -32,8 +31,4 @@ func (s Severity) Color() color.Attribute {
 	default:
 		return color.Reset
 	}
-}
-
-func (s Severity) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.Str)
 }
