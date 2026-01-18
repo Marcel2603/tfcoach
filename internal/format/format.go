@@ -29,22 +29,23 @@ type issueOutput struct {
 }
 
 func WriteResults(issues []types.Issue, w io.Writer, outputFormat string, allowEmojis bool) error {
+	preparedIssues := toIssueOutputs(issues)
 	switch outputFormat {
 	case "compact":
-		writeTextIssuesCompact(issues, w)
-		writeTextSummaryCompact(issues, w)
+		writeTextIssuesCompact(preparedIssues, w)
+		writeTextSummaryCompact(preparedIssues, w)
 	case "json":
-		err := writeJSON(issues, w)
+		err := writeJSON(preparedIssues, w)
 		if err != nil {
 			return err
 		}
 	case "pretty":
-		err := writePretty(issues, allowEmojis, w)
+		err := writePretty(preparedIssues, allowEmojis, w)
 		if err != nil {
 			return err
 		}
 	case "educational":
-		err := writeEducational(issues, allowEmojis, w)
+		err := writeEducational(preparedIssues, allowEmojis, w)
 		if err != nil {
 			return err
 		}
