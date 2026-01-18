@@ -15,10 +15,11 @@ import (
 )
 
 var (
-	formatFlag     string
-	noColorFlag    bool
-	noEmojisFlag   bool
-	configPathFlag string
+	formatFlag         string
+	noColorFlag        bool
+	noEmojisFlag       bool
+	includeTgCacheFlag bool
+	configPathFlag     string
 
 	defaultOutputConfig config.OutputConfiguration
 	finalOutputConfig   config.OutputConfiguration
@@ -43,6 +44,9 @@ var lintCmd = &cobra.Command{
 		if cmd.Flags().Changed("no-emojis") {
 			config.OverrideEmojis(!noEmojisFlag)
 		}
+		if cmd.Flags().Changed("include-terragrunt-cache") {
+			config.OverrideIncludeTgCache(includeTgCacheFlag)
+		}
 
 		finalOutputConfig = config.GetOutputConfiguration()
 		color.NoColor = !finalOutputConfig.Color.IsTrue
@@ -58,7 +62,12 @@ var lintCmd = &cobra.Command{
 			target = args[0]
 		}
 
-		src := engine.FileSystem{SkipDirs: []string{".git", ".terraform"}}
+		skipDirs := []string{".git", ".terraform"}
+		if !finalOutputConfig.IncludeTerragruntCache.IsTrue {
+			skipDirs = append(skipDirs, ".terragrunt-cache")
+		}
+
+		src := engine.FileSystem{SkipDirs: skipDirs}
 		code := runner.Lint(target, src, core.EnabledRules(), cmd.OutOrStdout(), finalOutputConfig.Format, finalOutputConfig.Emojis.IsTrue)
 		os.Exit(code)
 		return nil
@@ -79,6 +88,7 @@ func init() {
 
 	lintCmd.Flags().BoolVar(&noColorFlag, "no-color", !defaultOutputConfig.Color.IsTrue, "Disable color output")
 	lintCmd.Flags().BoolVar(&noEmojisFlag, "no-emojis", !defaultOutputConfig.Emojis.IsTrue, "Prevent emojis in output")
+	lintCmd.Flags().BoolVar(&includeTgCacheFlag, "include-terragrunt-cache", defaultOutputConfig.IncludeTerragruntCache.IsTrue, "Include Terragrunt cache in scanned files")
 
 	lintCmd.Flags().StringVarP(&configPathFlag, "config", "c", "", "Custom config file path (default current directory)")
 
