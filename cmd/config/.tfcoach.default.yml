@@ -3,3 +3,4 @@ output:
   format: educational
   color: true
   emojis: true
+  include_terragrunt_cache: false

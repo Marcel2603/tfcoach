@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.10.0](https://github.com/Marcel2603/tfcoach/compare/v0.9.1..0.10.0) - 2026-01-14
+## [0.11.0](https://github.com/Marcel2603/tfcoach/compare/v0.10.0..0.11.0) - 2026-01-18
+
+### Features
+
+- *(app)* Ignore Terragrunt cache by default ([#58](https://github.com/marcel2603/tfcoach/issues/58)) - ([01c2f90](https://github.com/Marcel2603/tfcoach/commit/01c2f902bb5a701aebb9df01f88a2ec6ab5725e6))  by @Erkenbend
+
+### Documentation
+
+- *(installation)* Describe installation via homebrew - ([8cd86d0](https://github.com/Marcel2603/tfcoach/commit/8cd86d0c9a1f720405f67a5374a4a80206db6b62))  by @Marcel2603
+
+## [0.10.0](https://github.com/Marcel2603/tfcoach/compare/v0.9.1..v0.10.0) - 2026-01-14
 
 ### Features
 
