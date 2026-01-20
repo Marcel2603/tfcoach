@@ -9,7 +9,13 @@ import (
 )
 
 func Print(srcReportPath string, w io.Writer, outputFormat string, allowEmojis bool) int {
-	reportContent, err := os.ReadFile(srcReportPath)
+	var reportContent []byte
+	var err error
+	if srcReportPath == "-" {
+		reportContent, err = io.ReadAll(os.Stdin)
+	} else {
+		reportContent, err = os.ReadFile(srcReportPath)
+	}
 	if err != nil {
 		_, _ = fmt.Fprintf(w, "failed to read %q: %v", srcReportPath, err)
 		return 1
