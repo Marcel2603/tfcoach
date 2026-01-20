@@ -81,7 +81,6 @@ tfcoach lint .
 ### Example output
 
 <!-- markdownlint-disable MD013 -->
-
 ```shell
 Summary: 2 rules broken (3 issues total)
 
