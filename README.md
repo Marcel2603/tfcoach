@@ -81,9 +81,31 @@ tfcoach lint .
 ### Example output
 
 <!-- markdownlint-disable MD013 -->
+
 ```shell
-H main.tf:7:1: Block "test-123" violates naming convention, it should only contain lowercase alphanumericcharacters and underscores. [core.naming_convention]
-M data.tf:1:1: Use locals instead of null_data_source [core.avoid_null_provider]
+Summary: 2 rules broken (3 issues total)
+
+─── Naming Convention (Severity HIGH) ─────────────────────────────
+
+💡  Terraform names should only contain lowercase alphanumeric characters and underscores.
+
+🆔  [core.naming_convention]
+📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+⚠️  Broken at:
+🔹 examples/non_compliant/main.tf:5:1 ➡️  Block "tEst" violates naming convention, it should only contain lowercase alphanumeric characters and underscores.
+🔹 examples/non_compliant/main.tf:7:1 ➡️  Block "is-not-compliant" violates naming convention, it should only contain lowercase alphanumeric characters and underscores.
+
+
+─── Avoid using hashicorp/null provider (Severity MEDIUM) ─────────
+
+💡  With newer Terraform version, use locals and terraform_data as native replacement for hashicorp/null
+
+🆔  [core.avoid_null_provider]
+📑  https://marcel2603.github.io/tfcoach/rules/core/avoid_null_provider
+
+⚠️  Broken at:
+🔹 examples/non_compliant/data.tf:1:1 ➡️  Use locals instead of null_data_source
 ```
 
 Alternative output formats (e.g. CI-friendly JSON) available with the `--format` flags (see `tfcoach lint --help`
@@ -94,6 +116,17 @@ Exit codes:
 - `0`: no issues found
 - `1`: issues found
 - `2`: error running the linter
+
+### Convert a JSON-report into a human-friendly format
+
+To avoid re-running the analysis in your CI-pipeline, run `tfcoach lint` with `--format json` and perform
+the analysis needed, then reformat it into any human-friendly format with `tfcoach print`:
+
+```shell
+tfcoach lint . --format json > report.json  # run with machine-friendly output
+cat report.json | jq '.issue_count'  # do something with report
+tfcoach print report.json --format pretty  # output result in human friendly output
+```
 
 ### Configuration
 
