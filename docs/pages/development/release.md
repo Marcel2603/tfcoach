@@ -49,7 +49,7 @@ sequenceDiagram
 
 We release multiple artifacts:
 
-| Type             | Arc                                      | Link                                                                   |
-|------------------|------------------------------------------|------------------------------------------------------------------------|
+| Type             | Arc                                      | Link                                                                     |
+|------------------|------------------------------------------|--------------------------------------------------------------------------|
 | Docker Container | arm64 and amd64 for linux                | <https://github.com/Marcel2603/tfcoach/pkgs/container/tfcoach%2Ftfcoach> |
 | Executable       | arm64 and amd64 for linux/darwin/windows | <https://github.com/Marcel2603/tfcoach/releases>                         |
