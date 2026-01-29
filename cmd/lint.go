@@ -19,7 +19,7 @@ var lintCmd = &cobra.Command{
 	Short: "Lint Terraform files",
 	Args:  cobra.ArbitraryArgs,
 	PreRunE: func(cmd *cobra.Command, _ []string) error {
-		err := parseStandardFlags(cmd)
+		err := config.ParseStandardFlags(cmd)
 		if err != nil {
 			return err
 		}
@@ -36,6 +36,8 @@ var lintCmd = &cobra.Command{
 			target = args[0]
 		}
 
+		finalOutputConfig := config.GetOutputConfiguration()
+
 		skipDirs := []string{".git", ".terraform"}
 		if !finalOutputConfig.IncludeTerragruntCache.IsTrue {
 			skipDirs = append(skipDirs, ".terragrunt-cache")
@@ -50,13 +52,12 @@ var lintCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(lintCmd)
-
-	addStandardFlags(lintCmd)
+	config.AddStandardFlags(lintCmd)
 
 	lintCmd.Flags().BoolVar(
 		&includeTgCacheFlag,
 		"include-terragrunt-cache",
-		defaultOutputConfig.IncludeTerragruntCache.IsTrue,
+		config.GetOutputConfiguration().IncludeTerragruntCache.IsTrue,
 		"Include Terragrunt cache in scanned files",
 	)
 
