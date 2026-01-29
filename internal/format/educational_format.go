@@ -11,7 +11,7 @@ import (
 	"github.com/fatih/color"
 )
 
-func writeEducational(issues []types.Issue, allowEmojis bool, w io.Writer) error {
+func writeEducational(issues []issueOutput, allowEmojis bool, w io.Writer) error {
 	issuesGroupedByRuleID := groupByRuleID(issues)
 
 	_, err := fmt.Fprintf(
@@ -39,7 +39,7 @@ func writeEducational(issues []types.Issue, allowEmojis bool, w io.Writer) error
 		ruleID := rule.ID()
 		ruleMeta := rule.META()
 		issuesForRule := issuesGroupedByRuleID[ruleID]
-		slices.SortStableFunc(issuesForRule, func(a, b types.Issue) int {
+		slices.SortStableFunc(issuesForRule, func(a, b issueOutput) int {
 			return strings.Compare(a.File, b.File)
 		})
 
@@ -75,8 +75,8 @@ func writeEducational(issues []types.Issue, allowEmojis bool, w io.Writer) error
 				"%s%s:%d:%d%s%s\n",
 				symbols.ruleMessagePrefix,
 				issue.File,
-				issue.Range.Start.Line,
-				issue.Range.Start.Column,
+				issue.Line,
+				issue.Column,
 				symbols.ruleMessageInfix,
 				issue.Message,
 			)
@@ -92,7 +92,7 @@ func writeEducational(issues []types.Issue, allowEmojis bool, w io.Writer) error
 	return nil
 }
 
-func extractRulesSortedBySeverity(issuesGroupedByRuleID map[string][]types.Issue, err error) []types.Rule {
+func extractRulesSortedBySeverity(issuesGroupedByRuleID map[string][]issueOutput, err error) []types.Rule {
 	var rules []types.Rule
 	for ruleID := range issuesGroupedByRuleID {
 		var rule types.Rule
@@ -114,8 +114,8 @@ func extractRulesSortedBySeverity(issuesGroupedByRuleID map[string][]types.Issue
 	return rules
 }
 
-func groupByRuleID(issues []types.Issue) map[string][]types.Issue {
-	issuesGroupedByRuleID := make(map[string][]types.Issue)
+func groupByRuleID(issues []issueOutput) map[string][]issueOutput {
+	issuesGroupedByRuleID := make(map[string][]issueOutput)
 	for _, issue := range issues {
 		issuesGroupedByRuleID[issue.RuleID] = append(issuesGroupedByRuleID[issue.RuleID], issue)
 	}

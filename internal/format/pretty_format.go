@@ -7,15 +7,13 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/fatih/color"
 )
 
-func writePretty(issues []types.Issue, allowEmojis bool, w io.Writer) error {
-	preparedIssues := toIssueOutputs(issues)
+func writePretty(issues []issueOutput, allowEmojis bool, w io.Writer) error {
 	issuesGroupedByFile := make(map[string][]issueOutput)
 	longestFilePath := 10 // for padding
-	for _, issue := range preparedIssues {
+	for _, issue := range issues {
 		issuesGroupedByFile[issue.File] = append(issuesGroupedByFile[issue.File], issue)
 		longestFilePath = max(longestFilePath, len(issue.File))
 	}

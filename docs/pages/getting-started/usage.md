@@ -51,6 +51,34 @@ tfcoach lint [path] [flags]
 | 1 | Issues found |
 | 2 | Runtime error |
 
+## tfcoach print
+
+Print tfcoach JSON report in another format
+
+```
+tfcoach print [path] [flags]
+```
+
+### Options
+
+```
+  -c, --config string   Custom config file path (default current directory)
+  -f, --format string   Output format. Supported: json|compact|pretty|educational (default "educational")
+  -h, --help            help for print
+      --no-color        Disable color output
+      --no-emojis       Prevent emojis in output
+```
+
+
+
+### Exit Codes
+
+| Code | Meaning|
+|------|--------|
+| 0 | No issues found |
+| 1 | Read error |
+| 2 | Conversion error |
+
 ## tfcoach version
 
 Print the version number
