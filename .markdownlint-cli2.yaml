@@ -1,6 +1,6 @@
 ignores:
   - docs/pages/rules/index.md
-  - docs/pages/usage.md
+  - docs/pages/getting-started/usage.md
   - CHANGELOG.md
 config:
   MD013:

@@ -1,5 +1,6 @@
 mkdocs
 mkdocs-material
+mkdocs-material-extensions
 mkdocs-git-revision-date-localized-plugin
 mkdocs-autolinks-plugin
 mkdocs-awesome-pages-plugin
