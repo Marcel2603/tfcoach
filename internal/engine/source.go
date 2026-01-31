@@ -18,6 +18,14 @@ type FileSystem struct {
 }
 
 func (f FileSystem) List(root string) ([]string, error) {
+	// TODO #42: use content of .tfcoachignore to parse which files should be ignored when reporting issues and
+	//   add this to the return value
+
+	// TODO idea: maybe allow 2 ignore lists: completely skip (which for now is statically defined in config.go
+	//   + optionally TG cache) and ignore in issue reporting only
+
+	// TODO later: switch .terragrunt-cache from "completely skipped" to "ignored in issue reporting"?
+
 	skip := map[string]struct{}{}
 	for _, d := range f.SkipDirs {
 		skip[d] = struct{}{}
