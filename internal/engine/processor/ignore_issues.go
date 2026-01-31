@@ -2,18 +2,17 @@ package processor
 
 import (
 	"strings"
-	"sync"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
+	"github.com/Marcel2603/tfcoach/internal/utils"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"golang.org/x/sync/syncmap"
 )
 
 const (
-	ignoreFileWord            = "#tfcoach-ignore-file"
-	ignoreRuleWord            = "#tfcoach-ignore"
-	filteredIssuesChanBufSize = 5
+	ignoreFileWord = "#tfcoach-ignore-file"
+	ignoreRuleWord = "#tfcoach-ignore"
 )
 
 type ruleIgnore struct {
@@ -79,30 +78,13 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 }
 
 func (p *ignoreIssuesProcessorImpl) ProcessIssues(issues []types.Issue) []types.Issue {
-	var wg sync.WaitGroup
-	filteredIssuesChan := make(chan types.Issue, filteredIssuesChanBufSize)
-	issueDoneChan := make(chan struct{})
-
-	for _, issue := range issues {
-		wg.Go(func() {
-			if !p.shouldIgnore(issue) {
-				filteredIssuesChan <- issue
-			}
-			issueDoneChan <- struct{}{}
-		})
+	processIssue := func(issue types.Issue, outChan chan<- types.Issue) {
+		if !p.shouldIgnore(issue) {
+			outChan <- issue
+		}
 	}
 
-	wg.Go(func() {
-		closeAfterSignalCount(len(issues), issueDoneChan)
-		close(filteredIssuesChan)
-	})
-
-	var filteredIssues []types.Issue
-	for issue := range filteredIssuesChan {
-		filteredIssues = append(filteredIssues, issue)
-	}
-
-	return filteredIssues
+	return utils.ProcessInParallel(issues, processIssue)
 }
 
 func (*ignoreIssuesProcessorImpl) appendUniqueRuleIgnores(current *ruleIgnoreSet, additionalRuleIgnores *ruleIgnoreSet) {
@@ -183,23 +165,4 @@ func findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) (hcl.Range, bool) {
 		return block.Range(), true
 	}
 	return nearestRange, false
-}
-
-func closeAfterSignalCount(target int, signalChannel chan struct{}) {
-	defer close(signalChannel)
-
-	if target == 0 {
-		return
-	}
-
-	signalCount := 0
-	for {
-		select {
-		case <-signalChannel:
-			signalCount++
-			if signalCount >= target {
-				return
-			}
-		}
-	}
 }
