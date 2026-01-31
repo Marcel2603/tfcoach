@@ -2,6 +2,7 @@ package processor
 
 import (
 	"strings"
+	"sync"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
@@ -10,8 +11,9 @@ import (
 )
 
 const (
-	ignoreFileWord = "#tfcoach-ignore-file"
-	ignoreRuleWord = "#tfcoach-ignore"
+	ignoreFileWord            = "#tfcoach-ignore-file"
+	ignoreRuleWord            = "#tfcoach-ignore"
+	filteredIssuesChanBufSize = 5
 )
 
 type ruleIgnore struct {
@@ -77,13 +79,29 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 }
 
 func (p *ignoreIssuesProcessorImpl) ProcessIssues(issues []types.Issue) []types.Issue {
-	filteredIssues := issues[:0]
+	var wg sync.WaitGroup
+	filteredIssuesChan := make(chan types.Issue, filteredIssuesChanBufSize)
+	issueDoneChan := make(chan struct{})
+
 	for _, issue := range issues {
-		if p.shouldIgnore(issue) {
-			continue
-		}
+		wg.Go(func() {
+			if !p.shouldIgnore(issue) {
+				filteredIssuesChan <- issue
+			}
+			issueDoneChan <- struct{}{}
+		})
+	}
+
+	wg.Go(func() {
+		closeAfterSignalCount(len(issues), issueDoneChan)
+		close(filteredIssuesChan)
+	})
+
+	var filteredIssues []types.Issue
+	for issue := range filteredIssuesChan {
 		filteredIssues = append(filteredIssues, issue)
 	}
+
 	return filteredIssues
 }
 
@@ -165,4 +183,23 @@ func findNearestBlock(body *hclsyntax.Body, pos hcl.Pos) (hcl.Range, bool) {
 		return block.Range(), true
 	}
 	return nearestRange, false
+}
+
+func closeAfterSignalCount(target int, signalChannel chan struct{}) {
+	defer close(signalChannel)
+
+	if target == 0 {
+		return
+	}
+
+	signalCount := 0
+	for {
+		select {
+		case <-signalChannel:
+			signalCount++
+			if signalCount >= target {
+				return
+			}
+		}
+	}
 }
