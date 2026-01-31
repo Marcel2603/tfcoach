@@ -42,6 +42,8 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	issuesChan := make(chan types.Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
 	ruleFinishDoneChan := make(chan struct{})
+
+	// TODO #42: pass .tfcoachignore infos to processor
 	ignoreIssuesProcessor := processor.NewIgnoreIssuesProcessor()
 	var wg sync.WaitGroup
 

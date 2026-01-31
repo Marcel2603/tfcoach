@@ -127,6 +127,8 @@ func (p *ignoreIssuesProcessorImpl) processIgnoreRule(comment string, path strin
 }
 
 func (p *ignoreIssuesProcessorImpl) shouldIgnore(issue types.Issue) bool {
+	// TODO #42: parse .tfcoachignore at some point and use the information here to skip the loop
+
 	for _, ignoredRule := range p.ignoreRules.values() {
 		if ignoredRule.path != issue.File {
 			continue
