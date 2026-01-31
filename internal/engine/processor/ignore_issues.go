@@ -16,8 +16,8 @@ const (
 
 type ruleIgnore struct {
 	ruleID   string
-	hclRange hcl.Range
 	path     string
+	hclRange hcl.Range
 }
 
 type ruleIgnoreSet struct {
@@ -47,13 +47,11 @@ type IgnoreIssuesProcessor interface {
 }
 
 type ignoreIssuesProcessorImpl struct {
-	ignoreFiles *ruleIgnoreSet
 	ignoreRules *ruleIgnoreSet
 }
 
 func NewIgnoreIssuesProcessor() IgnoreIssuesProcessor {
 	return &ignoreIssuesProcessorImpl{
-		ignoreFiles: &ruleIgnoreSet{},
 		ignoreRules: &ruleIgnoreSet{},
 	}
 }
@@ -67,7 +65,7 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 			comment = strings.Join(strings.Fields(comment), "")
 			if strings.HasPrefix(comment, ignoreFileWord) {
 				ignoredFileRules := p.processIgnoreFile(comment, path)
-				p.appendUniqueRuleIgnores(p.ignoreFiles, ignoredFileRules)
+				p.appendUniqueRuleIgnores(p.ignoreRules, ignoredFileRules)
 			} else {
 				if strings.HasPrefix(comment, ignoreRuleWord) {
 					ignoredRules := p.processIgnoreRule(comment, path, tok.Range, body)
@@ -81,10 +79,7 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 func (p *ignoreIssuesProcessorImpl) ProcessIssues(issues []types.Issue) []types.Issue {
 	filteredIssues := issues[:0]
 	for _, issue := range issues {
-		if p.shouldIgnoreAtFileLevel(issue) {
-			continue
-		}
-		if p.shouldIgnoreAtBlockLevel(issue) {
+		if p.shouldIgnore(issue) {
 			continue
 		}
 		filteredIssues = append(filteredIssues, issue)
@@ -131,22 +126,23 @@ func (p *ignoreIssuesProcessorImpl) processIgnoreRule(comment string, path strin
 	return &ignoredRules
 }
 
-func (p *ignoreIssuesProcessorImpl) shouldIgnoreAtFileLevel(issue types.Issue) bool {
-	for _, ignoredRule := range p.ignoreFiles.values() {
-		if ignoredRule.path == issue.File && ignoredRule.ruleID == issue.RuleID {
-			return true
-		}
-	}
-	return false
-}
-
-func (p *ignoreIssuesProcessorImpl) shouldIgnoreAtBlockLevel(issue types.Issue) bool {
+func (p *ignoreIssuesProcessorImpl) shouldIgnore(issue types.Issue) bool {
 	for _, ignoredRule := range p.ignoreRules.values() {
 		if ignoredRule.path != issue.File {
 			continue
 		}
 
-		if ignoredRule.hclRange.ContainsPos(issue.Range.Start) && ignoredRule.ruleID == issue.RuleID {
+		if ignoredRule.ruleID != issue.RuleID {
+			continue
+		}
+
+		if ignoredRule.hclRange == (hcl.Range{}) {
+			// rule ignored for whole file
+			return true
+		}
+
+		if ignoredRule.hclRange.ContainsPos(issue.Range.Start) {
+			// rule ignored for block containing the issue
 			return true
 		}
 	}

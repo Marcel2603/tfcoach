@@ -73,6 +73,8 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	issues := collectAllFromChannel(issuesChan)
 	wg.Wait()
 
+	issues = ignoreIssuesProcessor.ProcessIssues(issues)
+
 	// sort for deterministic output
 	slices.SortStableFunc(issues, func(a, b types.Issue) int {
 		if a.File != b.File {
@@ -89,8 +91,6 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		}
 		return strings.Compare(a.Message, b.Message)
 	})
-
-	issues = ignoreIssuesProcessor.ProcessIssues(issues)
 
 	return issues, nil
 }
