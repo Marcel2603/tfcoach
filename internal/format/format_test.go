@@ -20,16 +20,199 @@ var (
 			RuleID:  "core.file_naming",
 		},
 	}
+
 	issues2 = []types.Issue{
 		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "core.something_something"},
 		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "core.naming_convention"},
 	}
+
 	issues3 = []types.Issue{
 		{File: "a.tf", Range: rng("a.tf", 4, 7), Message: "m1", RuleID: "core.something_something"},
 		{File: "b.tf", Range: rng("b.tf", 9, 2), Message: "m2", RuleID: "core.naming_convention"},
 		{File: "a.tf", Range: rng("a.tf", 10, 2), Message: "m3", RuleID: "core.naming_convention"},
 		{File: "a.tf", Range: rng("a.tf", 2, 1), Message: "m4", RuleID: "core.file_naming"},
 	}
+	issues3PrettyWithEmojis = `Summary: 4 issues found in 2 files
+
+─── a.tf ───────────────
+
+  10:2	[core.naming_convention]	HIGH
+	💡  m3
+	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+  2:1	[core.file_naming]	LOW
+	💡  m4
+	📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+  4:7	[core.something_something]	UNKNOWN
+	💡  m1
+	📑  about:blank
+
+─── b.tf ───────────────
+
+  9:2	[core.naming_convention]	HIGH
+	💡  m2
+	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+`
+	issues3PrettyNoEmojis = `Summary: 4 issues found in 2 files
+
+─── a.tf ───────────────
+
+  10:2	[core.naming_convention]	HIGH
+	m3
+	Docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+  2:1	[core.file_naming]	LOW
+	m4
+	Docs: https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+  4:7	[core.something_something]	UNKNOWN
+	m1
+	Docs: about:blank
+
+─── b.tf ───────────────
+
+  9:2	[core.naming_convention]	HIGH
+	m2
+	Docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+`
+	issues3EducationalWithEmojis = `Summary: 3 rules broken (4 issues total)
+
+─── Naming Convention (Severity HIGH) ─────────
+
+💡  Terraform names should only contain lowercase alphanumeric characters and underscores.
+
+🆔  [core.naming_convention]
+📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+⚠️  Broken at:
+🔹 a.tf:10:2 ➡️  m3
+🔹 b.tf:9:2 ➡️  m2
+
+
+─── File Naming (Severity LOW) ────────────────
+
+💡  File naming should follow a strict convention.
+
+🆔  [core.file_naming]
+📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+⚠️  Broken at:
+🔹 a.tf:2:1 ➡️  m4
+
+
+─── Unknown (Severity UNKNOWN) ────────────────
+
+💡  Unknown rule
+
+🆔  [core.something_something]
+📑  about:blank
+
+⚠️  Broken at:
+🔹 a.tf:4:7 ➡️  m1
+
+`
+	issues3EducationalNoEmojis = `Summary: 3 rules broken (4 issues total)
+
+─── Naming Convention (Severity HIGH) ─────────
+
+Explanation: Terraform names should only contain lowercase alphanumeric characters and underscores.
+
+ID: [core.naming_convention]
+Read more: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
+
+Broken at:
+- a.tf:10:2 ─ m3
+- b.tf:9:2 ─ m2
+
+
+─── File Naming (Severity LOW) ────────────────
+
+Explanation: File naming should follow a strict convention.
+
+ID: [core.file_naming]
+Read more: https://marcel2603.github.io/tfcoach/rules/core/file_naming
+
+Broken at:
+- a.tf:2:1 ─ m4
+
+
+─── Unknown (Severity UNKNOWN) ────────────────
+
+Explanation: Unknown rule
+
+ID: [core.something_something]
+Read more: about:blank
+
+Broken at:
+- a.tf:4:7 ─ m1
+
+`
+	issues3Compact = `H b.tf:9:2: m2 [core.naming_convention]
+H a.tf:10:2: m3 [core.naming_convention]
+L a.tf:2:1: m4 [core.file_naming]
+U a.tf:4:7: m1 [core.something_something]
+Summary: 4 issues
+`
+	issues3Json = `{
+  "issue_count": 4,
+  "issues": [
+    {
+      "file": "a.tf",
+      "line": 4,
+      "column": 7,
+      "message": "m1",
+      "rule_id": "core.something_something",
+      "severity": {
+        "str": "UNKNOWN",
+        "priority": 99
+      },
+      "category": "",
+      "docs_url": "about:blank"
+    },
+    {
+      "file": "b.tf",
+      "line": 9,
+      "column": 2,
+      "message": "m2",
+      "rule_id": "core.naming_convention",
+      "severity": {
+        "str": "HIGH",
+        "priority": 1
+      },
+      "category": "",
+      "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/naming_convention"
+    },
+    {
+      "file": "a.tf",
+      "line": 10,
+      "column": 2,
+      "message": "m3",
+      "rule_id": "core.naming_convention",
+      "severity": {
+        "str": "HIGH",
+        "priority": 1
+      },
+      "category": "",
+      "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/naming_convention"
+    },
+    {
+      "file": "a.tf",
+      "line": 2,
+      "column": 1,
+      "message": "m4",
+      "rule_id": "core.file_naming",
+      "severity": {
+        "str": "LOW",
+        "priority": 3
+      },
+      "category": "",
+      "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/file_naming"
+    }
+  ]
+}`
 )
 
 func rng(file string, line0, col int) hcl.Range {
@@ -90,7 +273,10 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 	  "column": 1,
 	  "message": "Block \"a\" should be inside of \"b.tf\"",
 	  "rule_id": "core.file_naming",
-	  "severity": "LOW",
+	  "severity": {
+	    "str": "LOW",
+        "priority": 3
+      },
 	  "category": "",
 	  "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/file_naming"
 	}
@@ -130,7 +316,10 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 	  "column": 7,
 	  "message": "m1",
 	  "rule_id": "core.something_something",
-	  "severity": "UNKNOWN",
+      "severity": {
+	    "str": "UNKNOWN",
+        "priority": 99
+      },
 	  "category": "",
 	  "docs_url": "about:blank"
 	},
@@ -140,7 +329,10 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 	  "column": 2,
 	  "message": "m2",
 	  "rule_id": "core.naming_convention",
-	  "severity": "HIGH",
+	  "severity": {
+	    "str": "HIGH",
+        "priority": 1
+      },
 	  "category": "",
 	  "docs_url": "https://marcel2603.github.io/tfcoach/rules/core/naming_convention"
 	}
@@ -220,32 +412,8 @@ func TestWriteResults_PrettySorting(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `Summary: 4 issues found in 2 files
-
-─── a.tf ───────────────
-
-  10:2	[core.naming_convention]	HIGH
-	💡  m3
-	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
-
-  2:1	[core.file_naming]	LOW
-	💡  m4
-	📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
-
-  4:7	[core.something_something]	UNKNOWN
-	💡  m1
-	📑  about:blank
-
-─── b.tf ───────────────
-
-  9:2	[core.naming_convention]	HIGH
-	💡  m2
-	📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
-
-`
-
-	if got := buf.String(); got != want {
-		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	if got := buf.String(); got != issues3PrettyWithEmojis {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3PrettyWithEmojis)
 	}
 }
 
@@ -256,32 +424,8 @@ func TestWriteResults_PrettyNoEmojis(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `Summary: 4 issues found in 2 files
-
-─── a.tf ───────────────
-
-  10:2	[core.naming_convention]	HIGH
-	m3
-	Docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
-
-  2:1	[core.file_naming]	LOW
-	m4
-	Docs: https://marcel2603.github.io/tfcoach/rules/core/file_naming
-
-  4:7	[core.something_something]	UNKNOWN
-	m1
-	Docs: about:blank
-
-─── b.tf ───────────────
-
-  9:2	[core.naming_convention]	HIGH
-	m2
-	Docs: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
-
-`
-
-	if got := buf.String(); got != want {
-		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	if got := buf.String(); got != issues3PrettyNoEmojis {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3PrettyNoEmojis)
 	}
 }
 
@@ -355,45 +499,8 @@ func TestWriteResults_EducationalSorting(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `Summary: 3 rules broken (4 issues total)
-
-─── Naming Convention (Severity HIGH) ─────────
-
-💡  Terraform names should only contain lowercase alphanumeric characters and underscores.
-
-🆔  [core.naming_convention]
-📑  https://marcel2603.github.io/tfcoach/rules/core/naming_convention
-
-⚠️  Broken at:
-🔹 a.tf:10:2 ➡️  m3
-🔹 b.tf:9:2 ➡️  m2
-
-
-─── File Naming (Severity LOW) ────────────────
-
-💡  File naming should follow a strict convention.
-
-🆔  [core.file_naming]
-📑  https://marcel2603.github.io/tfcoach/rules/core/file_naming
-
-⚠️  Broken at:
-🔹 a.tf:2:1 ➡️  m4
-
-
-─── Unknown (Severity UNKNOWN) ────────────────
-
-💡  Unknown rule
-
-🆔  [core.something_something]
-📑  about:blank
-
-⚠️  Broken at:
-🔹 a.tf:4:7 ➡️  m1
-
-`
-
-	if got := buf.String(); got != want {
-		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	if got := buf.String(); got != issues3EducationalWithEmojis {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3EducationalWithEmojis)
 	}
 }
 
@@ -404,45 +511,8 @@ func TestWriteResults_EducationalNoEmojis(t *testing.T) {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
 
-	want := `Summary: 3 rules broken (4 issues total)
-
-─── Naming Convention (Severity HIGH) ─────────
-
-Explanation: Terraform names should only contain lowercase alphanumeric characters and underscores.
-
-ID: [core.naming_convention]
-Read more: https://marcel2603.github.io/tfcoach/rules/core/naming_convention
-
-Broken at:
-- a.tf:10:2 ─ m3
-- b.tf:9:2 ─ m2
-
-
-─── File Naming (Severity LOW) ────────────────
-
-Explanation: File naming should follow a strict convention.
-
-ID: [core.file_naming]
-Read more: https://marcel2603.github.io/tfcoach/rules/core/file_naming
-
-Broken at:
-- a.tf:2:1 ─ m4
-
-
-─── Unknown (Severity UNKNOWN) ────────────────
-
-Explanation: Unknown rule
-
-ID: [core.something_something]
-Read more: about:blank
-
-Broken at:
-- a.tf:4:7 ─ m1
-
-`
-
-	if got := buf.String(); got != want {
-		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, want)
+	if got := buf.String(); got != issues3EducationalNoEmojis {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3EducationalNoEmojis)
 	}
 }
 
@@ -454,6 +524,91 @@ func TestWriteResults_UnknownFormat(t *testing.T) {
 	}
 
 	want := "unknown output format: abcd"
+	if err.Error() != want {
+		t.Fatalf("mismatch:\n got: %q\nwant: %q", err, want)
+	}
+}
+
+func TestReformatResults_Pretty(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.ReformatResults([]byte(issues3Json), &buf, "pretty", true)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	if got := buf.String(); got != issues3PrettyWithEmojis {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3PrettyWithEmojis)
+	}
+}
+
+func TestReformatResults_PrettyNoEmojis(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.ReformatResults([]byte(issues3Json), &buf, "pretty", false)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	if got := buf.String(); got != issues3PrettyNoEmojis {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3PrettyNoEmojis)
+	}
+}
+
+func TestReformatResults_Educational(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.ReformatResults([]byte(issues3Json), &buf, "educational", true)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	if got := buf.String(); got != issues3EducationalWithEmojis {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3EducationalWithEmojis)
+	}
+}
+
+func TestReformatResults_EducationalNoEmojis(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.ReformatResults([]byte(issues3Json), &buf, "educational", false)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	if got := buf.String(); got != issues3EducationalNoEmojis {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3EducationalNoEmojis)
+	}
+}
+
+func TestReformatResults_Compact(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.ReformatResults([]byte(issues3Json), &buf, "compact", true)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	if got := buf.String(); got != issues3Compact {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3Compact)
+	}
+}
+
+func TestReformatResults_Json(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.ReformatResults([]byte(issues3Json), &buf, "json", true)
+	if err != nil {
+		t.Fatalf("Unexpected error: %v, want none", err)
+	}
+
+	if got := buf.String(); got != issues3Json {
+		t.Fatalf("mismatch:\n got:\n%s\nwant:\n%s", got, issues3Json)
+	}
+}
+
+func TestReformatResults_UnknownFormat(t *testing.T) {
+	var buf bytes.Buffer
+	err := format.ReformatResults([]byte(issues3Json), &buf, "xyz", true)
+	if err == nil {
+		t.Fatalf("Expected error, got none")
+	}
+
+	want := "unknown output format: xyz"
 	if err.Error() != want {
 		t.Fatalf("mismatch:\n got: %q\nwant: %q", err, want)
 	}

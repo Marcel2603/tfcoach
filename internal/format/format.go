@@ -1,6 +1,7 @@
 package format
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -28,7 +29,26 @@ type issueOutput struct {
 	DocsURL  string         `json:"docs_url"`
 }
 
+type jsonOutput struct {
+	IssueCount int           `json:"issue_count"`
+	Issues     []issueOutput `json:"issues"`
+}
+
 func WriteResults(issues []types.Issue, w io.Writer, outputFormat string, allowEmojis bool) error {
+	preparedIssues := toIssueOutputs(issues)
+	return writeResultsFromPrepared(preparedIssues, w, outputFormat, allowEmojis)
+}
+
+func ReformatResults(srcReport []byte, w io.Writer, outputFormat string, allowEmojis bool) error {
+	var report jsonOutput
+	err := json.Unmarshal(srcReport, &report)
+	if err != nil {
+		return err
+	}
+	return writeResultsFromPrepared(report.Issues, w, outputFormat, allowEmojis)
+}
+
+func writeResultsFromPrepared(issues []issueOutput, w io.Writer, outputFormat string, allowEmojis bool) error {
 	switch outputFormat {
 	case "compact":
 		writeTextIssuesCompact(issues, w)

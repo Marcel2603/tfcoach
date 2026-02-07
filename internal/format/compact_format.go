@@ -5,16 +5,14 @@ import (
 	"io"
 	"slices"
 
-	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/fatih/color"
 )
 
-func writeTextIssuesCompact(issues []types.Issue, w io.Writer) {
-	preparedIssues := toIssueOutputs(issues)
-	slices.SortStableFunc(preparedIssues, func(a, b issueOutput) int {
+func writeTextIssuesCompact(issues []issueOutput, w io.Writer) {
+	slices.SortStableFunc(issues, func(a, b issueOutput) int {
 		return a.Severity.Cmp(b.Severity)
 	})
-	for _, issue := range preparedIssues {
+	for _, issue := range issues {
 		_, _ = fmt.Fprintf(
 			w,
 			"%s %s:%d:%d: %s %s\n",
@@ -28,6 +26,6 @@ func writeTextIssuesCompact(issues []types.Issue, w io.Writer) {
 	}
 }
 
-func writeTextSummaryCompact(issues []types.Issue, w io.Writer) {
+func writeTextSummaryCompact(issues []issueOutput, w io.Writer) {
 	_, _ = fmt.Fprintf(w, "Summary: %d issue%s\n", len(issues), condPlural(len(issues)))
 }
