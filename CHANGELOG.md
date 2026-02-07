@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.11.0](https://github.com/Marcel2603/tfcoach/compare/v0.10.0..0.11.0) - 2026-01-18
+## [0.12.0](https://github.com/Marcel2603/tfcoach/compare/v0.11.0..0.12.0) - 2026-02-07
+
+### Features
+
+- *(app)* Add command "print" to convert JSON report to other formats ([#60](https://github.com/marcel2603/tfcoach/issues/60)) - ([10f6bd9](https://github.com/Marcel2603/tfcoach/commit/10f6bd95810113bfed9e15dbe03c2256d0551217))  by @Erkenbend
+
+### Documentation
+
+- *(mkdocs)* Adjust styling ([#61](https://github.com/marcel2603/tfcoach/issues/61)) - ([b3d8d5b](https://github.com/Marcel2603/tfcoach/commit/b3d8d5b69d058d06a91cc6e164977f5586a64d1e))  by @Marcel2603
+
+## [0.11.0](https://github.com/Marcel2603/tfcoach/compare/v0.10.0..v0.11.0) - 2026-01-18
 
 ### Features
 
