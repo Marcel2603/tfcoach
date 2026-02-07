@@ -503,15 +503,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tfcoach-version" class="md-nav__link">
+  <a href="#tfcoach-print" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tfcoach version
+        tfcoach print
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="tfcoach version">
+    <nav class="md-nav" aria-label="tfcoach print">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -527,6 +527,45 @@
         
           <li class="md-nav__item">
   <a href="#exit-codes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exit Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tfcoach-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tfcoach version
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tfcoach version">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#options_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exit-codes_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Exit Codes
@@ -1504,15 +1543,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tfcoach-version" class="md-nav__link">
+  <a href="#tfcoach-print" class="md-nav__link">
     <span class="md-ellipsis">
       
-        tfcoach version
+        tfcoach print
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="tfcoach version">
+    <nav class="md-nav" aria-label="tfcoach print">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1528,6 +1567,45 @@
         
           <li class="md-nav__item">
   <a href="#exit-codes_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exit Codes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tfcoach-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tfcoach version
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tfcoach version">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#options_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exit-codes_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         Exit Codes
@@ -1668,14 +1746,48 @@
 </tr>
 </tbody>
 </table>
+<h2 id="tfcoach-print">tfcoach print<a class="headerlink" href="#tfcoach-print" title="Permanent link">&para;</a></h2>
+<p>Print tfcoach JSON report in another format</p>
+<div class="highlight"><pre><span></span><code>tfcoach print [path] [flags]
+</code></pre></div>
+<h3 id="options_2">Options<a class="headerlink" href="#options_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>  -c, --config string   Custom config file path (default current directory)
+  -f, --format string   Output format. Supported: json|compact|pretty|educational (default &quot;educational&quot;)
+  -h, --help            help for print
+      --no-color        Disable color output
+      --no-emojis       Prevent emojis in output
+</code></pre></div>
+<h3 id="exit-codes_2">Exit Codes<a class="headerlink" href="#exit-codes_2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>No issues found</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Read error</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Conversion error</td>
+</tr>
+</tbody>
+</table>
 <h2 id="tfcoach-version">tfcoach version<a class="headerlink" href="#tfcoach-version" title="Permanent link">&para;</a></h2>
 <p>Print the version number</p>
 <div class="highlight"><pre><span></span><code>tfcoach version [flags]
 </code></pre></div>
-<h3 id="options_2">Options<a class="headerlink" href="#options_2" title="Permanent link">&para;</a></h3>
+<h3 id="options_3">Options<a class="headerlink" href="#options_3" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>  -h, --help   help for version
 </code></pre></div>
-<h3 id="exit-codes_2">Exit Codes<a class="headerlink" href="#exit-codes_2" title="Permanent link">&para;</a></h3>
+<h3 id="exit-codes_3">Exit Codes<a class="headerlink" href="#exit-codes_3" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -1710,7 +1822,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="January 28, 2026 11:16:25 UTC">January 28, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="February 7, 2026 22:59:40 UTC">February 7, 2026</span>
   </span>
 
     
