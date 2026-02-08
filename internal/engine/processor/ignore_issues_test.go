@@ -33,7 +33,7 @@ resource "test" "non_compliant"{}
 	processedIssues := ignoreIssueProcessor.ProcessIssues(issues)
 
 	if len(processedIssues) != 2 {
-		t.Fatalf("Wrong number of expected issues; got %d wanted %d", len(issues), 2)
+		t.Fatalf("Wrong number of expected issues; got %d, wanted %d", len(processedIssues), 2)
 	}
 }
 

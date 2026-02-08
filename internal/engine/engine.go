@@ -42,6 +42,8 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	issuesChan := make(chan types.Issue, issuesChanBufSize)
 	fileDoneChan := make(chan struct{})
 	ruleFinishDoneChan := make(chan struct{})
+
+	// TODO #42: pass .tfcoachignore infos to processor
 	ignoreIssuesProcessor := processor.NewIgnoreIssuesProcessor()
 	var wg sync.WaitGroup
 
@@ -73,6 +75,9 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	issues := collectAllFromChannel(issuesChan)
 	wg.Wait()
 
+	// need to wait for all files to have been processed so that all tfcoach-ignore directives are known
+	issues = ignoreIssuesProcessor.ProcessIssues(issues)
+
 	// sort for deterministic output
 	slices.SortStableFunc(issues, func(a, b types.Issue) int {
 		if a.File != b.File {
@@ -89,8 +94,6 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		}
 		return strings.Compare(a.Message, b.Message)
 	})
-
-	issues = ignoreIssuesProcessor.ProcessIssues(issues)
 
 	return issues, nil
 }
