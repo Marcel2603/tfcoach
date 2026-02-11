@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/Marcel2603/tfcoach/cmd/config"
 	"github.com/spf13/cobra"
 )
 
@@ -29,6 +30,14 @@ func Execute() {
 }
 
 func init() {
+	// this init function needs to run first in the module to ensure the default config is loaded, because the
+	// subcommands depend on it, hence the file name "0_root"
+
+	err := config.LoadDefaultConfig()
+	if err != nil {
+		panic(err)
+	}
+
 	rootCmd.Annotations = map[string]string{
 		"exitCodes": "0:OK",
 	}
