@@ -1,4 +1,4 @@
-package format_test
+package formatter_test
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Marcel2603/tfcoach/internal/format"
+	"github.com/Marcel2603/tfcoach/internal/formatter"
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 )
@@ -226,7 +226,7 @@ func rng(file string, line0, col int) hcl.Range {
 
 func TestWriteResults_CompactSingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "compact", true)
+	err := formatter.WriteResults(issues1, &buf, "compact", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -242,7 +242,7 @@ Summary: 1 issue
 
 func TestWriteResults_CompactMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "compact", true)
+	err := formatter.WriteResults(issues2, &buf, "compact", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -259,7 +259,7 @@ Summary: 2 issues
 
 func TestWriteResults_JsonSingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "json", true)
+	err := formatter.WriteResults(issues1, &buf, "json", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -302,7 +302,7 @@ func TestWriteResults_JsonSingle(t *testing.T) {
 
 func TestWriteResults_JsonMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "json", true)
+	err := formatter.WriteResults(issues2, &buf, "json", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -357,7 +357,7 @@ func TestWriteResults_JsonMultiple(t *testing.T) {
 
 func TestWriteResults_PrettySingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "pretty", true)
+	err := formatter.WriteResults(issues1, &buf, "pretty", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -379,7 +379,7 @@ func TestWriteResults_PrettySingle(t *testing.T) {
 
 func TestWriteResults_PrettyMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "pretty", true)
+	err := formatter.WriteResults(issues2, &buf, "pretty", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -407,7 +407,7 @@ func TestWriteResults_PrettyMultiple(t *testing.T) {
 
 func TestWriteResults_PrettySorting(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues3, &buf, "pretty", true)
+	err := formatter.WriteResults(issues3, &buf, "pretty", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -419,7 +419,7 @@ func TestWriteResults_PrettySorting(t *testing.T) {
 
 func TestWriteResults_PrettyNoEmojis(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues3, &buf, "pretty", false)
+	err := formatter.WriteResults(issues3, &buf, "pretty", false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -431,7 +431,7 @@ func TestWriteResults_PrettyNoEmojis(t *testing.T) {
 
 func TestWriteResults_EducationalSingle(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "educational", true)
+	err := formatter.WriteResults(issues1, &buf, "educational", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -457,7 +457,7 @@ func TestWriteResults_EducationalSingle(t *testing.T) {
 
 func TestWriteResults_EducationalMultiple(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues2, &buf, "educational", true)
+	err := formatter.WriteResults(issues2, &buf, "educational", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -494,7 +494,7 @@ func TestWriteResults_EducationalMultiple(t *testing.T) {
 
 func TestWriteResults_EducationalSorting(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues3, &buf, "educational", true)
+	err := formatter.WriteResults(issues3, &buf, "educational", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -506,7 +506,7 @@ func TestWriteResults_EducationalSorting(t *testing.T) {
 
 func TestWriteResults_EducationalNoEmojis(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues3, &buf, "educational", false)
+	err := formatter.WriteResults(issues3, &buf, "educational", false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -518,7 +518,7 @@ func TestWriteResults_EducationalNoEmojis(t *testing.T) {
 
 func TestWriteResults_UnknownFormat(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.WriteResults(issues1, &buf, "abcd", true)
+	err := formatter.WriteResults(issues1, &buf, "abcd", true)
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
@@ -531,7 +531,7 @@ func TestWriteResults_UnknownFormat(t *testing.T) {
 
 func TestReformatResults_Pretty(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.ReformatResults([]byte(issues3Json), &buf, "pretty", true)
+	err := formatter.ReformatResults([]byte(issues3Json), &buf, "pretty", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -543,7 +543,7 @@ func TestReformatResults_Pretty(t *testing.T) {
 
 func TestReformatResults_PrettyNoEmojis(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.ReformatResults([]byte(issues3Json), &buf, "pretty", false)
+	err := formatter.ReformatResults([]byte(issues3Json), &buf, "pretty", false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -555,7 +555,7 @@ func TestReformatResults_PrettyNoEmojis(t *testing.T) {
 
 func TestReformatResults_Educational(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.ReformatResults([]byte(issues3Json), &buf, "educational", true)
+	err := formatter.ReformatResults([]byte(issues3Json), &buf, "educational", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -567,7 +567,7 @@ func TestReformatResults_Educational(t *testing.T) {
 
 func TestReformatResults_EducationalNoEmojis(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.ReformatResults([]byte(issues3Json), &buf, "educational", false)
+	err := formatter.ReformatResults([]byte(issues3Json), &buf, "educational", false)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -579,7 +579,7 @@ func TestReformatResults_EducationalNoEmojis(t *testing.T) {
 
 func TestReformatResults_Compact(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.ReformatResults([]byte(issues3Json), &buf, "compact", true)
+	err := formatter.ReformatResults([]byte(issues3Json), &buf, "compact", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -591,7 +591,7 @@ func TestReformatResults_Compact(t *testing.T) {
 
 func TestReformatResults_Json(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.ReformatResults([]byte(issues3Json), &buf, "json", true)
+	err := formatter.ReformatResults([]byte(issues3Json), &buf, "json", true)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v, want none", err)
 	}
@@ -603,7 +603,7 @@ func TestReformatResults_Json(t *testing.T) {
 
 func TestReformatResults_UnknownFormat(t *testing.T) {
 	var buf bytes.Buffer
-	err := format.ReformatResults([]byte(issues3Json), &buf, "xyz", true)
+	err := formatter.ReformatResults([]byte(issues3Json), &buf, "xyz", true)
 	if err == nil {
 		t.Fatalf("Expected error, got none")
 	}
