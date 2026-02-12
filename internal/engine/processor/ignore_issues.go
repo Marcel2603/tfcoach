@@ -78,10 +78,11 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 }
 
 func (p *ignoreIssuesProcessorImpl) ProcessIssues(issues []types.Issue) []types.Issue {
-	processIssue := func(issue types.Issue, outChan chan<- types.Issue) {
+	processIssue := func(issue types.Issue) []types.Issue {
 		if !p.shouldIgnore(issue) {
-			outChan <- issue
+			return []types.Issue{issue}
 		}
+		return []types.Issue{}
 	}
 
 	return utils.ProcessInParallel(issues, processIssue)
