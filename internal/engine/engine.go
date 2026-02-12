@@ -8,11 +8,10 @@ import (
 
 	"github.com/Marcel2603/tfcoach/internal/engine/processor"
 	"github.com/Marcel2603/tfcoach/internal/types"
+	"github.com/Marcel2603/tfcoach/internal/utils"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
-
-const issuesChanBufSize = 5 // TODO later: choose appropriate buffer size (balance performance vs resource usage)
 
 type Engine struct {
 	src   Source
@@ -39,39 +38,16 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		return nil, err
 	}
 
-	issuesChan := make(chan types.Issue, issuesChanBufSize)
-	fileDoneChan := make(chan struct{})
-	ruleFinishDoneChan := make(chan struct{})
+	// TODO #42: pass .tfcoachignore infos to processor
 	ignoreIssuesProcessor := processor.NewIgnoreIssuesProcessor()
-	var wg sync.WaitGroup
 
-	for _, path := range files {
-		wg.Go(func() {
-			e.processFile(path, issuesChan, ignoreIssuesProcessor)
-			fileDoneChan <- struct{}{}
-		})
-	}
-
-	wg.Go(func() {
-		// wait for all files to have been processed before triggering rule finish
-		closeAfterSignalCount(len(files), fileDoneChan)
-		for _, rule := range e.rules {
-			wg.Go(func() {
-				for _, issue := range rule.Finish() {
-					issuesChan <- issue
-				}
-				ruleFinishDoneChan <- struct{}{}
-			})
-		}
+	issuesAfterApply := utils.ProcessInParallelChan(files, func(path string, issuesChan chan<- types.Issue) {
+		e.processFile(path, issuesChan, ignoreIssuesProcessor)
 	})
 
-	wg.Go(func() {
-		closeAfterSignalCount(len(e.rules), ruleFinishDoneChan)
-		close(issuesChan)
-	})
+	issuesAfterFinish := utils.ProcessInParallel(e.rules, types.Rule.Finish)
 
-	issues := collectAllFromChannel(issuesChan)
-	wg.Wait()
+	issues := ignoreIssuesProcessor.ProcessIssues(slices.Concat(issuesAfterApply, issuesAfterFinish))
 
 	// sort for deterministic output
 	slices.SortStableFunc(issues, func(a, b types.Issue) int {
@@ -89,8 +65,6 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		}
 		return strings.Compare(a.Message, b.Message)
 	})
-
-	issues = ignoreIssuesProcessor.ProcessIssues(issues)
 
 	return issues, nil
 }
@@ -116,50 +90,16 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postPro
 		return
 	}
 	var fileProcessingGroup sync.WaitGroup
-
 	fileProcessingGroup.Go(func() {
 		postProcessor.ScanFile(bytes, hclFile, path)
 	})
-	ruleApplyDoneChan := make(chan struct{})
-	for _, rule := range e.rules {
-		fileProcessingGroup.Go(func() {
-			for _, issue := range rule.Apply(path, hclFile) {
-				issuesChan <- issue
-			}
-			ruleApplyDoneChan <- struct{}{}
-		})
-	}
 
-	fileProcessingGroup.Go(func() {
-		closeAfterSignalCount(len(e.rules), ruleApplyDoneChan)
-	})
+	applyOnFile := func(r types.Rule) []types.Issue {
+		return r.Apply(path, hclFile)
+	}
+	for _, issue := range utils.ProcessInParallel(e.rules, applyOnFile) {
+		issuesChan <- issue
+	}
 
 	fileProcessingGroup.Wait()
-}
-
-func closeAfterSignalCount(target int, signalChannel chan struct{}) {
-	defer close(signalChannel)
-
-	if target == 0 {
-		return
-	}
-
-	signalCount := 0
-	for {
-		select {
-		case <-signalChannel:
-			signalCount++
-			if signalCount >= target {
-				return
-			}
-		}
-	}
-}
-
-func collectAllFromChannel(issuesChan <-chan types.Issue) []types.Issue {
-	var issues []types.Issue
-	for issue := range issuesChan {
-		issues = append(issues, issue)
-	}
-	return issues
 }
