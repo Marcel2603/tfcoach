@@ -1,5 +1,4 @@
-//revive:disable:var-naming For now it's okay to have a generic name
-package format
+package formatter
 
 import (
 	"fmt"

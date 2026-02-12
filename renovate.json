@@ -3,12 +3,6 @@
   "extends": [
     "config:recommended"
   ],
-  "schedule": [
-    "before 5am"
-  ],
   "prConcurrentLimit": 10,
-  "suppressNotifications": [
-    "prEditedNotification"
-  ],
-  "dependencyDashboard" : false
+  "dependencyDashboard" : true
 }
