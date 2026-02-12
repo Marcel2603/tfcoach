@@ -5,7 +5,7 @@ import (
 	"io"
 
 	"github.com/Marcel2603/tfcoach/internal/engine"
-	"github.com/Marcel2603/tfcoach/internal/format"
+	"github.com/Marcel2603/tfcoach/internal/formatter"
 	"github.com/Marcel2603/tfcoach/internal/types"
 )
 
@@ -19,7 +19,7 @@ func Lint(path string, src engine.Source, rules []types.Rule, w io.Writer, outpu
 	}
 
 	if len(issues) > 0 {
-		writeErr := format.WriteResults(issues, w, outputFormat, allowEmojis)
+		writeErr := formatter.WriteResults(issues, w, outputFormat, allowEmojis)
 		if writeErr != nil {
 			_, _ = fmt.Printf("error writing results: %v\n", writeErr)
 			return 2

@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/Marcel2603/tfcoach/internal/format"
+	"github.com/Marcel2603/tfcoach/internal/formatter"
 )
 
 func Print(srcReportPath string, w io.Writer, outputFormat string, allowEmojis bool) int {
@@ -21,7 +21,7 @@ func Print(srcReportPath string, w io.Writer, outputFormat string, allowEmojis b
 		return 1
 	}
 
-	err = format.ReformatResults(reportContent, w, outputFormat, allowEmojis)
+	err = formatter.ReformatResults(reportContent, w, outputFormat, allowEmojis)
 	if err != nil {
 		_, _ = fmt.Fprintf(w, "failed to convert report: %v", err)
 		return 2
