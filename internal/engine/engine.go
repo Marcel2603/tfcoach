@@ -41,11 +41,11 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 	// TODO #42: pass .tfcoachignore infos to processor
 	ignoreIssuesProcessor := processor.NewIgnoreIssuesProcessor()
 
-	issuesAfterApply := utils.ProcessInParallelChan(files, func(path string, issuesChan chan<- types.Issue) {
+	issuesAfterApply := utils.FlatMapChan(files, func(path string, issuesChan chan<- types.Issue) {
 		e.processFile(path, issuesChan, ignoreIssuesProcessor)
 	})
 
-	issuesAfterFinish := utils.ProcessInParallel(e.rules, types.Rule.Finish)
+	issuesAfterFinish := utils.FlatMap(e.rules, types.Rule.Finish)
 
 	issues := ignoreIssuesProcessor.ProcessIssues(slices.Concat(issuesAfterApply, issuesAfterFinish))
 
@@ -97,7 +97,7 @@ func (e *Engine) processFile(path string, issuesChan chan<- types.Issue, postPro
 	applyOnFile := func(r types.Rule) []types.Issue {
 		return r.Apply(path, hclFile)
 	}
-	for _, issue := range utils.ProcessInParallel(e.rules, applyOnFile) {
+	for _, issue := range utils.FlatMap(e.rules, applyOnFile) {
 		issuesChan <- issue
 	}
 

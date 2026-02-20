@@ -85,7 +85,7 @@ func (p *ignoreIssuesProcessorImpl) ProcessIssues(issues []types.Issue) []types.
 		return []types.Issue{}
 	}
 
-	return utils.ProcessInParallel(issues, processIssue)
+	return utils.FlatMap(issues, processIssue)
 }
 
 func (*ignoreIssuesProcessorImpl) appendUniqueRuleIgnores(current *ruleIgnoreSet, additionalRuleIgnores *ruleIgnoreSet) {
