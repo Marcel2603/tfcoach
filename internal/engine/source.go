@@ -41,6 +41,9 @@ func (f FileSystem) List(root string) ([]string, error) {
 			return ignoreErr
 		}
 		if shouldIgnore {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 		if d.IsDir() {
