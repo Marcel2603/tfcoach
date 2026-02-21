@@ -67,10 +67,10 @@ func TestFileSystem_List_BasicAndSkipDirs(t *testing.T) {
 	}
 }
 
-func TestFileSystem_List_SkipFilesFromTfcoachignore(t *testing.T) {
+func TestFileSystem_List_SkipFilesFromTfcoachnoscan(t *testing.T) {
 	root := t.TempDir()
 
-	createFile(t, filepath.Join(root, ".tfcoachignore"), `
+	createFile(t, filepath.Join(root, ".tfcoachnoscan"), `
 vendor/
 **/m1.tf
 `)

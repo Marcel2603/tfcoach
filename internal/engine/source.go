@@ -20,13 +20,10 @@ type FileSystem struct {
 }
 
 func (f FileSystem) List(root string) ([]string, error) {
-	ignorer, err := dotignore.NewRepositoryMatcherWithConfig(root, &dotignore.RepositoryConfig{IgnoreFileName: ".tfcoachignore"})
+	ignorer, err := dotignore.NewRepositoryMatcherWithConfig(root, &dotignore.RepositoryConfig{IgnoreFileName: ".tfcoachnoscan"})
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO idea: maybe allow 2 ignore lists: completely skip (which for now is statically defined in config.go
-	//   + optionally TG cache) and ignore in issue reporting only
 
 	// TODO later: switch .terragrunt-cache from "completely skipped" to "ignored in issue reporting"?
 

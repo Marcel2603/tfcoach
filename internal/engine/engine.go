@@ -38,8 +38,10 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		return nil, err
 	}
 
-	// TODO #42: pass .tfcoachignore infos to processor
-	ignoreIssuesProcessor := processor.NewIgnoreIssuesProcessor()
+	ignoreIssuesProcessor, err := processor.NewIgnoreIssuesProcessor(root)
+	if err != nil {
+		return nil, err
+	}
 
 	issuesAfterApply := utils.FlatMapChan(files, func(path string, issuesChan chan<- types.Issue) {
 		e.processFile(path, issuesChan, ignoreIssuesProcessor)

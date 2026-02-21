@@ -5,6 +5,7 @@ import (
 
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/Marcel2603/tfcoach/internal/utils"
+	"github.com/codeglyph/go-dotignore/v2"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"golang.org/x/sync/syncmap"
@@ -42,22 +43,64 @@ func (r *ruleIgnoreSet) values() []ruleIgnore {
 	return result
 }
 
+// TODO #42: generify?
+type fileIgnoreSet struct {
+	m syncmap.Map
+}
+
+func (r *fileIgnoreSet) add(path string) {
+	r.m.Store(path, struct{}{})
+}
+
+func (r *fileIgnoreSet) values() []string {
+	var result []string
+	r.m.Range(func(k, _ interface{}) bool {
+		rule, ok := k.(string)
+		if !ok {
+			return false
+		}
+		result = append(result, rule)
+		return true
+	})
+	return result
+}
+
+func (r *fileIgnoreSet) isPresent(path string) bool {
+	_, ok := r.m.Load(path)
+	return ok
+}
+
 type IgnoreIssuesProcessor interface {
 	ProcessIssues(issues []types.Issue) []types.Issue
 	ScanFile(bytes []byte, hclFile *hcl.File, path string)
 }
 
 type ignoreIssuesProcessorImpl struct {
-	ignoreRules *ruleIgnoreSet
+	ignoredRules *ruleIgnoreSet
+	ignoredFiles *fileIgnoreSet
+	fileIgnorer  *dotignore.RepositoryMatcher
 }
 
-func NewIgnoreIssuesProcessor() IgnoreIssuesProcessor {
-	return &ignoreIssuesProcessorImpl{
-		ignoreRules: &ruleIgnoreSet{},
+func NewIgnoreIssuesProcessor(rootPath string) (IgnoreIssuesProcessor, error) {
+	ignorer, err := dotignore.NewRepositoryMatcherWithConfig(rootPath, &dotignore.RepositoryConfig{IgnoreFileName: ".tfcoachnoreport"})
+	if err != nil {
+		return nil, err
 	}
+
+	return &ignoreIssuesProcessorImpl{
+		ignoredFiles: &fileIgnoreSet{},
+		ignoredRules: &ruleIgnoreSet{},
+		fileIgnorer:  ignorer,
+	}, nil
 }
 
 func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, path string) {
+	shouldIgnore, _ := p.fileIgnorer.Matches(path)
+	if shouldIgnore {
+		p.ignoredFiles.add(path)
+		return
+	}
+
 	tokens, _ := hclsyntax.LexConfig(bytes, path, hcl.InitialPos)
 	body, _ := hclFile.Body.(*hclsyntax.Body)
 	for _, tok := range tokens {
@@ -65,12 +108,12 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 			comment := string(tok.Bytes)
 			comment = strings.Join(strings.Fields(comment), "")
 			if strings.HasPrefix(comment, ignoreFileWord) {
-				ignoredFileRules := p.processIgnoreFile(comment, path)
-				p.appendUniqueRuleIgnores(p.ignoreRules, ignoredFileRules)
+				ignoredRulesForFile := p.computeIgnoredRulesForFile(comment, path)
+				p.appendUniqueRuleIgnores(p.ignoredRules, ignoredRulesForFile)
 			} else {
 				if strings.HasPrefix(comment, ignoreRuleWord) {
-					ignoredRules := p.processIgnoreRule(comment, path, tok.Range, body)
-					p.appendUniqueRuleIgnores(p.ignoreRules, ignoredRules)
+					ignoredRulesForBlock := p.computeIgnoredRulesForBlock(comment, path, tok.Range, body)
+					p.appendUniqueRuleIgnores(p.ignoredRules, ignoredRulesForBlock)
 				}
 			}
 		}
@@ -94,7 +137,7 @@ func (*ignoreIssuesProcessorImpl) appendUniqueRuleIgnores(current *ruleIgnoreSet
 	}
 }
 
-func (p *ignoreIssuesProcessorImpl) processIgnoreFile(comment string, path string) *ruleIgnoreSet {
+func (p *ignoreIssuesProcessorImpl) computeIgnoredRulesForFile(comment string, path string) *ruleIgnoreSet {
 	ignoredRules := ruleIgnoreSet{}
 
 	commentSplit := strings.SplitN(comment, ":", 2)
@@ -108,7 +151,7 @@ func (p *ignoreIssuesProcessorImpl) processIgnoreFile(comment string, path strin
 	return &ignoredRules
 }
 
-func (p *ignoreIssuesProcessorImpl) processIgnoreRule(comment string, path string, hclRange hcl.Range, body *hclsyntax.Body) *ruleIgnoreSet {
+func (p *ignoreIssuesProcessorImpl) computeIgnoredRulesForBlock(comment string, path string, hclRange hcl.Range, body *hclsyntax.Body) *ruleIgnoreSet {
 	ignoredRules := ruleIgnoreSet{}
 
 	commentSplit := strings.SplitN(comment, ":", 2)
@@ -128,9 +171,11 @@ func (p *ignoreIssuesProcessorImpl) processIgnoreRule(comment string, path strin
 }
 
 func (p *ignoreIssuesProcessorImpl) shouldIgnore(issue types.Issue) bool {
-	// TODO #42: parse .tfcoachignore at some point and use the information here to skip the loop
+	if p.ignoredFiles.isPresent(issue.File) {
+		return true
+	}
 
-	for _, ignoredRule := range p.ignoreRules.values() {
+	for _, ignoredRule := range p.ignoredRules.values() {
 		if ignoredRule.path != issue.File {
 			continue
 		}

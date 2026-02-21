@@ -11,3 +11,6 @@ docs/site
 .tfcoach.y*ml
 .tfcoach.json
 report.json
+
+examples/compliant/.tfcoachnoscan
+.tfcoachnoreport

@@ -1,6 +1,8 @@
 package processor_test
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/Marcel2603/tfcoach/internal/engine/processor"
@@ -8,6 +10,42 @@ import (
 	"github.com/Marcel2603/tfcoach/internal/types"
 	"github.com/hashicorp/hcl/v2"
 )
+
+func TestIgnoreIssuesProcessor_ShouldRespectTfcoachnoreport(t *testing.T) {
+	tempDir := t.TempDir()
+	createFile(t, filepath.Join(tempDir, ".tfcoachnoreport"), `
+a.tf
+`)
+
+	ignored := `
+resource "test" "a"{}
+resource "test" "b"{}
+`
+	resource2 := `
+resource "test" "c"{}
+`
+	ignoredFile := testutil.ParseToHcl(t, "a.tf", ignored)
+	ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor(tempDir)
+	if err != nil {
+		t.Fatal("Setup error: ", err)
+	}
+	ignoreIssueProcessor.ScanFile([]byte(ignored), ignoredFile, "a.tf")
+
+	anotherFile := testutil.ParseToHcl(t, "b.tf", resource2)
+	ignoreIssueProcessor.ScanFile([]byte(resource2), anotherFile, "b.tf")
+
+	issues := []types.Issue{
+		{File: "a.tf", RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 2}}},
+		{File: "a.tf", RuleID: "another-rule", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
+		{File: "b.tf", RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
+	}
+
+	processedIssues := ignoreIssueProcessor.ProcessIssues(issues)
+
+	if len(processedIssues) != 1 {
+		t.Fatalf("Wrong number of expected issues; got %d, wanted %d", len(processedIssues), 1)
+	}
+}
 
 func TestIgnoreIssuesProcessor_ProcessFileIgnore(t *testing.T) {
 	ignored := `
@@ -20,12 +58,16 @@ resource "test" "non_compliant"{}
 resource "test" "non_compliant"{}
 `
 	ignoredFile := testutil.ParseToHcl(t, "main.tf", ignored)
-	ignoreIssueProcessor := processor.NewIgnoreIssuesProcessor()
+	ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor(".")
+	if err != nil {
+		t.Fatal("Setup error: ", err)
+	}
 	ignoreIssueProcessor.ScanFile([]byte(ignored), ignoredFile, "main.tf")
 
 	anotherFile := testutil.ParseToHcl(t, "another.tf", resource2)
 	ignoreIssueProcessor.ScanFile([]byte(resource2), anotherFile, "another.tf")
-	issues := []types.Issue{{File: "main.tf", RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 2}}},
+	issues := []types.Issue{
+		{File: "main.tf", RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 2}}},
 		{File: "main.tf", RuleID: "another-rule", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
 		{File: "another.tf", RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
 	}
@@ -79,7 +121,10 @@ resource "test" "notIgnored"{
 		t.Run(tt.name, func(t *testing.T) {
 			hclFile := testutil.ParseToHcl(t, "main.tf", tt.resource)
 
-			ignoreIssueProcessor := processor.NewIgnoreIssuesProcessor()
+			ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor(".")
+			if err != nil {
+				t.Fatal("Setup error: ", err)
+			}
 			ignoreIssueProcessor.ScanFile([]byte(tt.resource), hclFile, "main.tf")
 
 			var issues []types.Issue
@@ -95,5 +140,15 @@ resource "test" "notIgnored"{
 				t.Fatalf("Wrong number of expected issues; got %d wanted %d", len(issues), tt.numberOfIssues)
 			}
 		})
+	}
+}
+
+func createFile(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatalf("mkdir -p %s: %v", filepath.Dir(path), err)
+	}
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write %s: %v", path, err)
 	}
 }

@@ -1,0 +1,3 @@
+variable "b" {
+  type = string
+}
