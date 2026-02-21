@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/codeglyph/go-dotignore/v2"
 )
 
 type Source interface {
@@ -18,8 +20,10 @@ type FileSystem struct {
 }
 
 func (f FileSystem) List(root string) ([]string, error) {
-	// TODO #42: use content of .tfcoachignore to parse which files should be ignored when reporting issues and
-	//   add this to the return value
+	ignorer, err := dotignore.NewRepositoryMatcherWithConfig(root, &dotignore.RepositoryConfig{IgnoreFileName: ".tfcoachignore"})
+	if err != nil {
+		return nil, err
+	}
 
 	// TODO idea: maybe allow 2 ignore lists: completely skip (which for now is statically defined in config.go
 	//   + optionally TG cache) and ignore in issue reporting only
@@ -31,9 +35,16 @@ func (f FileSystem) List(root string) ([]string, error) {
 		skip[d] = struct{}{}
 	}
 	var out []string
-	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
+	err = filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+		shouldIgnore, ignoreErr := ignorer.Matches(p)
+		if ignoreErr != nil {
+			return ignoreErr
+		}
+		if shouldIgnore {
+			return nil
 		}
 		if d.IsDir() {
 			if _, ok := skip[d.Name()]; ok {
@@ -46,6 +57,7 @@ func (f FileSystem) List(root string) ([]string, error) {
 		}
 		return nil
 	})
+
 	if err != nil {
 		return nil, err
 	}
