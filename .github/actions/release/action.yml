@@ -42,7 +42,7 @@ runs:
           go.sum
 
     - name: Install GoReleaser
-      uses: goreleaser/goreleaser-action@v6
+      uses: goreleaser/goreleaser-action@v7
       with:
         install-only: true
         version: "~> v2"
