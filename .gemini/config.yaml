@@ -2,7 +2,7 @@ have_fun: false
 memory_config:
   disabled: false
 code_review:
-  disable: true
+  disable: false
   comment_severity_threshold: MEDIUM
   max_review_comments: 3
   pull_request_opened:
