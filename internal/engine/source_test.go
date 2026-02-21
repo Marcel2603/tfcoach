@@ -89,11 +89,44 @@ vendor/
 		t.Fatalf("List() error: %v", err)
 	}
 
-	// Expect only .tf files outside any "vendor" directory; order is sorted.
+	// Expect only .tf files outside any "vendor" directory and not "m1.tf"; order is sorted.
 	want := []string{
 		filepath.Join(root, "a.tf"),
 		filepath.Join(root, "nested", "a.tf"),
 		filepath.Join(root, "nested", "deeper.tf"),
+	}
+	if len(got) != len(want) {
+		t.Fatalf("List() length = %d, want %d; got=%v", len(got), len(want), got)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Errorf("List()[%d] = %q, want %q", i, got[i], want[i])
+		}
+	}
+}
+
+func TestFileSystem_List_SkipFilesFromComplexTfcoachnoscan(t *testing.T) {
+	root := t.TempDir()
+
+	createFile(t, filepath.Join(root, ".tfcoachnoscan"), `
+vendor/
+!vendor/abcd.tf
+`)
+	createFile(t, filepath.Join(root, "a.tf"), "yes")
+	createFile(t, filepath.Join(root, "vendor", "v1.tf"), "should ignore dir")
+	createFile(t, filepath.Join(root, "vendor", "abcd.tf"), "should ignore this file")
+	createFile(t, filepath.Join(root, "nested", "vendor", "v2.tf"), "should ignore dir")
+
+	fs := engine.FileSystem{SkipDirs: []string{}}
+
+	got, err := fs.List(root)
+	if err != nil {
+		t.Fatalf("List() error: %v", err)
+	}
+
+	want := []string{
+		filepath.Join(root, "a.tf"),
+		filepath.Join(root, "vendor", "abcd.tf"),
 	}
 	if len(got) != len(want) {
 		t.Fatalf("List() length = %d, want %d; got=%v", len(got), len(want), got)
