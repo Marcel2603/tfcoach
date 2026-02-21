@@ -13,3 +13,4 @@ To ignore rules, you have 2 options:
 | [File Naming](core/file_naming.md) | File naming should follow a strict convention. |
 | [Naming Convention](core/naming_convention.md) | Terraform names should only contain lowercase alphanumeric characters and underscores. |
 | [Required Provider Must Be Declared](core/required_provider_must_be_declared.md) | All providers used in resources or data sources are declared in the terraform.required_providers block. |
+| [Use a cloud backend to store the state](core/use_cloud_backend.md) | To store the Terraform state securely, define a cloud backend |

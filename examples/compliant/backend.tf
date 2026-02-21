@@ -3,4 +3,8 @@ terraform {
   backend "local" {
     path = "test"
   }
+  backend "remote" {}
+  cloud {
+    workspaces {}
+  }
 }
