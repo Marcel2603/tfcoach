@@ -54,9 +54,10 @@ type IgnoreIssuesProcessor interface {
 }
 
 type ignoreIssuesProcessorImpl struct {
-	ignoredRules *set[ruleIgnore]
-	ignoredFiles *set[string]
-	fileIgnorer  *dotignore.RepositoryMatcher
+	ignoredRulesAtBlockLevel *set[ruleIgnore]
+	ignoredRulesAtFileLevel  *set[ruleIgnore]
+	ignoredFiles             *set[string]
+	fileIgnorer              *dotignore.RepositoryMatcher
 }
 
 func NewIgnoreIssuesProcessor(rootPath string) (IgnoreIssuesProcessor, error) {
@@ -69,9 +70,10 @@ func NewIgnoreIssuesProcessor(rootPath string) (IgnoreIssuesProcessor, error) {
 	}
 
 	return &ignoreIssuesProcessorImpl{
-		ignoredFiles: &set[string]{},
-		ignoredRules: &set[ruleIgnore]{},
-		fileIgnorer:  ignorer,
+		ignoredRulesAtBlockLevel: &set[ruleIgnore]{},
+		ignoredRulesAtFileLevel:  &set[ruleIgnore]{},
+		ignoredFiles:             &set[string]{},
+		fileIgnorer:              ignorer,
 	}, nil
 }
 
@@ -90,11 +92,11 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 			comment = strings.Join(strings.Fields(comment), "")
 			if strings.HasPrefix(comment, ignoreFileWord) {
 				ignoredRulesForFile := computeIgnoredRulesForFile(comment, path)
-				p.appendUniqueRuleIgnores(ignoredRulesForFile)
+				p.appendUniqueRuleIgnoresAtFileLevel(ignoredRulesForFile)
 			} else {
 				if strings.HasPrefix(comment, ignoreRuleWord) {
 					ignoredRulesForBlock := computeIgnoredRulesForBlock(comment, path, tok.Range, body)
-					p.appendUniqueRuleIgnores(ignoredRulesForBlock)
+					p.appendUniqueRuleIgnoresAtBlockLevel(ignoredRulesForBlock)
 				}
 			}
 		}
@@ -112,9 +114,15 @@ func (p *ignoreIssuesProcessorImpl) ProcessIssues(issues []types.Issue) []types.
 	return utils.FlatMap(issues, processIssue)
 }
 
-func (p *ignoreIssuesProcessorImpl) appendUniqueRuleIgnores(additionalRuleIgnores *set[ruleIgnore]) {
+func (p *ignoreIssuesProcessorImpl) appendUniqueRuleIgnoresAtBlockLevel(additionalRuleIgnores *set[ruleIgnore]) {
 	for _, r := range additionalRuleIgnores.values() {
-		p.ignoredRules.add(r)
+		p.ignoredRulesAtBlockLevel.add(r)
+	}
+}
+
+func (p *ignoreIssuesProcessorImpl) appendUniqueRuleIgnoresAtFileLevel(additionalRuleIgnores *set[ruleIgnore]) {
+	for _, r := range additionalRuleIgnores.values() {
+		p.ignoredRulesAtFileLevel.add(r)
 	}
 }
 
@@ -156,7 +164,11 @@ func (p *ignoreIssuesProcessorImpl) shouldIgnore(issue types.Issue) bool {
 		return true
 	}
 
-	for _, ignoredRule := range p.ignoredRules.values() {
+	if p.ignoredRulesAtFileLevel.has(ruleIgnore{ruleID: issue.RuleID, path: issue.File}) {
+		return true
+	}
+
+	for _, ignoredRule := range p.ignoredRulesAtBlockLevel.values() {
 		if ignoredRule.path != issue.File {
 			continue
 		}
@@ -165,13 +177,7 @@ func (p *ignoreIssuesProcessorImpl) shouldIgnore(issue types.Issue) bool {
 			continue
 		}
 
-		if ignoredRule.hclRange == (hcl.Range{}) {
-			// rule ignored for whole file
-			return true
-		}
-
 		if ignoredRule.hclRange.ContainsPos(issue.Range.Start) {
-			// rule ignored for block containing the issue
 			return true
 		}
 	}
