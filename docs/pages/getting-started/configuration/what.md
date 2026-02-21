@@ -39,3 +39,20 @@ output:
   emojis: true  # enable or disable emojis; if set to false, equivalent to the "--no-emojis" flag
   include_terragrunt_cache: false  # enable or disable terragrunt-cache scanning; if set to true, equivalent to the "--include-terragrunt-cache" flag
 ```
+
+## Exclude whole files from scanning or reporting
+
+Additionally, it is possible to exclude complete paths from being scanned by tfcoach or from reporting issues.
+
+> Consider the following case: a file has many problems we do not care about but defines some resources that are
+> needed to pass a rule (e.g. providers for `core.required_provider_must_be_declared`). If it were excluded from
+> scanning, then the rule would find an issue. If it were completely included, then noise issues would be additionally
+> reported. This file should therefore be scanned but prevented from reporting issues.
+
+This can be configured via the following files:
+
+- `.tfcoachnoscan`: exclude from scanning
+- `.tfcoachnoreport`: prevent from reporting issues
+
+Both files use the `.gitignore` convention (see [Git docs](https://git-scm.com/docs/gitignore)) for listing files and
+directories to ignore.
