@@ -21,6 +21,7 @@ var (
 		EnforceVariableDescriptionRule(),
 		AvoidNullProviderRule(),
 		AvoidTypeInNameRule(),
+		UseCloudBackendRule(),
 	}
 	ruleMap = mapRules(rules)
 )
