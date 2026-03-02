@@ -6,5 +6,10 @@ import "github.com/hashicorp/hcl/v2"
 type DetectedBlock struct {
 	Name  string
 	File  string
+	Type  DetectedBlockType
 	Range hcl.Range
+}
+
+type DetectedBlockType struct {
+	Value string `json:"value"`
 }
