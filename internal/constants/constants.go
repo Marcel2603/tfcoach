@@ -7,4 +7,7 @@ var (
 	SeverityMedium  = types.Severity{Str: "MEDIUM", Priority: 2}
 	SeverityLow     = types.Severity{Str: "LOW", Priority: 3}
 	SeverityUnknown = types.Severity{Str: "UNKNOWN", Priority: 99}
+
+	DetectedBlockTypeBackend = types.DetectedBlockType{Value: "backend"}
+	DetectedBlockTypeCloud   = types.DetectedBlockType{Value: "cloud"}
 )
