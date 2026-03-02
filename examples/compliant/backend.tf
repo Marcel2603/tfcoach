@@ -4,4 +4,8 @@ terraform {
   cloud {
     workspaces {}
   }
+  backend "remote" {}
+  cloud {
+    workspaces {}
+  }
 }
