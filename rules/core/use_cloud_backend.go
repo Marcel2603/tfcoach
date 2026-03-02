@@ -1,7 +1,7 @@
 package core
 
 import (
-	"fmt"
+	"slices"
 	"strings"
 	"sync"
 
@@ -18,16 +18,14 @@ type UseCloudBackend struct {
 
 type detectedBackendBlocks struct {
 	sync.RWMutex
-	backendBlocks []types.DetectedBlock
-	cloudBlocks   []types.DetectedBlock
+	detectedBlocks []types.DetectedBlock
 }
 
 func UseCloudBackendRule() *UseCloudBackend {
 	return &UseCloudBackend{
 		id: rulePrefix + ".use_cloud_backend",
 		foundBackends: detectedBackendBlocks{
-			backendBlocks: make([]types.DetectedBlock, 0),
-			cloudBlocks:   make([]types.DetectedBlock, 0),
+			detectedBlocks: make([]types.DetectedBlock, 0),
 		},
 	}
 }
@@ -53,13 +51,11 @@ func (u *UseCloudBackend) Apply(file string, f *hcl.File) []types.Issue {
 	for _, blk := range body.Blocks {
 		if blk.Type == "terraform" {
 			for _, child := range blk.Body.Blocks {
-				if child.Type == "backend" {
-					fmt.Printf("Backend block found %s \n", child.Labels[0])
-					u.addBackendBlock(child.Labels[0], file, child.Range())
+				if child.Type == constants.DetectedBlockTypeBackend.Value {
+					u.addBlock(constants.DetectedBlockTypeBackend, child.Labels[0], file, child.Range())
 				}
-				if child.Type == "cloud" {
-					fmt.Printf("Cloud block found \n")
-					u.addCloudBlock("cloud", file, child.Range())
+				if child.Type == constants.DetectedBlockTypeCloud.Value {
+					u.addBlock(constants.DetectedBlockTypeCloud, "cloud", file, child.Range())
 				}
 			}
 		}
@@ -68,25 +64,36 @@ func (u *UseCloudBackend) Apply(file string, f *hcl.File) []types.Issue {
 	return []types.Issue{}
 }
 
-func (*UseCloudBackend) Finish() []types.Issue {
-
+func (u *UseCloudBackend) Finish() []types.Issue {
+	blocks := u.foundBackends.detectedBlocks
+	if len(blocks) == 0 {
+		return []types.Issue{
+			{
+				RuleID:  u.id,
+				Message: "No backend configured. State will not be stored remotely",
+				Range:   hcl.Range{},
+			},
+		}
+	}
+	localBackendIndex := slices.IndexFunc(blocks, func(b types.DetectedBlock) bool { return b.Name == "local" })
+	if localBackendIndex != -1 {
+		return []types.Issue{
+			{
+				RuleID:  u.id,
+				File:    blocks[localBackendIndex].File,
+				Message: "Local backend configured. State will be stored locally",
+				Range:   blocks[localBackendIndex].Range,
+			},
+		}
+	}
 	return []types.Issue{}
 }
 
-func (u *UseCloudBackend) addBackendBlock(name string, file string, blockRange hcl.Range) {
+func (u *UseCloudBackend) addBlock(detectedBlockType types.DetectedBlockType, name string, file string, blockRange hcl.Range) {
 	u.foundBackends.Lock()
-	u.foundBackends.backendBlocks = append(
-		u.foundBackends.backendBlocks,
-		types.DetectedBlock{Name: name, File: file, Range: blockRange},
-	)
-	u.foundBackends.Unlock()
-}
-
-func (u *UseCloudBackend) addCloudBlock(name string, file string, blockRange hcl.Range) {
-	u.foundBackends.Lock()
-	u.foundBackends.cloudBlocks = append(
-		u.foundBackends.cloudBlocks,
-		types.DetectedBlock{Name: name, File: file, Range: blockRange},
+	u.foundBackends.detectedBlocks = append(
+		u.foundBackends.detectedBlocks,
+		types.DetectedBlock{Name: name, File: file, Range: blockRange, Type: detectedBlockType},
 	)
 	u.foundBackends.Unlock()
 }
