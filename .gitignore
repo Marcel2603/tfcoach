@@ -12,8 +12,5 @@ docs/site
 .tfcoach.json
 report.json
 
-.tfcoachnoscan
-.tfcoachnoreport
-
-!examples/compliant/.tfcoachnoscan
-!examples/compliant/.tfcoachnoreport
+.tfcoachignore
+!examples/compliant/.tfcoachignore

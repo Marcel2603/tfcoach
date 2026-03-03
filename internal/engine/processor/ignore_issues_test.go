@@ -11,9 +11,9 @@ import (
 	"github.com/hashicorp/hcl/v2"
 )
 
-func TestIgnoreIssuesProcessor_ShouldRespectTfcoachnoreport(t *testing.T) {
+func TestIgnoreIssuesProcessor_ShouldRespectTfcoachignore(t *testing.T) {
 	tempDir := t.TempDir()
-	createFile(t, filepath.Join(tempDir, ".tfcoachnoreport"), `
+	createFile(t, filepath.Join(tempDir, ".tfcoachignore"), `
 a.tf
 `)
 

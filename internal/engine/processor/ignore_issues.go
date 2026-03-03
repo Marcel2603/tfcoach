@@ -63,7 +63,7 @@ type ignoreIssuesProcessorImpl struct {
 func NewIgnoreIssuesProcessor(rootPath string) (IgnoreIssuesProcessor, error) {
 	ignorer, err := dotignore.NewRepositoryMatcherWithConfig(
 		rootPath,
-		&dotignore.RepositoryConfig{IgnoreFileName: ".tfcoachnoreport"},
+		&dotignore.RepositoryConfig{IgnoreFileName: ".tfcoachignore"},
 	)
 	if err != nil {
 		return nil, err

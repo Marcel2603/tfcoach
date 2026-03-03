@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-
-	"github.com/codeglyph/go-dotignore/v2"
 )
 
 type Source interface {
@@ -20,11 +18,6 @@ type FileSystem struct {
 }
 
 func (f FileSystem) List(root string) ([]string, error) {
-	ignorer, err := dotignore.NewRepositoryMatcherWithConfig(root, &dotignore.RepositoryConfig{IgnoreFileName: ".tfcoachnoscan"})
-	if err != nil {
-		return nil, err
-	}
-
 	// TODO later: switch .terragrunt-cache from "completely skipped" to "ignored in issue reporting"?
 
 	skip := map[string]struct{}{}
@@ -32,16 +25,9 @@ func (f FileSystem) List(root string) ([]string, error) {
 		skip[d] = struct{}{}
 	}
 	var out []string
-	err = filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
-		}
-		shouldIgnore, ignoreErr := ignorer.Matches(p)
-		if ignoreErr != nil {
-			return ignoreErr
-		}
-		if shouldIgnore {
-			return nil
 		}
 		if d.IsDir() {
 			if _, ok := skip[d.Name()]; ok {
