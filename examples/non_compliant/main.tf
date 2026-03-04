@@ -24,3 +24,25 @@ resource "azurerm_resource_group" "this" {
 resource "aws_s3_bucket" "s3" {
   bucket = "non-compliant-naming"
 }
+
+resource "aws_instance" "web1" {
+  count = 1
+  ami = 4321
+  depends_on = [
+    aws_s3_bucket.s3
+  ]
+  lifecycle {
+    ignore_changes = [tags]
+  }
+}
+
+resource "aws_instance" "web2" {
+  ami = 1234
+  instance_market_options {
+    market_type = "spot"
+    spot_options {
+      max_price = 0.002
+    }
+  }
+  availability_zone = "custom-az"
+}
