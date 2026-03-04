@@ -11,6 +11,15 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
+var categoryOrder = map[string]int{
+	"count":      0,
+	"for_each":   1,
+	"non_block":  2,
+	"block":      3,
+	"lifecycle":  4,
+	"depends_on": 5,
+}
+
 type ResourceParameterOrder struct {
 	id string
 }
@@ -62,34 +71,32 @@ func (*ResourceParameterOrder) Finish() []types.Issue {
 
 func isParameterOrderCorrect(attributes *hclsyntax.Attributes) bool {
 	metaArguments := []string{"count", "for_each", "lifecycle", "depends_on"}
-	var categorizedAttributes []string
+	var foundCategories []int
 
 	// TODO #20: need to sort attributes for consistent ordering here?
 	for _, attr := range *attributes {
 		if slices.Contains(metaArguments, attr.Name) {
-			categorizedAttributes = append(categorizedAttributes, attr.Name)
+			prio, ok := categoryOrder[attr.Name]
+			if !ok {
+				// unexpected attribute! probably misconfiguration of this rule
+				return false
+			}
+			foundCategories = append(foundCategories, prio)
 		} else if isNonBlockExpression(attr.Expr) {
-			categorizedAttributes = append(categorizedAttributes, "non_block")
+			foundCategories = append(foundCategories, categoryOrder["non_block"])
 		} else {
-			categorizedAttributes = append(categorizedAttributes, "block")
+			foundCategories = append(foundCategories, categoryOrder["block"])
 		}
 	}
 
-	fmt.Println(categorizedAttributes)
-	correctCategoryOrder := []string{"count", "for_each", "non_block", "block", "lifecycle", "depends_on"}
-	refCatIdx := 0
-	for _, currentCat := range categorizedAttributes {
-		orderIdx := slices.IndexFunc(correctCategoryOrder, func(c string) bool { return c == currentCat })
-		if orderIdx == -1 {
-			// TODO #20: not found, should we test this?
+	fmt.Println(foundCategories)
+	// check if the list of categories in order of appearance is correctly sorted
+	previous := 0
+	for _, foundCategory := range foundCategories {
+		if foundCategory < previous {
 			return false
 		}
-		if orderIdx < refCatIdx {
-			// repetition of "earlier" category: wrong order
-			return false
-		}
-		// we expect only this category or "later" from now on
-		refCatIdx = orderIdx
+		previous = foundCategory
 	}
 	return true
 }
