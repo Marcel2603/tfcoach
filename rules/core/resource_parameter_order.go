@@ -15,11 +15,11 @@ import (
 var (
 	categoryOrder = map[string]int{
 		"count":      0,
-		"for_each":   10,
-		"non_block":  20,
-		"block":      30,
-		"lifecycle":  40,
-		"depends_on": 50,
+		"for_each":   0,
+		"non_block":  10,
+		"block":      20,
+		"lifecycle":  30,
+		"depends_on": 40,
 	}
 )
 
