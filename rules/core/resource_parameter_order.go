@@ -1,6 +1,7 @@
 package core
 
 import (
+	"cmp"
 	"fmt"
 	"slices"
 	"strings"
@@ -10,6 +11,11 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
+
+type detectedParam struct {
+	paramType string
+	startPos  hcl.Pos
+}
 
 var categoryOrder = map[string]int{
 	"count":      0,
@@ -51,8 +57,7 @@ func (r *ResourceParameterOrder) Apply(path string, f *hcl.File) []types.Issue {
 	var out []types.Issue
 	for _, blk := range body.Blocks {
 		if blk.Type == "resource" {
-			// TODO #20: iterating on attributes is not enough! ignores lifecycle and block parameters
-			if !isParameterOrderCorrect(&blk.Body.Attributes) {
+			if !isParameterOrderCorrect(blk.Body) {
 				out = append(out, types.Issue{
 					File:    path,
 					Range:   blk.Range(),
@@ -69,24 +74,53 @@ func (*ResourceParameterOrder) Finish() []types.Issue {
 	return []types.Issue{}
 }
 
-func isParameterOrderCorrect(attributes *hclsyntax.Attributes) bool {
-	metaArguments := []string{"count", "for_each", "lifecycle", "depends_on"}
-	var foundCategories []int
+func isParameterOrderCorrect(body *hclsyntax.Body) bool {
+	specialKeywords := []string{"count", "for_each", "lifecycle", "depends_on"}
 
-	// TODO #20: need to sort attributes for consistent ordering here?
-	for _, attr := range *attributes {
-		if slices.Contains(metaArguments, attr.Name) {
-			prio, ok := categoryOrder[attr.Name]
-			if !ok {
-				// unexpected attribute! probably misconfiguration of this rule
-				return false
-			}
-			foundCategories = append(foundCategories, prio)
-		} else if isNonBlockExpression(attr.Expr) {
-			foundCategories = append(foundCategories, categoryOrder["non_block"])
+	fmt.Println(body.Attributes)
+	for _, b := range body.Blocks {
+		fmt.Println(b.Type)
+		fmt.Println(b.Range().Start)
+	}
+
+	var detectedParams []detectedParam
+	for _, attr := range body.Attributes {
+		var paramType string
+		if slices.Contains(specialKeywords, attr.Name) {
+			paramType = attr.Name
 		} else {
-			foundCategories = append(foundCategories, categoryOrder["block"])
+			paramType = "non_block"
 		}
+
+		detectedParams = append(detectedParams, detectedParam{
+			paramType: paramType,
+			startPos:  attr.Range().Start,
+		})
+	}
+	for _, blk := range body.Blocks {
+		var paramType string
+		if slices.Contains(specialKeywords, blk.Type) {
+			paramType = blk.Type
+		} else {
+			paramType = "block"
+		}
+
+		detectedParams = append(detectedParams, detectedParam{
+			paramType: paramType,
+			startPos:  blk.Range().Start,
+		})
+	}
+
+	slices.SortStableFunc(detectedParams, func(a, b detectedParam) int {
+		if a.startPos.Line != b.startPos.Line {
+			return cmp.Compare(a.startPos.Line, b.startPos.Line)
+		}
+		return cmp.Compare(a.startPos.Column, b.startPos.Column)
+	})
+
+	var foundCategories []int
+	for _, param := range detectedParams {
+		foundCategories = append(foundCategories, categoryOrder[param.paramType])
 	}
 
 	fmt.Println(foundCategories)
@@ -99,9 +133,4 @@ func isParameterOrderCorrect(attributes *hclsyntax.Attributes) bool {
 		previous = foundCategory
 	}
 	return true
-}
-
-func isNonBlockExpression(_ hclsyntax.Expression) bool {
-	// TODO #20: switch case or reflect or better?
-	return false
 }
