@@ -24,6 +24,8 @@ func (d detectedParam) compare(other detectedParam) int {
 	return cmp.Compare(d.startPos.Column, other.startPos.Column)
 }
 
+var specialKeywords = []string{"count", "for_each", "lifecycle", "depends_on"}
+
 var categoryOrder = map[string]int{
 	"count":      0,
 	"for_each":   1,
@@ -82,38 +84,17 @@ func (*ResourceParameterOrder) Finish() []types.Issue {
 }
 
 func isParameterOrderCorrect(body *hclsyntax.Body) bool {
-	specialKeywords := []string{"count", "for_each", "lifecycle", "depends_on"}
-
+	// detect parameters in all attributes and blocks
 	var detectedParams []detectedParam
 	for _, attr := range body.Attributes {
-		var paramType string
-		if slices.Contains(specialKeywords, attr.Name) {
-			paramType = attr.Name
-		} else {
-			paramType = "non_block"
-		}
-
-		detectedParams = append(detectedParams, detectedParam{
-			paramType: paramType,
-			startPos:  attr.Range().Start,
-		})
+		detectedParams = append(detectedParams, detectFromAttribute(attr))
 	}
 	for _, blk := range body.Blocks {
-		var paramType string
-		if slices.Contains(specialKeywords, blk.Type) {
-			paramType = blk.Type
-		} else {
-			paramType = "block"
-		}
-
-		detectedParams = append(detectedParams, detectedParam{
-			paramType: paramType,
-			startPos:  blk.Range().Start,
-		})
+		detectedParams = append(detectedParams, detectFromBlock(blk))
 	}
-
 	slices.SortStableFunc(detectedParams, func(a, b detectedParam) int { return a.compare(b) })
 
+	// assign expected order to each parameter
 	var foundCategories []int
 	for _, param := range detectedParams {
 		foundCategories = append(foundCategories, categoryOrder[param.paramType])
@@ -127,5 +108,34 @@ func isParameterOrderCorrect(body *hclsyntax.Body) bool {
 		}
 		previous = foundCategory
 	}
+
 	return true
+}
+
+func detectFromAttribute(attr *hclsyntax.Attribute) detectedParam {
+	var paramType string
+	if slices.Contains(specialKeywords, attr.Name) {
+		paramType = attr.Name
+	} else {
+		paramType = "non_block"
+	}
+
+	return detectedParam{
+		paramType: paramType,
+		startPos:  attr.Range().Start,
+	}
+}
+
+func detectFromBlock(blk *hclsyntax.Block) detectedParam {
+	var paramType string
+	if slices.Contains(specialKeywords, blk.Type) {
+		paramType = blk.Type
+	} else {
+		paramType = "block"
+	}
+
+	return detectedParam{
+		paramType: paramType,
+		startPos:  blk.Range().Start,
+	}
 }
