@@ -12,6 +12,18 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
+var (
+	specialKeywords = []string{"count", "for_each", "lifecycle", "depends_on"}
+	categoryOrder   = map[string]int{
+		"count":      0,
+		"for_each":   10,
+		"non_block":  20,
+		"block":      30,
+		"lifecycle":  40,
+		"depends_on": 50,
+	}
+)
+
 type detectedParam struct {
 	paramType string
 	startPos  hcl.Pos
@@ -22,17 +34,6 @@ func (d detectedParam) compare(other detectedParam) int {
 		return cmp.Compare(d.startPos.Line, other.startPos.Line)
 	}
 	return cmp.Compare(d.startPos.Column, other.startPos.Column)
-}
-
-var specialKeywords = []string{"count", "for_each", "lifecycle", "depends_on"}
-
-var categoryOrder = map[string]int{
-	"count":      0,
-	"for_each":   1,
-	"non_block":  2,
-	"block":      3,
-	"lifecycle":  4,
-	"depends_on": 5,
 }
 
 type ResourceParameterOrder struct {
@@ -92,6 +93,8 @@ func isParameterOrderCorrect(body *hclsyntax.Body) bool {
 	for _, blk := range body.Blocks {
 		detectedParams = append(detectedParams, detectFromBlock(blk))
 	}
+
+	// order detected parameters by their position in the file
 	slices.SortStableFunc(detectedParams, func(a, b detectedParam) int { return a.compare(b) })
 
 	// assign expected order to each parameter
