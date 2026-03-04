@@ -17,6 +17,13 @@ type detectedParam struct {
 	startPos  hcl.Pos
 }
 
+func (d detectedParam) compare(other detectedParam) int {
+	if d.startPos.Line != other.startPos.Line {
+		return cmp.Compare(d.startPos.Line, other.startPos.Line)
+	}
+	return cmp.Compare(d.startPos.Column, other.startPos.Column)
+}
+
 var categoryOrder = map[string]int{
 	"count":      0,
 	"for_each":   1,
@@ -77,12 +84,6 @@ func (*ResourceParameterOrder) Finish() []types.Issue {
 func isParameterOrderCorrect(body *hclsyntax.Body) bool {
 	specialKeywords := []string{"count", "for_each", "lifecycle", "depends_on"}
 
-	fmt.Println(body.Attributes)
-	for _, b := range body.Blocks {
-		fmt.Println(b.Type)
-		fmt.Println(b.Range().Start)
-	}
-
 	var detectedParams []detectedParam
 	for _, attr := range body.Attributes {
 		var paramType string
@@ -111,19 +112,13 @@ func isParameterOrderCorrect(body *hclsyntax.Body) bool {
 		})
 	}
 
-	slices.SortStableFunc(detectedParams, func(a, b detectedParam) int {
-		if a.startPos.Line != b.startPos.Line {
-			return cmp.Compare(a.startPos.Line, b.startPos.Line)
-		}
-		return cmp.Compare(a.startPos.Column, b.startPos.Column)
-	})
+	slices.SortStableFunc(detectedParams, func(a, b detectedParam) int { return a.compare(b) })
 
 	var foundCategories []int
 	for _, param := range detectedParams {
 		foundCategories = append(foundCategories, categoryOrder[param.paramType])
 	}
 
-	fmt.Println(foundCategories)
 	// check if the list of categories in order of appearance is correctly sorted
 	previous := 0
 	for _, foundCategory := range foundCategories {
