@@ -99,7 +99,7 @@ func TestResourceParameterOrder_AllGood(t *testing.T) {
 		{
 			"with_multiple_in_correct_order_2",
 			`resource "aws_instance" "web" {
-  foreach = var.instances
+  for_each = var.instances
   ami = each.key
   availability_zone = each.value
   instance_market_options {
