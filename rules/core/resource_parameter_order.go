@@ -13,8 +13,7 @@ import (
 )
 
 var (
-	specialKeywords = []string{"count", "for_each", "lifecycle", "depends_on"}
-	categoryOrder   = map[string]int{
+	categoryOrder = map[string]int{
 		"count":      0,
 		"for_each":   10,
 		"non_block":  20,
@@ -100,7 +99,11 @@ func isParameterOrderCorrect(body *hclsyntax.Body) bool {
 	// assign expected order to each parameter
 	var foundCategories []int
 	for _, param := range detectedParams {
-		foundCategories = append(foundCategories, categoryOrder[param.paramType])
+		order, ok := categoryOrder[param.paramType]
+		if ok {
+			foundCategories = append(foundCategories, order)
+		}
+		// TODO later: log warnings if not found
 	}
 
 	// check if the list of categories in order of appearance is correctly sorted
@@ -117,9 +120,10 @@ func isParameterOrderCorrect(body *hclsyntax.Body) bool {
 
 func detectFromAttribute(attr *hclsyntax.Attribute) detectedParam {
 	var paramType string
-	if slices.Contains(specialKeywords, attr.Name) {
+	switch attr.Name {
+	case "count", "for_each", "depends_on":
 		paramType = attr.Name
-	} else {
+	default:
 		paramType = "non_block"
 	}
 
@@ -131,9 +135,10 @@ func detectFromAttribute(attr *hclsyntax.Attribute) detectedParam {
 
 func detectFromBlock(blk *hclsyntax.Block) detectedParam {
 	var paramType string
-	if slices.Contains(specialKeywords, blk.Type) {
+	switch blk.Type {
+	case "lifecycle":
 		paramType = blk.Type
-	} else {
+	default:
 		paramType = "block"
 	}
 
