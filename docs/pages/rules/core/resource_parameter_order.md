@@ -3,7 +3,7 @@
 Enforce the ordering of parameters in `resource` blocks as recommended by
 the [Terraform docs](https://developer.hashicorp.com/terraform/language/style#resource-order):
 
-1. If present, The `count` or `for_each` meta-argument
+1. If present, the `count` or `for_each` meta-argument
 2. Resource-specific _non-block_ parameters
 3. Resource-specific _block_ parameters
 4. If required, a `lifecycle` block
