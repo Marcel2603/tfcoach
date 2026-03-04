@@ -49,7 +49,7 @@ resource "aws_instance" "web2" {
 
 ### Good
 
-````hcl
+```hcl
 resource "aws_instance" "web1" {
   count = 1
   ami = 4321
@@ -71,8 +71,8 @@ resource "aws_instance" "web2" {
     }
   }
 }
-````
+```
 
 ## Configuration
 
-There is currently no configuration flags for that rule, beside the option to enable or disable the rule
+There is currently no configuration flags for that rule, besides the option to enable or disable the rule
