@@ -18,6 +18,8 @@ type FileSystem struct {
 }
 
 func (f FileSystem) List(root string) ([]string, error) {
+	// TODO later: switch .terragrunt-cache from "completely skipped" to "ignored in issue reporting"?
+
 	skip := map[string]struct{}{}
 	for _, d := range f.SkipDirs {
 		skip[d] = struct{}{}
@@ -38,6 +40,7 @@ func (f FileSystem) List(root string) ([]string, error) {
 		}
 		return nil
 	})
+
 	if err != nil {
 		return nil, err
 	}

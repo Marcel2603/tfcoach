@@ -1,4 +1,5 @@
 ignores:
+  - .gemini/styleguide.md
   - docs/pages/rules/index.md
   - docs/pages/getting-started/usage.md
   - CHANGELOG.md
