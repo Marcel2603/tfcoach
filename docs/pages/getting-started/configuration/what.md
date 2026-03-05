@@ -28,6 +28,7 @@ scanned by setting the property `output.include_terragrunt_cache: true`.
 Example `.tfcoach.yml` (same options available with the JSON format):
 
 <!-- markdownlint-disable MD013 -->
+
 ```yaml
 rules: # map to restrict rule configurations
   core.example_rule: # rule_id of the rule you want to configure
@@ -39,3 +40,10 @@ output:
   emojis: true  # enable or disable emojis; if set to false, equivalent to the "--no-emojis" flag
   include_terragrunt_cache: false  # enable or disable terragrunt-cache scanning; if set to true, equivalent to the "--include-terragrunt-cache" flag
 ```
+
+## Exclude whole files from scanning or reporting
+
+Additionally, it is possible to exclude complete paths from reporting issues.
+
+This can be configured via the `.tfcoachignore` file. It uses the `.gitignore` convention (see
+[Git docs](https://git-scm.com/docs/gitignore)) for listing files and directories to ignore.
