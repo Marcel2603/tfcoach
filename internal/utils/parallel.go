@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	defaultBufSize = 5 // TODO later: choose appropriate buffer size (balance performance vs resource usage)
+	defaultBufSize = 5 // TODO #68: choose appropriate buffer size (balance performance vs resource usage)
 )
 
 // FlatMap Use for transformations that take an input array and return an output array by
