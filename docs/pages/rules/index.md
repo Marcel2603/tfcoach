@@ -13,3 +13,4 @@ To ignore rules, you have 2 options:
 | [File Naming](core/file_naming.md) | File naming should follow a strict convention. |
 | [Naming Convention](core/naming_convention.md) | Terraform names should only contain lowercase alphanumeric characters and underscores. |
 | [Required Provider Must Be Declared](core/required_provider_must_be_declared.md) | All providers used in resources or data sources are declared in the terraform.required_providers block. |
+| [Resource Parameter Order](core/resource_parameter_order.md) | Resource parameters should follow a consistent order |

@@ -31,4 +31,4 @@ resource "aws_s3_bucket" "this" {}
 
 ## Configuration
 
-There is currently no configuration flags for that rule, beside the option to enable or disable the rule
+There is currently no configuration flags for that rule, besides the option to enable or disable the rule
