@@ -51,9 +51,9 @@ func (u *UseCloudBackend) Apply(file string, f *hcl.File) []types.Issue {
 	for _, blk := range body.Blocks {
 		if blk.Type == "terraform" {
 			for _, child := range blk.Body.Blocks {
-                if child.Type == constants.DetectedBlockTypeBackend.Value && len(child.Labels) > 0 {
-                    u.addBlock(constants.DetectedBlockTypeBackend, child.Labels[0], file, child.Range())
-                }
+				if child.Type == constants.DetectedBlockTypeBackend.Value && len(child.Labels) > 0 {
+					u.addBlock(constants.DetectedBlockTypeBackend, child.Labels[0], file, child.Range())
+				}
 				if child.Type == constants.DetectedBlockTypeCloud.Value {
 					u.addBlock(constants.DetectedBlockTypeCloud, "cloud", file, child.Range())
 				}
