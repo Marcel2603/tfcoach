@@ -4,18 +4,18 @@ go 1.25.5
 
 require (
 	dario.cat/mergo v1.0.2
+	github.com/codeglyph/go-dotignore/v2 v2.1.0
 	github.com/fatih/color v1.18.0
 	github.com/hashicorp/hcl/v2 v2.24.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/sync v0.19.0
+	golang.org/x/sync v0.20.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
-	github.com/codeglyph/go-dotignore/v2 v2.1.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect

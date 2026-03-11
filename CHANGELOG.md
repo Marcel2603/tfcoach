@@ -1,6 +1,32 @@
 # Changelog
 
-## [0.12.0](https://github.com/Marcel2603/tfcoach/compare/v0.11.0..0.12.0) - 2026-02-07
+## [0.13.0](https://github.com/Marcel2603/tfcoach/compare/v0.12.0..0.13.0) - 2026-03-05
+
+### Features
+
+- *(app)* Add option to exclude whole files from tfcoach report via .tfcoachignore ([#62](https://github.com/marcel2603/tfcoach/issues/62)) - ([3f2e379](https://github.com/Marcel2603/tfcoach/commit/3f2e37954b6a11af2f2641c26ab09bdfced94453))  by @Erkenbend
+
+### Bug Fixes
+
+- *(format)* Rename package name from 'format' to 'formatter' to be c… ([#64](https://github.com/marcel2603/tfcoach/issues/64)) - ([bae8792](https://github.com/Marcel2603/tfcoach/commit/bae8792b23b5e47b3ba75432e97e1f2740bda40c))  by @Marcel2603
+
+### Miscellaneous Tasks
+
+- *(docs)* Add manual trigger - ([72b0608](https://github.com/Marcel2603/tfcoach/commit/72b0608d3c3ed0a3f90dbe06a52b6d008d70022f))  by @Marcel2603
+- *(gemini)* Add styleguide, enable memory_config ([#73](https://github.com/marcel2603/tfcoach/issues/73)) - ([df85258](https://github.com/Marcel2603/tfcoach/commit/df8525865db18b3bdc20f21d8561636eb0bf300b))  by @Marcel2603
+- *(gemini)* Allow infinit commtes by gemini - ([c698ccc](https://github.com/Marcel2603/tfcoach/commit/c698ccce1699e459da2834de1f55aecf35cd068f))  by @Marcel2603
+- *(gemini)* Add gemini code-review - ([d4a0c86](https://github.com/Marcel2603/tfcoach/commit/d4a0c863ef80d64b78ac0e3c49272714dee60dc2))  by @Marcel2603
+- *(gemini)* Add gemini code-review - ([e000e21](https://github.com/Marcel2603/tfcoach/commit/e000e215f309c5842b83e4d35b05ce677dd2104f))  by @Marcel2603
+
+### Dependencies
+
+- *(deps)* Update docker/setup-buildx-action action to v4 ([#72](https://github.com/marcel2603/tfcoach/issues/72)) - ([39ea103](https://github.com/Marcel2603/tfcoach/commit/39ea1034dc48fbcb5608624ebacc416ed8848173))  by @renovate[bot]
+- *(deps)* Update docker/setup-qemu-action action to v4 ([#69](https://github.com/marcel2603/tfcoach/issues/69)) - ([905caef](https://github.com/Marcel2603/tfcoach/commit/905caef6cc6089c1ac8a877a72c32314c7acef5a))  by @renovate[bot]
+- *(deps)* Update docker/login-action action to v4 ([#70](https://github.com/marcel2603/tfcoach/issues/70)) - ([071831d](https://github.com/Marcel2603/tfcoach/commit/071831d0b49b9ebdb8eba92347f45239c42f380e))  by @renovate[bot]
+- *(deps)* Update goreleaser/goreleaser-action action to v7 ([#66](https://github.com/marcel2603/tfcoach/issues/66)) - ([888484e](https://github.com/Marcel2603/tfcoach/commit/888484e9e6585dd6220b7ac3905db0e2ed01885f))  by @renovate[bot]
+- *(deps)* Update dependency go to 1.26.x ([#63](https://github.com/marcel2603/tfcoach/issues/63)) - ([82cb3e9](https://github.com/Marcel2603/tfcoach/commit/82cb3e9417f68b785f4a0d1de6a440220b4cf828))  by @renovate[bot]
+
+## [0.12.0](https://github.com/Marcel2603/tfcoach/compare/v0.11.0..v0.12.0) - 2026-02-07
 
 ### Features
 
