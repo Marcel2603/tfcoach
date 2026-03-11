@@ -30,17 +30,17 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
 		name     string
 		resource string
 	}{
-		{"no_parameters",
+		{"resource_with_no_parameters",
 			`resource "aws_instance" "web" {}`,
 		},
-		{"with_count",
+		{"resource_with_count",
 			`resource "aws_instance" "web" {
   count = 1
   ami = data.aws_ami.web.id
 }`,
 		},
 		{
-			"with_for_each",
+			"resource_with_for_each",
 			`resource "aws_instance" "web" {
   for_each = var.instances
   ami = each.key
@@ -48,7 +48,7 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
 }`,
 		},
 		{
-			"with_lifecycle",
+			"resource_with_lifecycle",
 			`resource "aws_instance" "web" {
   ami = 1234
   lifecycle {
@@ -57,7 +57,7 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
 }`,
 		},
 		{
-			"with_depends_on",
+			"resource_with_depends_on",
 			`resource "aws_instance" "web" {
   ami = 1234
   depends_on = [
@@ -66,7 +66,7 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
 }`,
 		},
 		{
-			"with_non_block_and_block_parameters",
+			"resource_with_non_block_and_block_parameters",
 			`resource "aws_instance" "web" {
   ami = 1234
   availability_zone = var.az
@@ -79,7 +79,7 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
 }`,
 		},
 		{
-			"with_multiple_in_correct_order_1",
+			"resource_with_multiple_in_correct_order_1",
 			`resource "aws_instance" "web" {
   count = 1
   ami = data.aws_ami.web.id
@@ -97,7 +97,7 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
 }`,
 		},
 		{
-			"with_multiple_in_correct_order_2",
+			"resource_with_multiple_in_correct_order_2",
 			`resource "aws_instance" "web" {
   for_each = var.instances
   ami = each.key
@@ -105,6 +105,59 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
   instance_market_options {
     market_type = "spot"
   }
+  depends_on = [
+    aws_iam_role_policy.test
+  ]
+}`,
+		},
+		{
+			"module_with_multiple_in_correct_order",
+			`module "ec2_instance" {
+  count   = length(local.instance_names)
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "6.0.2"
+
+  name           = local.instance_names[count.index]
+  ami            = data.aws_ami.latest_amazon_linux.id
+  instance_type  = "t2.micro"
+
+  depends_on = [aws_s3_bucket.example]
+}`,
+		},
+		{
+			"data_with_multiple_in_correct_order",
+			`data "aws_ami" "latest" {
+  count = 3
+  name = "test"
+  lifecycle {
+    ignore_changes = [tags]
+  }
+  depends_on = [aws_s3_bucket.example]
+}`,
+		},
+		{
+			"ephemeral_with_multiple_in_correct_order",
+			`ephemeral "aws_instance" "web" {
+  count = 1
+  ami = data.aws_ami.web.id
+  instance_market_options {
+    spot_options {
+      max_price = 0.002
+    }
+  }
+  lifecycle {
+    ignore_changes = [tags]
+  }
+  depends_on = [
+    aws_iam_role_policy.test
+  ]
+}`,
+		},
+		{
+			"output_with_depends_on",
+			`output "my_output" {
+  value = "test"
+  sensitive = true
   depends_on = [
     aws_iam_role_policy.test
   ]
@@ -130,7 +183,7 @@ func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 		issueCount int
 		resource   string
 	}{
-		{"count_not_first",
+		{"resource_count_not_first",
 			1,
 			`resource "aws_instance" "web" {
   ami = data.aws_ami.web.id
@@ -138,7 +191,7 @@ func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 }`,
 		},
 		{
-			"for_each_not_first",
+			"resource_for_each_not_first",
 			1,
 			`resource "aws_instance" "web" {
   instance_type = "t4g.nano"
@@ -148,7 +201,7 @@ func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 }`,
 		},
 		{
-			"lifecycle_too_high",
+			"resource_lifecycle_too_high",
 			1,
 			`resource "aws_instance" "web" {
   ami = 1234
@@ -161,7 +214,7 @@ func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 }`,
 		},
 		{
-			"depends_on_too_high",
+			"resource_depends_on_too_high",
 			1,
 			`resource "aws_instance" "web" {
   ami = 1234
@@ -174,7 +227,7 @@ func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 }`,
 		},
 		{
-			"depends_on_before_lifecycle",
+			"resource_depends_on_before_lifecycle",
 			1,
 			`resource "aws_instance" "web" {
   count = 1
@@ -189,7 +242,7 @@ func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 		},
 		{
 			// TODO #20: do we want to apply the rule for nested blocks?
-			"non_block_after_block_parameters",
+			"resource_non_block_after_block_parameters",
 			1,
 			`resource "aws_instance" "web" {
   ami = 1234
@@ -203,7 +256,7 @@ func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 }`,
 		},
 		{
-			"multiple_non_compliant_resources",
+			"resource_multiple_non_compliant_resources",
 			3,
 			`resource "aws_instance" "non_compliant_1" {
   ami = 1234
@@ -233,6 +286,73 @@ resource "aws_instance" "non_compliant_3" {
   ami = 8765
   availability_zone = var.az
   count = 1
+}`,
+		},
+		{
+			"module_depends_on_too_high",
+			1,
+			`module "ec2_instance" {
+  count   = length(local.instance_names)
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "6.0.2"
+  depends_on = [aws_s3_bucket.example]
+
+  name           = local.instance_names[count.index]
+  instance_type  = "t2.micro"
+}`,
+		},
+		{
+			"module_count_not_first",
+			1,
+			`module "ec2_instance" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "6.0.2"
+  count   = length(local.instance_names)
+
+  name           = local.instance_names[count.index]
+  instance_type  = "t2.micro"
+  depends_on = [aws_s3_bucket.example]
+}`,
+		},
+		{
+			"data_lifecycle_too_high",
+			1,
+			`data "aws_ami" "latest" {
+  count = 3
+  lifecycle {
+    ignore_changes = [tags]
+  }
+  name = "test"
+}`,
+		},
+		{
+			"ephemeral_completely_wrong_order",
+			1,
+			`ephemeral "aws_instance" "web" {
+  lifecycle {
+    ignore_changes = [tags]
+  }
+  count = 1
+  instance_market_options {
+    spot_options {
+      max_price = 0.002
+    }
+  }
+  depends_on = [
+    aws_iam_role_policy.test
+  ]
+  ami = data.aws_ami.web.id
+}`,
+		},
+		{
+			"output_depends_on_too_high",
+			1,
+			`output "my_output" {
+  depends_on = [
+    aws_iam_role_policy.test
+  ]
+  value = "test"
+  sensitive = true
 }`,
 		},
 	}
