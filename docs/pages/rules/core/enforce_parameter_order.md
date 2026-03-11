@@ -12,7 +12,10 @@ the [Terraform docs](https://developer.hashicorp.com/terraform/language/style#re
 This rule applies to the following blocks:
 
 - `resource`
-- TODO #20
+- `data`
+- `module`
+- `ephemeral`
+- `output`
 
 ## Why
 
