@@ -1,6 +1,6 @@
-# core.resource_parameter_order
+# core.enforce_parameter_order
 
-Enforce the ordering of parameters in `resource` blocks as recommended by
+Enforce the ordering of parameters as recommended by
 the [Terraform docs](https://developer.hashicorp.com/terraform/language/style#resource-order):
 
 1. If present, the `count` or `for_each` meta-argument
@@ -8,6 +8,11 @@ the [Terraform docs](https://developer.hashicorp.com/terraform/language/style#re
 3. Resource-specific _block_ parameters
 4. If required, a `lifecycle` block
 5. If required, the `depends_on` parameter
+
+This rule applies to the following blocks:
+
+- `resource`
+- TODO #20
 
 ## Why
 
@@ -52,7 +57,7 @@ resource "aws_instance" "web2" {
 ```hcl
 resource "aws_instance" "web1" {
   count = 1
-  ami = 4321
+  ami   = 4321
   lifecycle {
     ignore_changes = [tags]
   }
@@ -62,7 +67,7 @@ resource "aws_instance" "web1" {
 }
 
 resource "aws_instance" "web2" {
-  ami = 1234
+  ami               = 1234
   availability_zone = "custom-az"
   instance_market_options {
     market_type = "spot"

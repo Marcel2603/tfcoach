@@ -35,30 +35,30 @@ func (d detectedParam) compare(other detectedParam) int {
 	return cmp.Compare(d.startPos.Column, other.startPos.Column)
 }
 
-type ResourceParameterOrder struct {
+type EnforceParameterOrder struct {
 	id string
 }
 
-func ResourceParameterOrderRule() *ResourceParameterOrder {
-	return &ResourceParameterOrder{
-		id: rulePrefix + ".resource_parameter_order",
+func EnforceParameterOrderRule() *EnforceParameterOrder {
+	return &EnforceParameterOrder{
+		id: rulePrefix + ".enforce_parameter_order",
 	}
 }
 
-func (r *ResourceParameterOrder) ID() string {
-	return r.id
+func (e *EnforceParameterOrder) ID() string {
+	return e.id
 }
 
-func (r *ResourceParameterOrder) META() types.RuleMeta {
+func (e *EnforceParameterOrder) META() types.RuleMeta {
 	return types.RuleMeta{
-		Title:       "Resource Parameter Order",
-		Description: "Resource parameters should follow a consistent order",
+		Title:       "Enforce Parameter Order",
+		Description: "Enforce parameters should follow a consistent order",
 		Severity:    constants.SeverityMedium,
-		DocsURI:     strings.ReplaceAll(r.id, ".", "/"),
+		DocsURI:     strings.ReplaceAll(e.id, ".", "/"),
 	}
 }
 
-func (r *ResourceParameterOrder) Apply(path string, f *hcl.File) []types.Issue {
+func (e *EnforceParameterOrder) Apply(path string, f *hcl.File) []types.Issue {
 	body, ok := f.Body.(*hclsyntax.Body)
 	if !ok {
 		return nil
@@ -71,7 +71,7 @@ func (r *ResourceParameterOrder) Apply(path string, f *hcl.File) []types.Issue {
 					File:    path,
 					Range:   blk.Range(),
 					Message: fmt.Sprintf("Parameter order in resource \"%s\" is incorrect", blk.Labels[1]),
-					RuleID:  r.id,
+					RuleID:  e.id,
 				})
 			}
 		}
@@ -79,7 +79,7 @@ func (r *ResourceParameterOrder) Apply(path string, f *hcl.File) []types.Issue {
 	return out
 }
 
-func (*ResourceParameterOrder) Finish() []types.Issue {
+func (*EnforceParameterOrder) Finish() []types.Issue {
 	return []types.Issue{}
 }
 
