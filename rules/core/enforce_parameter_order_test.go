@@ -10,12 +10,12 @@ import (
 	"github.com/Marcel2603/tfcoach/rules/core"
 )
 
-func TestResourceParameterOrder_ExpectedMETA(t *testing.T) {
-	rule := core.ResourceParameterOrderRule()
+func TestEnforceParameterOrder_ExpectedMETA(t *testing.T) {
+	rule := core.EnforceParameterOrderRule()
 
 	expectedMETA := types.RuleMeta{
-		Title:       "Resource Parameter Order",
-		Description: "Resource parameters should follow a consistent order",
+		Title:       "Enforce Parameter Order",
+		Description: "Enforce parameters should follow a consistent order",
 		Severity:    constants.SeverityMedium,
 		DocsURI:     strings.ReplaceAll(rule.ID(), ".", "/"),
 	}
@@ -25,7 +25,7 @@ func TestResourceParameterOrder_ExpectedMETA(t *testing.T) {
 	}
 }
 
-func TestResourceParameterOrder_AllGood(t *testing.T) {
+func TestEnforceParameterOrder_AllGood(t *testing.T) {
 	cases := []struct {
 		name     string
 		resource string
@@ -112,7 +112,7 @@ func TestResourceParameterOrder_AllGood(t *testing.T) {
 		},
 	}
 
-	rule := core.ResourceParameterOrderRule()
+	rule := core.EnforceParameterOrderRule()
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -124,7 +124,7 @@ func TestResourceParameterOrder_AllGood(t *testing.T) {
 	}
 }
 
-func TestResourceParameterOrder_ShouldComplain(t *testing.T) {
+func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 	cases := []struct {
 		name       string
 		issueCount int
@@ -237,7 +237,7 @@ resource "aws_instance" "non_compliant_3" {
 		},
 	}
 
-	rule := core.ResourceParameterOrderRule()
+	rule := core.EnforceParameterOrderRule()
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -249,8 +249,8 @@ resource "aws_instance" "non_compliant_3" {
 	}
 }
 
-func TestResourceParameterOrder_FinishShouldDoNothing(t *testing.T) {
-	rule := core.ResourceParameterOrderRule()
+func TestEnforceParameterOrder_FinishShouldDoNothing(t *testing.T) {
+	rule := core.EnforceParameterOrderRule()
 
 	issues := rule.Finish()
 	if len(issues) != 0 {
