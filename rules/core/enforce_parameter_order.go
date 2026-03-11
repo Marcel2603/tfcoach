@@ -77,7 +77,7 @@ func (e *EnforceParameterOrder) Apply(path string, f *hcl.File) []types.Issue {
 				out = append(out, types.Issue{
 					File:    path,
 					Range:   blk.Range(),
-					Message: fmt.Sprintf("Parameter order in %s \"%s\" is incorrect", blk.Type, nameOf(blk)),
+					Message: fmt.Sprintf("Parameter order in %s block \"%s\" is incorrect", blk.Type, nameOf(blk)),
 					RuleID:  e.id,
 				})
 			}
