@@ -21,6 +21,13 @@ var (
 		"lifecycle":  30,
 		"depends_on": 40,
 	}
+	supportedBlocks = []string{
+		"resource",
+		"data",
+		"module",
+		"ephemeral",
+		"output",
+	}
 )
 
 type detectedParam struct {
@@ -70,7 +77,7 @@ func (e *EnforceParameterOrder) Apply(path string, f *hcl.File) []types.Issue {
 				out = append(out, types.Issue{
 					File:    path,
 					Range:   blk.Range(),
-					Message: fmt.Sprintf("Parameter order in resource \"%s\" is incorrect", blk.Labels[1]),
+					Message: fmt.Sprintf("Parameter order in %s \"%s\" is incorrect", blk.Type, nameOf(blk)),
 					RuleID:  e.id,
 				})
 			}

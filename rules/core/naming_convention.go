@@ -59,14 +59,3 @@ func (n *NamingConvention) Apply(file string, f *hcl.File) []types.Issue {
 func (*NamingConvention) Finish() []types.Issue {
 	return []types.Issue{}
 }
-
-func nameOf(block *hclsyntax.Block) string {
-	// <block_type> "<label1>" "<label2>"
-	if len(block.Labels) == 0 {
-		return ""
-	}
-	if block.Type == "resource" || block.Type == "data" {
-		return block.Labels[1]
-	}
-	return block.Labels[0]
-}
