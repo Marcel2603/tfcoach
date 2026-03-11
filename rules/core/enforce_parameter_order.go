@@ -72,7 +72,7 @@ func (e *EnforceParameterOrder) Apply(path string, f *hcl.File) []types.Issue {
 	}
 	var out []types.Issue
 	for _, blk := range body.Blocks {
-		if blk.Type == "resource" {
+		if slices.Contains(supportedBlocks, blk.Type) {
 			if !isParameterOrderCorrect(blk.Body) {
 				out = append(out, types.Issue{
 					File:    path,
