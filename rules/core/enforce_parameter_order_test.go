@@ -27,8 +27,8 @@ func TestEnforceParameterOrder_ExpectedMETA(t *testing.T) {
 
 func TestEnforceParameterOrder_AllGood(t *testing.T) {
 	cases := []struct {
-		name     string
-		resource string
+		name        string
+		fileContent string
 	}{
 		{"resource_with_no_parameters",
 			`resource "aws_instance" "web" {}`,
@@ -169,7 +169,7 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
-			issues := rule.Apply("a.tf", testutil.ParseToHcl(t, "a.tf", tt.resource))
+			issues := rule.Apply("a.tf", testutil.ParseToHcl(t, "a.tf", tt.fileContent))
 			if len(issues) != 0 {
 				t.Fatalf("Issues found; expected none; got %d: %#v", len(issues), issues)
 			}
@@ -179,9 +179,9 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
 
 func TestEnforceParameterOrder_ShouldComplain(t *testing.T) {
 	cases := []struct {
-		name       string
-		issueCount int
-		resource   string
+		name        string
+		issueCount  int
+		fileContent string
 	}{
 		{"resource_count_not_first",
 			1,
@@ -361,11 +361,54 @@ resource "aws_instance" "non_compliant_3" {
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
-			issues := rule.Apply("a.tf", testutil.ParseToHcl(t, "a.tf", tt.resource))
+			issues := rule.Apply("a.tf", testutil.ParseToHcl(t, "a.tf", tt.fileContent))
 			if len(issues) != tt.issueCount {
 				t.Fatalf("Mismatch in reported issue count; want %d; got %d: %#v", tt.issueCount, len(issues), issues)
 			}
 		})
+	}
+}
+
+func TestEnforceParameterOrder_IssueMessage(t *testing.T) {
+	fileContent := `data "aws_ami" "latest" {
+  count = 3
+  lifecycle {
+    ignore_changes = [tags]
+  }
+  name = "test"
+}
+
+resource "aws_instance" "web" {
+  ami = data.aws_ami.web.id
+  count = 1
+}
+
+output "my_output" {
+  depends_on = [
+    aws_iam_role_policy.test
+  ]
+  value = "test"
+  sensitive = true
+}`
+	expectedIssueCount := 3
+	expectedIssueMessages := []string{
+		"Parameter order in data block \"latest\" is incorrect",
+		"Parameter order in resource block \"web\" is incorrect",
+		"Parameter order in output block \"my_output\" is incorrect",
+	}
+
+	rule := core.EnforceParameterOrderRule()
+
+	issues := rule.Apply("a.tf", testutil.ParseToHcl(t, "a.tf", fileContent))
+
+	if len(issues) != expectedIssueCount {
+		t.Fatalf("Mismatch in reported issue count; want %d; got %d: %#v", expectedIssueCount, len(issues), issues)
+	}
+
+	for idx, issue := range issues {
+		if issue.Message != expectedIssueMessages[idx] {
+			t.Fatalf("Mismatch in issue message; want '%s'; got '%s'", expectedIssueMessages[idx], issue.Message)
+		}
 	}
 }
 
