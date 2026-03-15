@@ -9,6 +9,7 @@ To ignore rules, you have 2 options:
 |--------|---------|
 | [Avoid Type in Name](core/avoid_type_in_name.md) | Names shouldn't repeat their type. |
 | [Avoid using hashicorp/null provider](core/avoid_null_provider.md) | With newer Terraform version, use locals and terraform_data as native replacement for hashicorp/null |
+| [Enforce Parameter Order](core/enforce_parameter_order.md) | Enforce parameters should follow a consistent order |
 | [Enforce Variable Description](core/enforce_variable_description.md) | To understand what that variable does (even if it seems trivial), always add a description |
 | [File Naming](core/file_naming.md) | File naming should follow a strict convention. |
 | [Naming Convention](core/naming_convention.md) | Terraform names should only contain lowercase alphanumeric characters and underscores. |

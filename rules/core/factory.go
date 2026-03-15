@@ -21,6 +21,7 @@ var (
 		EnforceVariableDescriptionRule(),
 		AvoidNullProviderRule(),
 		AvoidTypeInNameRule(),
+		EnforceParameterOrderRule(),
 	}
 	ruleMap = mapRules(rules)
 )
