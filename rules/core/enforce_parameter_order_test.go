@@ -419,12 +419,22 @@ output "my_output" {
   ]
   value = "test"
   sensitive = true
+}
+
+variable "environment" {
+  type        = string
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "Environment must be dev, staging, or prod."
+  }
+  default = "dev"
 }`
-	expectedIssueCount := 3
+	expectedIssueCount := 4
 	expectedIssueMessages := []string{
 		"Parameter order in data block \"latest\" is incorrect",
 		"Parameter order in resource block \"web\" is incorrect",
 		"Parameter order in output block \"my_output\" is incorrect",
+		"Parameter order in variable block \"environment\" is incorrect",
 	}
 
 	rule := core.EnforceParameterOrderRule()
