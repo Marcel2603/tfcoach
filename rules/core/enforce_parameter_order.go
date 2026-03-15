@@ -27,6 +27,7 @@ var (
 		"module",
 		"ephemeral",
 		"output",
+		"variable",
 	}
 )
 

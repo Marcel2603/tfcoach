@@ -16,6 +16,7 @@ This rule applies to the following blocks:
 - `module`
 - `ephemeral`
 - `output`
+- `variable`
 
 ## Why
 
