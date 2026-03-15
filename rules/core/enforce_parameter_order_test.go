@@ -163,6 +163,21 @@ func TestEnforceParameterOrder_AllGood(t *testing.T) {
   ]
 }`,
 		},
+		{
+			"variable_with_validation",
+			`
+variable "environment" {
+  type        = string
+  description = "Deployment environment name"
+  default     = "dev"
+
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "Environment must be dev, staging, or prod."
+  }
+}
+`,
+		},
 	}
 
 	rule := core.EnforceParameterOrderRule()
@@ -354,6 +369,21 @@ resource "aws_instance" "non_compliant_3" {
   value = "test"
   sensitive = true
 }`,
+		},
+		{
+			"variable_block_too_high",
+			1,
+			`
+variable "environment" {
+  type        = string
+  description = "Deployment environment name"
+  validation {
+    condition     = contains(["dev", "staging", "prod"], var.environment)
+    error_message = "Environment must be dev, staging, or prod."
+  }
+  default = "dev"
+}
+`,
 		},
 	}
 
