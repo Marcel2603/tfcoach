@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	dario.cat/mergo v1.0.2
 	github.com/codeglyph/go-dotignore/v2 v2.1.0
-	github.com/fatih/color v1.18.0
+	github.com/fatih/color v1.19.0
 	github.com/hashicorp/hcl/v2 v2.24.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/spf13/cobra v1.10.2
@@ -26,7 +26,7 @@ require (
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.32.0 // indirect
-	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/tools v0.41.0 // indirect
 )
