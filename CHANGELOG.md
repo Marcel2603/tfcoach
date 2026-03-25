@@ -1,6 +1,21 @@
 # Changelog
 
-## [0.13.0](https://github.com/Marcel2603/tfcoach/compare/v0.12.0..0.13.0) - 2026-03-05
+## [0.14.0](https://github.com/Marcel2603/tfcoach/compare/v0.13.0..0.14.0) - 2026-03-25
+
+### Features
+
+- *(rule)* Add rule "core.enforce_parameter_order" ([#71](https://github.com/marcel2603/tfcoach/issues/71)) - ([505bc21](https://github.com/Marcel2603/tfcoach/commit/505bc21410050bd7353e7699476c4a1acff3e254))  by @Erkenbend
+
+### Bug Fixes
+
+- *(deps)* Update module github.com/fatih/color to v1.19.0 ([#76](https://github.com/marcel2603/tfcoach/issues/76)) - ([b44c065](https://github.com/Marcel2603/tfcoach/commit/b44c06504da025ade9430f36ccd9eac767e9559c))  by @renovate[bot]
+- *(deps)* Update module golang.org/x/sync to v0.20.0 ([#74](https://github.com/marcel2603/tfcoach/issues/74)) - ([4aee15e](https://github.com/Marcel2603/tfcoach/commit/4aee15ef7c4cd57f283f1154b04b020a7419aea8))  by @renovate[bot]
+
+### Dependencies
+
+- *(deps)* Update actions/create-github-app-token action to v3 ([#75](https://github.com/marcel2603/tfcoach/issues/75)) - ([65ce582](https://github.com/Marcel2603/tfcoach/commit/65ce5824116094c4e6b9d3ae8c62e463553c49b0))  by @renovate[bot]
+
+## [0.13.0](https://github.com/Marcel2603/tfcoach/compare/v0.12.0..v0.13.0) - 2026-03-05
 
 ### Features
 
