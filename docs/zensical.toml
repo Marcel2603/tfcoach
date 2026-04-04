@@ -1,0 +1,60 @@
+[project]
+site_name = "tfcoach"
+site_url = "https://marcel2603.github.io/tfcoach/"
+repo_url = "https://github.com/Marcel2603/tfcoach"
+repo_name = "Marcel2603/tfcoach"
+docs_dir = "pages"
+extra_css = ["stylesheets/max_width.css"]
+
+[project.theme]
+variant = "modern"
+features = [
+    "navigation.indexes",
+    "navigation.instant",
+    "navigation.tracking",
+    "navigation.path",
+    "content.code.copy",
+    "content.code.annotate",
+    "content.tabs.link"
+]
+
+[project.theme.font]
+text = "Roboto"
+code = "Roboto Mono"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle = { icon = "material/brightness-auto", name = "Switch to light mode" }
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "white"
+accent = "indigo"
+toggle = { icon = "material/brightness-7", name = "Switch to dark mode" }
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "black"
+accent = "indigo"
+toggle = { icon = "material/brightness-4", name = "Switch to system preference" }
+
+[project.markdown]
+extensions = [
+    "admonition",
+    "codehilite",
+    "footnotes",
+    "tables"
+]
+
+[project.markdown.toc]
+permalink = true
+
+[project.plugins]
+search = {}
+autolinks = {}
+awesome-pages = {}
+
+[project.plugins.git-revision-date-localized]
+fallback_to_build_date = true
