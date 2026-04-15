@@ -29,7 +29,7 @@ func GenerateRulesOverview(filename string) {
 		return cmp.Compare(a.META().Title, b.META().Title)
 	})
 	rulesDir := path.Dir(filename)
-	for _, r := range core.All() {
+	for _, r := range rules {
 		meta := r.META()
 		buf.WriteString(fmt.Sprintf("| [%s](%s.md) | %s |\n", meta.Title, meta.DocsURI, meta.Description))
 		rulePath := fmt.Sprintf("%s/%s.md", rulesDir, meta.DocsURI)
