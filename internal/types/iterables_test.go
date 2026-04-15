@@ -9,12 +9,21 @@ import (
 )
 
 func TestSet_Len(t *testing.T) {
-	set := types.Set[string]{}
-	set.Add("test")
-	set.Add("test2")
-	if set.Len() != 2 {
-		t.Errorf("Expected length 2, got %d", set.Len())
-	}
+	t.Run("basic", func(t *testing.T) {
+		set := types.Set[string]{}
+		set.Add("test")
+		set.Add("test2")
+		if set.Len() != 2 {
+			t.Errorf("Expected length 2, got %d", set.Len())
+		}
+	})
+	t.Run("empty set should return 0", func(t *testing.T) {
+		set := types.Set[string]{}
+		if set.Len() != 0 {
+			t.Errorf("Expected length 0, got %d", set.Len())
+		}
+	})
+
 }
 
 func TestSet_Has(t *testing.T) {

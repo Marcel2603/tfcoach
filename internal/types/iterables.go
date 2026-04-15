@@ -19,7 +19,7 @@ func (s *Set[T]) Add(elem T) {
 }
 
 func (s *Set[T]) Values() []T {
-	var result []T
+	result := make([]T, 0, s.Len())
 	s.m.Range(func(k, _ interface{}) bool {
 		elem, ok := k.(T)
 		if !ok {
@@ -31,8 +31,8 @@ func (s *Set[T]) Values() []T {
 	return result
 }
 
-func (s *Set[T]) Len() int32 {
-	return s.count.Load()
+func (s *Set[T]) Len() int {
+	return int(s.count.Load())
 }
 
 func (s *Set[T]) Has(elem T) bool {
