@@ -1,13 +1,21 @@
 package types
 
-import "golang.org/x/sync/syncmap"
+import (
+	"sync/atomic"
+
+	"golang.org/x/sync/syncmap"
+)
 
 type Set[T any] struct {
-	m syncmap.Map
+	m     syncmap.Map
+	count atomic.Int32
 }
 
 func (s *Set[T]) Add(elem T) {
-	s.m.Store(elem, struct{}{})
+	_, loaded := s.m.LoadOrStore(elem, struct{}{})
+	if !loaded {
+		s.count.Add(1)
+	}
 }
 
 func (s *Set[T]) Values() []T {
@@ -23,7 +31,18 @@ func (s *Set[T]) Values() []T {
 	return result
 }
 
+func (s *Set[T]) Len() int32 {
+	return s.count.Load()
+}
+
 func (s *Set[T]) Has(elem T) bool {
 	_, ok := s.m.Load(elem)
 	return ok
+}
+
+func (s *Set[T]) Delete(elem T) {
+	_, present := s.m.LoadAndDelete(elem)
+	if present {
+		s.count.Add(-1)
+	}
 }
