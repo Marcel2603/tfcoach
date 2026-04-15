@@ -8,19 +8,14 @@ import (
 
 	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
+	"github.com/Marcel2603/tfcoach/internal/utils"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 )
 
-type detectedBlock struct {
-	file         string
-	resourceName string
-	blockRange   hcl.Range
-}
-
 type requiredProviders struct {
 	sync.RWMutex
-	m map[string][]detectedBlock
+	m map[string][]types.DetectedBlock
 }
 
 type RequiredProviderMustBeDeclared struct {
@@ -32,7 +27,7 @@ type RequiredProviderMustBeDeclared struct {
 func RequiredProviderMustBeDeclaredRule() *RequiredProviderMustBeDeclared {
 	return &RequiredProviderMustBeDeclared{
 		id:                rulePrefix + ".required_provider_must_be_declared",
-		requiredProviders: requiredProviders{m: make(map[string][]detectedBlock)},
+		requiredProviders: requiredProviders{m: make(map[string][]types.DetectedBlock)},
 		foundProviders:    []string{"terraform"}, // built-in provider "terraform" always counts as present
 	}
 }
@@ -60,7 +55,9 @@ func (r *RequiredProviderMustBeDeclared) Apply(file string, f *hcl.File) []types
 		case "resource", "data":
 			name := blk.Labels[0]
 			provider := strings.Split(name, "_")
-			r.addBlockToRequiredProvider(provider[0], file, name, blk.Range())
+			if blockType, err := utils.DetectedBlockTypeFromHcl(blk.Type); err == nil {
+				r.addBlockToRequiredProvider(provider[0], *blockType, file, name, blk.Range())
+			}
 		case "terraform":
 			for _, child := range blk.Body.Blocks {
 				if child.Type != "required_providers" {
@@ -83,9 +80,9 @@ func (r *RequiredProviderMustBeDeclared) Finish() []types.Issue {
 		}
 		for _, block := range detectedBlocks {
 			issues = append(issues, types.Issue{
-				File:    block.file,
-				Range:   block.blockRange,
-				Message: fmt.Sprintf("Block \"%s\" requires provider \"%s\" which is not declared.", block.resourceName, requiredProvider),
+				File:    block.File,
+				Range:   block.Range,
+				Message: fmt.Sprintf("Block \"%s\" requires provider \"%s\" which is not declared.", block.Name, requiredProvider),
 				RuleID:  r.id,
 			})
 		}
@@ -93,11 +90,11 @@ func (r *RequiredProviderMustBeDeclared) Finish() []types.Issue {
 	return issues
 }
 
-func (r *RequiredProviderMustBeDeclared) addBlockToRequiredProvider(provider string, file string, resourceName string, blockRange hcl.Range) {
+func (r *RequiredProviderMustBeDeclared) addBlockToRequiredProvider(provider string, blkType types.DetectedBlockType, file string, resourceName string, blockRange hcl.Range) {
 	r.requiredProviders.Lock()
 	r.requiredProviders.m[provider] = append(
 		r.requiredProviders.m[provider],
-		detectedBlock{file, resourceName, blockRange},
+		types.DetectedBlock{File: file, Name: resourceName, Type: blkType, Range: blockRange},
 	)
 	r.requiredProviders.Unlock()
 }
