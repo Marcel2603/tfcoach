@@ -34,8 +34,12 @@ func GenerateRulesOverview(filename string) {
 		buf.WriteString(fmt.Sprintf("| [%s](%s.md) | %s |\n", meta.Title, meta.DocsURI, meta.Description))
 		rulePath := fmt.Sprintf("%s/%s.md", rulesDir, meta.DocsURI)
 		if _, err := os.Stat(rulePath); errors.Is(err, os.ErrNotExist) {
-			_ = os.WriteFile(rulePath, []byte(fmt.Sprintf("# %s \n", r.ID())), 0644)
-			fmt.Printf("Created rule file: %s\n", rulePath)
+			err = os.WriteFile(rulePath, []byte(fmt.Sprintf("# %s \n", r.ID())), 0644)
+			if err != nil {
+				log.Fatalf("failed to create rule file %s: %v", rulePath, err)
+			} else {
+				fmt.Printf("Created rule file: %s\n", rulePath)
+			}
 		}
 	}
 	if err := os.WriteFile(filename, buf.Bytes(), 0644); err != nil {
