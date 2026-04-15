@@ -55,8 +55,9 @@ func (r *RequiredProviderMustBeDeclared) Apply(file string, f *hcl.File) []types
 		case "resource", "data":
 			name := blk.Labels[0]
 			provider := strings.Split(name, "_")
-			blockType, _ := utils.DetectedBlockTypeFromHcl(blk.Type)
-			r.addBlockToRequiredProvider(provider[0], *blockType, file, name, blk.Range())
+			if blockType, err := utils.DetectedBlockTypeFromHcl(blk.Type); err == nil {
+				r.addBlockToRequiredProvider(provider[0], *blockType, file, name, blk.Range())
+			}
 		case "terraform":
 			for _, child := range blk.Body.Blocks {
 				if child.Type != "required_providers" {
