@@ -3,7 +3,6 @@ package core
 import (
 	"slices"
 	"strings"
-	"sync"
 
 	"github.com/Marcel2603/tfcoach/internal/constants"
 	"github.com/Marcel2603/tfcoach/internal/types"
@@ -13,20 +12,13 @@ import (
 
 type UseCloudBackend struct {
 	id            string
-	foundBackends detectedBackendBlocks
-}
-
-type detectedBackendBlocks struct {
-	sync.RWMutex
-	detectedBlocks []types.DetectedBlock
+	foundBackends *types.Set[types.DetectedBlock]
 }
 
 func UseCloudBackendRule() *UseCloudBackend {
 	return &UseCloudBackend{
-		id: rulePrefix + ".use_cloud_backend",
-		foundBackends: detectedBackendBlocks{
-			detectedBlocks: make([]types.DetectedBlock, 0),
-		},
+		id:            rulePrefix + ".use_cloud_backend",
+		foundBackends: &types.Set[types.DetectedBlock]{},
 	}
 }
 
@@ -65,8 +57,8 @@ func (u *UseCloudBackend) Apply(file string, f *hcl.File) []types.Issue {
 }
 
 func (u *UseCloudBackend) Finish() []types.Issue {
-	blocks := u.foundBackends.detectedBlocks
-	if len(blocks) == 0 {
+	blocks := u.foundBackends
+	if blocks.Len() == 0 {
 		return []types.Issue{
 			{
 				RuleID:  u.id,
@@ -75,14 +67,15 @@ func (u *UseCloudBackend) Finish() []types.Issue {
 			},
 		}
 	}
-	localBackendIndex := slices.IndexFunc(blocks, func(b types.DetectedBlock) bool { return b.Name == "local" })
+	blockValues := blocks.Values()
+	localBackendIndex := slices.IndexFunc(blockValues, func(b types.DetectedBlock) bool { return b.Name == "local" })
 	if localBackendIndex != -1 {
 		return []types.Issue{
 			{
 				RuleID:  u.id,
-				File:    blocks[localBackendIndex].File,
+				File:    blockValues[localBackendIndex].File,
 				Message: "Local backend configured. State will be stored locally",
-				Range:   blocks[localBackendIndex].Range,
+				Range:   blockValues[localBackendIndex].Range,
 			},
 		}
 	}
@@ -90,10 +83,5 @@ func (u *UseCloudBackend) Finish() []types.Issue {
 }
 
 func (u *UseCloudBackend) addBlock(detectedBlockType types.DetectedBlockType, name string, file string, blockRange hcl.Range) {
-	u.foundBackends.Lock()
-	u.foundBackends.detectedBlocks = append(
-		u.foundBackends.detectedBlocks,
-		types.DetectedBlock{Name: name, File: file, Range: blockRange, Type: detectedBlockType},
-	)
-	u.foundBackends.Unlock()
+	u.foundBackends.Add(types.DetectedBlock{Name: name, File: file, Range: blockRange, Type: detectedBlockType})
 }
