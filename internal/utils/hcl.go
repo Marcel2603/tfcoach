@@ -19,6 +19,6 @@ func DetectedBlockTypeFromHcl(hclType string) (*types.DetectedBlockType, error) 
 	case "backend":
 		return &constants.DetectedBlockTypeBackend, nil
 	default:
-		return nil, fmt.Errorf("unknown detected block type: %s", hclType)
+		return &types.DetectedBlockType{}, fmt.Errorf("unknown detected block type: %s", hclType)
 	}
 }
