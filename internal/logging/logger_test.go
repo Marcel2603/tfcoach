@@ -16,7 +16,7 @@ func TestBuildHandler(t *testing.T) {
 		{"INFO", slog.LevelInfo, false},
 		{"WARN", slog.LevelWarn, false},
 		{"ERROR", slog.LevelError, false},
-		{"JSON", slog.LevelError, true},
+		{"JSON", slog.LevelDebug, true},
 		{"", slog.LevelError, false},
 		{"invalid", slog.LevelError, false},
 	}
