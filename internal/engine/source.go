@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -49,10 +50,23 @@ func (f FileSystem) List(root string) (*FileList, error) {
 		}
 		return nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
+
+	// Also search parent directories of root for .tfcoachignore files, so that
+	// running `tfcoach lint subdir` still respects ignore files at the repo root.
+	absRoot, err := filepath.Abs(root)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve root path: %w", err)
+	}
+	for d := filepath.Dir(absRoot); d != filepath.Dir(d); d = filepath.Dir(d) {
+		p := filepath.Join(d, ".tfcoachignore")
+		if _, err := os.Stat(p); err == nil {
+			foundIgnoreFiles = append(foundIgnoreFiles, p)
+		}
+	}
+
 	sort.Strings(foundTerraformFiles) // deterministic order
 	sort.Strings(foundIgnoreFiles)
 	return &FileList{

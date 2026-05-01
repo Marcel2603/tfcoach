@@ -70,9 +70,6 @@ func (p *ignoreIssuesProcessorImpl) matchesIgnoreFile(path string) bool {
 	var dirs []string
 	for dir := filepath.Dir(absPath); filepath.Dir(dir) != dir; dir = filepath.Dir(dir) {
 		dirs = append(dirs, dir)
-		if _, ok := p.fileMatchers[dir]; ok {
-			break
-		}
 	}
 	slices.Reverse(dirs)
 
@@ -86,9 +83,11 @@ func (p *ignoreIssuesProcessorImpl) matchesIgnoreFile(path string) bool {
 		if err != nil {
 			continue
 		}
-		if isMatch, _, err := matcher.MatchesWithTracking(rel); err == nil {
-			matched = isMatch
+		isMatch, anyMatched, err := matcher.MatchesWithTracking(rel)
+		if err != nil || !anyMatched {
+			continue
 		}
+		matched = isMatch
 	}
 	return matched
 }

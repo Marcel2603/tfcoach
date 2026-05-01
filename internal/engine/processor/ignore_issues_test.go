@@ -11,40 +11,73 @@ import (
 	"github.com/hashicorp/hcl/v2"
 )
 
-func TestIgnoreIssuesProcessor_ShouldRespectTfcoachignore(t *testing.T) {
-	tempDir := t.TempDir()
-	createFile(t, filepath.Join(tempDir, ".tfcoachignore"), `
-a.tf
-`)
-
-	ignored := `
-resource "test" "a"{}
-resource "test" "b"{}
-`
-	resource2 := `
-resource "test" "c"{}
-`
-	ignoredFile := testutil.ParseToHcl(t, "a.tf", ignored)
-	ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor([]string{filepath.Join(tempDir, ".tfcoachignore")})
-	if err != nil {
-		t.Fatal("Setup error: ", err)
+func TestIgnoreIssuesProcessor_NestedIgnoreFiles(t *testing.T) {
+	tests := []struct {
+		name        string
+		rootIgnore  string
+		childIgnore string
+		file        string // relative to tempDir
+		wantIgnored bool
+	}{
+		{
+			name:        "file matched by parent ignore",
+			rootIgnore:  "*.tf\n",
+			file:        "modules/main.tf",
+			wantIgnored: true,
+		},
+		{
+			name:        "file matched by child ignore",
+			childIgnore: "main.tf\n",
+			file:        "modules/main.tf",
+			wantIgnored: true,
+		},
+		{
+			name:        "child negates parent match",
+			rootIgnore:  "*.tf\n",
+			childIgnore: "!main.tf\n",
+			file:        "modules/main.tf",
+			wantIgnored: false,
+		},
 	}
-	ignoredFilePath := filepath.Join(tempDir, "a.tf")
-	ignoreIssueProcessor.ScanFile([]byte(ignored), ignoredFile, ignoredFilePath)
 
-	anotherFile := testutil.ParseToHcl(t, "b.tf", resource2)
-	ignoreIssueProcessor.ScanFile([]byte(resource2), anotherFile, filepath.Join(tempDir, "b.tf"))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tempDir := t.TempDir()
 
-	issues := []types.Issue{
-		{File: ignoredFilePath, RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 2}}},
-		{File: ignoredFilePath, RuleID: "another-rule", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
-		{File: filepath.Join(tempDir, "b.tf"), RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
-	}
+			var ignoreFiles []string
+			if tt.rootIgnore != "" {
+				p := filepath.Join(tempDir, ".tfcoachignore")
+				createFile(t, p, tt.rootIgnore)
+				ignoreFiles = append(ignoreFiles, p)
+			}
+			if tt.childIgnore != "" {
+				p := filepath.Join(tempDir, "modules", ".tfcoachignore")
+				createFile(t, p, tt.childIgnore)
+				ignoreFiles = append(ignoreFiles, p)
+			}
 
-	processedIssues := ignoreIssueProcessor.ProcessIssues(issues)
+			proc, err := processor.NewIgnoreIssuesProcessor(ignoreFiles)
+			if err != nil {
+				t.Fatal("setup error: ", err)
+			}
 
-	if len(processedIssues) != 1 {
-		t.Fatalf("Wrong number of expected issues; got %d, wanted %d", len(processedIssues), 1)
+			content := `resource "test" "a"{}`
+			hclFile := testutil.ParseToHcl(t, tt.file, content)
+			absFile := filepath.Join(tempDir, tt.file)
+			proc.ScanFile([]byte(content), hclFile, absFile)
+
+			issues := []types.Issue{
+				{File: absFile, RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 1}}},
+			}
+			processed := proc.ProcessIssues(issues)
+
+			if tt.wantIgnored && len(processed) != 0 {
+				t.Fatalf("expected file to be ignored, got %d issues", len(processed))
+			}
+			if !tt.wantIgnored && len(processed) != 1 {
+				t.Fatalf("expected file not to be ignored, got %d issues", len(processed))
+			}
+		})
 	}
 }
 
