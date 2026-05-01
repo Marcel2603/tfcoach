@@ -4,10 +4,10 @@ tfcoach uses Go's standard [`log/slog`](https://pkg.go.dev/log/slog) package wit
 
 ## Enabling logs
 
-Set the `TF_COACH_LOG` environment variable before running tfcoach:
+Set the `TFCOACH_LOG` environment variable before running tfcoach:
 
 ```shell
-TF_COACH_LOG=DEBUG tfcoach lint .
+TFCOACH_LOG=DEBUG tfcoach lint .
 ```
 
 | Value   | Effect                                          |
@@ -18,7 +18,7 @@ TF_COACH_LOG=DEBUG tfcoach lint .
 | `ERROR` | Error messages only                             |
 | `JSON`  | JSON output to stderr, INFO level               |
 
-If `TF_COACH_LOG` is unset or has an unrecognised value, the level defaults to `ERROR`.
+If `TFCOACH_LOG` is unset or has an unrecognised value, the level defaults to `ERROR`.
 
 ## Writing log statements
 

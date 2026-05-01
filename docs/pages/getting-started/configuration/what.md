@@ -21,7 +21,7 @@ Color can be disabled with `output.color: false`.
 Emojis can be disabled with `output.emojis: false` (they get replaced with equivalent text).
 
 > **Note:** The output formats above only affect lint results. Log messages (debug, info, warn, error)
-> are written to stderr and configured separately via the `TF_COACH_LOG` environment variable.
+> are written to stderr and configured separately via the `TFCOACH_LOG` environment variable.
 > See [Logging](../../../development/logging.md) for details.
 
 Issues found in `.terragrunt-cache` directories are usually not wanted so disabled by default. These directories can be

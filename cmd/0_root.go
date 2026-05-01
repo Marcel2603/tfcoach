@@ -36,7 +36,7 @@ func init() {
 	// subcommands depend on it, hence the file name "0_root"
 
 	err := config.LoadDefaultConfig()
-	logLevel := strings.ToUpper(strings.TrimSpace(os.Getenv("TF_COACH_LOG")))
+	logLevel := strings.ToUpper(strings.TrimSpace(os.Getenv("TFCOACH_LOG")))
 	logging.SetupLogger(logLevel)
 	if err != nil {
 		panic(err)
