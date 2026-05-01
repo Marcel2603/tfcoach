@@ -63,7 +63,7 @@ func isDescriptionPresent(attributes *hclsyntax.Attributes) bool {
 		if attr.Name == "description" {
 			value, err := attr.Expr.Value(&hcl.EvalContext{})
 			if err != nil {
-				fmt.Println("error while parsing block value, skipping: ", err)
+				_, _ = fmt.Println("error while parsing block value, skipping: ", err)
 				continue
 			}
 			if value.AsString() != "" {
