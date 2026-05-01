@@ -111,8 +111,9 @@ func isParameterOrderCorrect(body *hclsyntax.Body) bool {
 		order, ok := categoryOrder[param.paramType]
 		if ok {
 			foundCategories = append(foundCategories, order)
+		} else {
+			slog.Warn("category not found", "type", param.paramType)
 		}
-		slog.Warn("category not found", "type", param.paramType)
 	}
 
 	// check if the list of categories in order of appearance is correctly sorted
