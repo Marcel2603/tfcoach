@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"os"
+	"strings"
 
 	"github.com/Marcel2603/tfcoach/cmd/config"
+	"github.com/Marcel2603/tfcoach/internal/logging"
 	"github.com/spf13/cobra"
 )
 
@@ -34,6 +36,8 @@ func init() {
 	// subcommands depend on it, hence the file name "0_root"
 
 	err := config.LoadDefaultConfig()
+	logLevel := strings.ToUpper(strings.TrimSpace(os.Getenv("TF_COACH_LOG")))
+	logging.SetupLogger(logLevel)
 	if err != nil {
 		panic(err)
 	}
