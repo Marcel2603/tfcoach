@@ -31,7 +31,7 @@ format:
 	@gofmt -l -s -w .
 
 lint: format
-	@go run github.com/mgechev/revive@latest -config config.toml -formatter friendly ./...
+	@go run github.com/mgechev/revive@latest -config config.toml -set_exit_status -formatter friendly ./...
 
 init-precommit:
 	@pre-commit install

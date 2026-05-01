@@ -85,7 +85,7 @@ func (nullableBool *NullableBool) UnmarshalYAML(value *yaml.Node) error {
 
 type NullableBoolTransformer struct{}
 
-func (t NullableBoolTransformer) Transformer(typ reflect.Type) func(dst, src reflect.Value) error {
+func (NullableBoolTransformer) Transformer(typ reflect.Type) func(dst, src reflect.Value) error {
 	if typ == reflect.TypeOf(NullableBool{}) {
 		return func(dst, src reflect.Value) error {
 			if dst.CanSet() {
