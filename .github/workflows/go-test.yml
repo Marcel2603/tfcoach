@@ -19,6 +19,9 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: '1.26.x'
+          cache: true
+          cache-dependency-path: |
+            go.sum
       - name: Lint
         run: make lint
   test:
@@ -29,5 +32,8 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: '1.26.x'
+          cache: true
+          cache-dependency-path: |
+            go.sum
       - name: Test with the Go CLI
         run: make cover
