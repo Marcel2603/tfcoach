@@ -14,7 +14,7 @@ func handler(rawLevel string, w io.Writer) slog.Handler {
 	var slogLevel slog.Level
 
 	switch rawLevel {
-	case "DEBUG":
+	case "DEBUG", "JSON":
 		slogLevel = slog.LevelDebug
 	case "WARN":
 		slogLevel = slog.LevelWarn
@@ -23,15 +23,9 @@ func handler(rawLevel string, w io.Writer) slog.Handler {
 	default:
 		slogLevel = slog.LevelError
 	}
-	logAsJSON := rawLevel == "JSON"
-
-	if logAsJSON {
-		slogLevel = slog.LevelDebug
-	}
-
 	opts := &slog.HandlerOptions{Level: slogLevel, AddSource: true}
 
-	if logAsJSON {
+	if rawLevel == "JSON" {
 		return slog.NewJSONHandler(w, opts)
 	}
 
