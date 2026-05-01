@@ -10,13 +10,13 @@ Set the `TFCOACH_LOG` environment variable before running tfcoach:
 TFCOACH_LOG=DEBUG tfcoach lint .
 ```
 
-| Value   | Effect                                          |
-|---------|-------------------------------------------------|
-| `DEBUG` | All messages (debug, info, warn, error)         |
-| `INFO`  | Info, warn, and error messages                  |
-| `WARN`  | Warn and error messages only                    |
-| `ERROR` | Error messages only                             |
-| `JSON`  | JSON output to stderr, INFO level               |
+| Value   | Effect                                  |
+|---------|-----------------------------------------|
+| `DEBUG` | All messages (debug, info, warn, error) |
+| `INFO`  | Info, warn, and error messages          |
+| `WARN`  | Warn and error messages only            |
+| `ERROR` | Error messages only                     |
+| `JSON`  | JSON output to stderr, DEBUG level      |
 
 If `TFCOACH_LOG` is unset or has an unrecognised value, the level defaults to `ERROR`.
 

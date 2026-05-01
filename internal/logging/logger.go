@@ -1,11 +1,16 @@
 package logging
 
 import (
+	"io"
 	"log/slog"
 	"os"
 )
 
 func SetupLogger(rawLevel string) {
+	slog.SetDefault(slog.New(handler(rawLevel, os.Stderr)))
+}
+
+func handler(rawLevel string, w io.Writer) slog.Handler {
 	var slogLevel slog.Level
 
 	switch rawLevel {
@@ -13,24 +18,22 @@ func SetupLogger(rawLevel string) {
 		slogLevel = slog.LevelDebug
 	case "WARN":
 		slogLevel = slog.LevelWarn
-	case "ERROR":
-		slogLevel = slog.LevelError
+	case "INFO":
+		slogLevel = slog.LevelInfo
 	default:
 		slogLevel = slog.LevelError
 	}
+	logAsJSON := rawLevel == "JSON"
 
-	opts := &slog.HandlerOptions{
-		Level:     slogLevel,
-		AddSource: true,
+	if logAsJSON {
+		slogLevel = slog.LevelDebug
 	}
 
-	var handler slog.Handler
+	opts := &slog.HandlerOptions{Level: slogLevel, AddSource: true}
 
-	if rawLevel == "JSON" {
-		handler = slog.NewJSONHandler(os.Stderr, opts)
-	} else {
-		handler = slog.NewTextHandler(os.Stderr, opts)
+	if logAsJSON {
+		return slog.NewJSONHandler(w, opts)
 	}
 
-	slog.SetDefault(slog.New(handler))
+	return slog.NewTextHandler(w, opts)
 }
