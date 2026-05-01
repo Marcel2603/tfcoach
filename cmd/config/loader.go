@@ -75,25 +75,19 @@ func LoadConfig(navigator Navigator) error {
 	// 2. config from home dir
 	var homeConfigData config
 	homeConfigData, err = loadConfigFromHomeDir(navigator)
-	if err == nil {
-		mergeErr := mergeInto(&configData, homeConfigData)
-		if mergeErr != nil {
-			return mergeErr
-		}
-	} else {
+	if err != nil {
 		slog.Warn("error loading home config", "err", err)
+	} else if mergeErr := mergeInto(&configData, homeConfigData); mergeErr != nil {
+		return mergeErr
 	}
 
 	// 3. config from current dir
 	var customConfigData config
 	customConfigData, err = loadConfigFromLocalFile(navigator)
-	if err == nil {
-		mergeErr := mergeInto(&configData, customConfigData)
-		if mergeErr != nil {
-			return mergeErr
-		}
-	} else {
+	if err != nil {
 		slog.Warn("error loading custom config", "err", err)
+	} else if mergeErr := mergeInto(&configData, customConfigData); mergeErr != nil {
+		return mergeErr
 	}
 
 	// 4. config from env
