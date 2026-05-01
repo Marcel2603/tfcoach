@@ -25,19 +25,20 @@ resource "test" "b"{}
 resource "test" "c"{}
 `
 	ignoredFile := testutil.ParseToHcl(t, "a.tf", ignored)
-	ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor(tempDir)
+	ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor([]string{filepath.Join(tempDir, ".tfcoachignore")})
 	if err != nil {
 		t.Fatal("Setup error: ", err)
 	}
-	ignoreIssueProcessor.ScanFile([]byte(ignored), ignoredFile, "a.tf")
+	ignoredFilePath := filepath.Join(tempDir, "a.tf")
+	ignoreIssueProcessor.ScanFile([]byte(ignored), ignoredFile, ignoredFilePath)
 
 	anotherFile := testutil.ParseToHcl(t, "b.tf", resource2)
-	ignoreIssueProcessor.ScanFile([]byte(resource2), anotherFile, "b.tf")
+	ignoreIssueProcessor.ScanFile([]byte(resource2), anotherFile, filepath.Join(tempDir, "b.tf"))
 
 	issues := []types.Issue{
-		{File: "a.tf", RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 2}}},
-		{File: "a.tf", RuleID: "another-rule", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
-		{File: "b.tf", RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
+		{File: ignoredFilePath, RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 2}}},
+		{File: ignoredFilePath, RuleID: "another-rule", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
+		{File: filepath.Join(tempDir, "b.tf"), RuleID: "rule-a", Range: hcl.Range{Start: hcl.Pos{Line: 4}}},
 	}
 
 	processedIssues := ignoreIssueProcessor.ProcessIssues(issues)
@@ -58,7 +59,7 @@ resource "test" "non_compliant"{}
 resource "test" "non_compliant"{}
 `
 	ignoredFile := testutil.ParseToHcl(t, "main.tf", ignored)
-	ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor(".")
+	ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor(nil)
 	if err != nil {
 		t.Fatal("Setup error: ", err)
 	}
@@ -121,7 +122,7 @@ resource "test" "notIgnored"{
 		t.Run(tt.name, func(t *testing.T) {
 			hclFile := testutil.ParseToHcl(t, "main.tf", tt.resource)
 
-			ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor(".")
+			ignoreIssueProcessor, err := processor.NewIgnoreIssuesProcessor(nil)
 			if err != nil {
 				t.Fatal("Setup error: ", err)
 			}

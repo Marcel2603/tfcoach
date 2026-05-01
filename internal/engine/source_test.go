@@ -57,12 +57,12 @@ func TestFileSystem_List_BasicAndSkipDirs(t *testing.T) {
 		filepath.Join(root, "nested", "a.tf"),
 		filepath.Join(root, "nested", "deeper.tf"),
 	}
-	if len(got) != len(want) {
-		t.Fatalf("List() length = %d, want %d; got=%v", len(got), len(want), got)
+	if len(got.TerraformFiles) != len(want) {
+		t.Fatalf("List() length = %d, want %d; got=%v", len(got.TerraformFiles), len(want), got.TerraformFiles)
 	}
 	for i := range want {
-		if got[i] != want[i] {
-			t.Errorf("List()[%d] = %q, want %q", i, got[i], want[i])
+		if got.TerraformFiles[i] != want[i] {
+			t.Errorf("List()[%d] = %q, want %q", i, got.TerraformFiles[i], want[i])
 		}
 	}
 }
