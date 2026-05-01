@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"log/slog"
 	"strings"
 
 	"github.com/Marcel2603/tfcoach/internal/constants"
@@ -63,7 +64,7 @@ func isDescriptionPresent(attributes *hclsyntax.Attributes) bool {
 		if attr.Name == "description" {
 			value, err := attr.Expr.Value(&hcl.EvalContext{})
 			if err != nil {
-				_, _ = fmt.Println("error while parsing block value, skipping: ", err)
+				slog.Error("error while parsing block value, skipping", "err", err)
 				continue
 			}
 			if value.AsString() != "" {
