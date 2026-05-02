@@ -7,6 +7,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"log"
@@ -45,26 +46,42 @@ func GenerateNav(pagesRoot, tomlFile string) {
 }
 
 // replaceNavBlock replaces the nav = [...] block in a TOML string.
+// It uses line-based search to avoid false positives from brackets inside string values.
 func replaceNavBlock(toml, navBlock string) string {
-	start := strings.Index(toml, "nav = [")
+	lines := strings.Split(toml, "\n")
+
+	start := -1
+	for i, line := range lines {
+		if strings.HasPrefix(line, "nav = [") {
+			start = i
+			break
+		}
+	}
 	if start == -1 {
 		return toml + "\n" + navBlock
 	}
-	// find the matching closing bracket
-	depth, end := 0, start
-	for end < len(toml) {
-		switch toml[end] {
-		case '[':
-			depth++
-		case ']':
-			depth--
-			if depth == 0 {
-				return toml[:start] + navBlock + strings.TrimLeft(toml[end+1:], "\n")
-			}
+
+	// find the closing line: a line that is exactly "]"
+	end := -1
+	for i := start + 1; i < len(lines); i++ {
+		if lines[i] == "]" {
+			end = i
+			break
 		}
-		end++
 	}
-	return toml
+	if end == -1 {
+		return toml
+	}
+
+	var buf strings.Builder
+	for _, line := range lines[:start] {
+		buf.WriteString(line + "\n")
+	}
+	buf.WriteString(navBlock)
+	for _, line := range lines[end+1:] {
+		buf.WriteString(line + "\n")
+	}
+	return strings.TrimRight(buf.String(), "\n") + "\n"
 }
 
 // writeTOMLNav serialises the nav tree into the TOML inline-table array format
@@ -283,12 +300,15 @@ func listedEntries(nav []any) map[string]bool {
 
 // titleFromFile reads the first H1 heading from a markdown file, falling back to the filename stem.
 func titleFromFile(path string) string {
-	data, err := os.ReadFile(path)
+	f, err := os.Open(path)
 	if err != nil {
 		return stemName(path)
 	}
-	for _, line := range strings.Split(string(data), "\n") {
-		line = strings.TrimSpace(line)
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
 		if strings.HasPrefix(line, "# ") {
 			return strings.TrimPrefix(line, "# ")
 		}
