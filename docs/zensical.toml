@@ -27,7 +27,8 @@ nav = [
             { "core.enforce_variable_description" = "rules/core/enforce_variable_description.md" },
             { "core.file_naming" = "rules/core/file_naming.md" },
             { "core.naming_convention" = "rules/core/naming_convention.md" },
-            { "core.required_provider_must_be_declared" = "rules/core/required_provider_must_be_declared.md" }
+            { "core.required_provider_must_be_declared" = "rules/core/required_provider_must_be_declared.md" },
+            { "core.use_cloud_backend" = "rules/core/use_cloud_backend.md" }
         ] }
     ] },
     { "Development" = [
