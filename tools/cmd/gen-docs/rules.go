@@ -5,9 +5,11 @@ package main
 import (
 	"bytes"
 	"cmp"
+	"errors"
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"slices"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
@@ -26,10 +28,19 @@ func GenerateRulesOverview(filename string) {
 	slices.SortStableFunc(rules, func(a, b types.Rule) int {
 		return cmp.Compare(a.META().Title, b.META().Title)
 	})
-
-	for _, r := range core.All() {
+	rulesDir := path.Dir(filename)
+	for _, r := range rules {
 		meta := r.META()
 		buf.WriteString(fmt.Sprintf("| [%s](%s.md) | %s |\n", meta.Title, meta.DocsURI, meta.Description))
+		rulePath := fmt.Sprintf("%s/%s.md", rulesDir, meta.DocsURI)
+		if _, err := os.Stat(rulePath); errors.Is(err, os.ErrNotExist) {
+			err = os.WriteFile(rulePath, []byte(fmt.Sprintf("# %s \n", r.ID())), 0644)
+			if err != nil {
+				log.Fatalf("failed to create rule file %s: %v", rulePath, err)
+			} else {
+				fmt.Printf("Created rule file: %s\n", rulePath)
+			}
+		}
 	}
 	if err := os.WriteFile(filename, buf.Bytes(), 0644); err != nil {
 		log.Fatalf("failed to write rules overview: %v", err)

@@ -22,6 +22,7 @@ var (
 		AvoidNullProviderRule(),
 		AvoidTypeInNameRule(),
 		EnforceParameterOrderRule(),
+		UseCloudBackendRule(),
 	}
 	ruleMap = mapRules(rules)
 )
