@@ -72,22 +72,11 @@ func replaceNavBlock(toml, navBlock string) string {
 func writeTOMLNav(b *bytes.Buffer, items []any, depth int) {
 	indent := strings.Repeat("    ", depth)
 	inner := strings.Repeat("    ", depth+1)
-
 	flat := flattenNavItems(items)
 
 	b.WriteString("[\n")
 	for i, entry := range flat {
-		for label, val := range entry {
-			b.WriteString(inner + "{ ")
-			fmt.Fprintf(b, "%q = ", label)
-			switch child := val.(type) {
-			case string:
-				fmt.Fprintf(b, "%q", child)
-			case []any:
-				writeTOMLNav(b, child, depth+1)
-			}
-			b.WriteString(" }")
-		}
+		writeTOMLEntry(b, inner, entry, depth)
 		if i < len(flat)-1 {
 			b.WriteByte(',')
 		}
@@ -96,10 +85,26 @@ func writeTOMLNav(b *bytes.Buffer, items []any, depth int) {
 	b.WriteString(indent + "]")
 }
 
+// writeTOMLEntry writes a single { "Label" = value } entry.
+// value is either a string path or a nested []any slice.
+func writeTOMLEntry(b *bytes.Buffer, indent string, entry map[string]any, depth int) {
+	for label, val := range entry {
+		b.WriteString(indent + "{ ")
+		fmt.Fprintf(b, "%q = ", label)
+		switch child := val.(type) {
+		case string:
+			fmt.Fprintf(b, "%q", child)
+		case []any:
+			writeTOMLNav(b, child, depth+1)
+		}
+		b.WriteString(" }")
+	}
+}
+
 // flattenNavItems normalises a []any nav slice into []map[string]any,
 // expanding any nested []any produced by restEntries.
 func flattenNavItems(items []any) []map[string]any {
-	var flat []map[string]any
+	flat := make([]map[string]any, 0, len(items))
 	for _, item := range items {
 		switch v := item.(type) {
 		case map[string]any:
@@ -258,7 +263,7 @@ func readPagesFile(dir string) pagesFile {
 
 // listedEntries returns a set of filenames/dirnames explicitly listed in a nav.
 func listedEntries(nav []any) map[string]bool {
-	listed := make(map[string]bool)
+	listed := make(map[string]bool, len(nav))
 	for _, entry := range nav {
 		switch v := entry.(type) {
 		case string:
@@ -291,11 +296,14 @@ func titleFromFile(path string) string {
 	return stemName(path)
 }
 
-// dirLabel returns the title from a directory's .pages file, falling back to the dir name.
+// dirLabel returns the title from a directory's .pages file, the index.md H1, or falls back to the dir name.
 func dirLabel(dir string) string {
 	p := readPagesFile(dir)
 	if p.Title != "" {
 		return p.Title
+	}
+	if title := titleFromFile(filepath.Join(dir, "index.md")); title != "index" {
+		return title
 	}
 	return filepath.Base(dir)
 }
