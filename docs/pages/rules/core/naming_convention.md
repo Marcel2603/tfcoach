@@ -8,7 +8,7 @@ Consistent naming improves module reuse and keeps downstream references simple.
 
 ## Triggers
 
-- Any block whose not following the naming convention `a-z0-9_`.
+- Any block not following the `snake_case` naming convention (`a-z0-9_`)
 
 ## Example
 

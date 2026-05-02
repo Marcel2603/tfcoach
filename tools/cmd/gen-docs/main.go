@@ -11,4 +11,7 @@ func main() {
 	fmt.Println("Generate Rules Overview")
 	GenerateRulesOverview("docs/pages/rules/index.md")
 	fmt.Println("Rules Overview generated")
+	fmt.Println("Generate Nav")
+	GenerateNav("docs/pages", "docs/zensical.toml")
+	fmt.Println("Nav generated")
 }

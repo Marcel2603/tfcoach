@@ -1,6 +1,6 @@
 # Docs
 
-This folder contains the documenation of tfcoach
+This folder contains the documentation of tfcoach
 
 ## Run locally
 
@@ -10,15 +10,15 @@ source .venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
-After that you can interact with mkdocs.
+After that you can interact with zensical.
 
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+* `zensical serve` - Start the live-reloading docs server.
+* `zensical build` - Build the documentation site.
+* `zensical -h` - Print help message and exit.
 
 ### Run inside docker
 
 ```shell
-docker build . -t mkdocs:tfcoach
-docker run -p 8000:8000 mkdocs:tfcoach
+docker build . -t zensical:tfcoach
+docker run -p 8000:8000 zensical:tfcoach
 ```
