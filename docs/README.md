@@ -1,6 +1,6 @@
 # Docs
 
-This folder contains the documenation of tfcoach
+This folder contains the documentation of tfcoach
 
 ## Run locally
 
