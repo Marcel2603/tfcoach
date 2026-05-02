@@ -26,7 +26,7 @@ func TestUseCloudBackend_META(t *testing.T) {
 	}
 }
 
-func TestUseCloudBackend_ShouldFineOneIssueWithoutBackendBlock(t *testing.T) {
+func TestUseCloudBackend_ShouldFindOneIssueWithoutBackendBlock(t *testing.T) {
 	f := testutil.ParseToHcl(t, "a.tf", `resource "terraform_data" "this" {}`)
 	rule := core.UseCloudBackendRule()
 	rule.Apply("a.tf", f)
@@ -42,7 +42,7 @@ func TestUseCloudBackend_ShouldFineOneIssueWithoutBackendBlock(t *testing.T) {
 	}
 }
 
-func TestUseCloudBackend_ShouldFineOneIssueForLocalBackend(t *testing.T) {
+func TestUseCloudBackend_ShouldFindOneIssueForLocalBackend(t *testing.T) {
 	f := testutil.ParseToHcl(t, "a.tf", `
 	terraform {
 		backend "local" {
@@ -64,7 +64,7 @@ func TestUseCloudBackend_ShouldFineOneIssueForLocalBackend(t *testing.T) {
 	}
 }
 
-func TestUseCloudBackend_ShouldComplainOnMultipleFiles(t *testing.T) {
+func TestUseCloudBackend_ShouldNotComplainOnMultipleFiles(t *testing.T) {
 	f := testutil.ParseToHcl(t, "a.tf", `
 	resource "aws_s3_bucket" "this" {}
 	`)
@@ -80,11 +80,11 @@ func TestUseCloudBackend_ShouldComplainOnMultipleFiles(t *testing.T) {
 	issues := rule.Finish()
 
 	if len(issues) != 0 {
-		t.Fatalf("issues mismatch; got %d, wanted 1", len(issues))
+		t.Fatalf("issues mismatch; got %d, wanted 0", len(issues))
 	}
 }
 
-func TestUseCloudBackend_ShouldComplainOnHashicorpCloud(t *testing.T) {
+func TestUseCloudBackend_ShouldNotComplainOnHashicorpCloud(t *testing.T) {
 	f := testutil.ParseToHcl(t, "a.tf", `
 	terraform {
 		cloud {
@@ -96,11 +96,11 @@ func TestUseCloudBackend_ShouldComplainOnHashicorpCloud(t *testing.T) {
 	issues := rule.Finish()
 
 	if len(issues) != 0 {
-		t.Fatalf("issues mismatch; got %d, wanted 1", len(issues))
+		t.Fatalf("issues mismatch; got %d, wanted 0", len(issues))
 	}
 }
 
-func TestUseCloudBackend_ShouldComplainOnCloudBackends(t *testing.T) {
+func TestUseCloudBackend_ShouldNotComplainOnCloudBackends(t *testing.T) {
 	tests := []struct {
 		backendType string
 	}{
@@ -130,9 +130,8 @@ func TestUseCloudBackend_ShouldComplainOnCloudBackends(t *testing.T) {
 			issues := rule.Finish()
 
 			if len(issues) != 0 {
-				t.Fatalf("issues mismatch; got %d, wanted 1", len(issues))
+				t.Fatalf("issues mismatch; got %d, wanted 0", len(issues))
 			}
 		})
 	}
-
 }

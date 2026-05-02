@@ -4,7 +4,7 @@ This rule should enforce that no local statefile is being used.
 
 ## Why
 
-If you store the state locally (default backend), it will be impossible to run terraform from other PCs
+If you store the state locally (default backend), it will be impossible to run terraform from other computers.
 
 ## Triggers
 

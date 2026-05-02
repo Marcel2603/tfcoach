@@ -95,11 +95,9 @@ func TestSet_ConcurrentAdd(t *testing.T) {
 	set := types.Set[int]{}
 	var wg sync.WaitGroup
 	for i := range 100 {
-		wg.Add(1)
-		go func(v int) {
-			defer wg.Done()
-			set.Add(v)
-		}(i)
+		wg.Go(func() {
+			set.Add(i)
+		})
 	}
 	wg.Wait()
 	if set.Len() != 100 {
