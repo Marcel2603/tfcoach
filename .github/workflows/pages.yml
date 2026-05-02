@@ -30,7 +30,7 @@ jobs:
       - run: pip install -r ./docs/requirements.txt
       - run: |
               cd ./docs
-              zensical build
+              zensical build --strict
       - uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: docs/site
