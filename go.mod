@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	dario.cat/mergo v1.0.2
-	github.com/codeglyph/go-dotignore/v2 v2.1.0
+	github.com/codeglyph/go-dotignore/v2 v2.2.0
 	github.com/fatih/color v1.19.0
 	github.com/hashicorp/hcl/v2 v2.24.0
 	github.com/kelseyhightower/envconfig v1.4.0
