@@ -3,6 +3,7 @@ package core
 import (
 	"cmp"
 	"fmt"
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -110,8 +111,9 @@ func isParameterOrderCorrect(body *hclsyntax.Body) bool {
 		order, ok := categoryOrder[param.paramType]
 		if ok {
 			foundCategories = append(foundCategories, order)
+		} else {
+			slog.Warn("category not found", "type", param.paramType)
 		}
-		// TODO later: log warnings if not found
 	}
 
 	// check if the list of categories in order of appearance is correctly sorted

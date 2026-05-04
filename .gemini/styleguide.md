@@ -42,3 +42,10 @@ Please review the following Go code strictly against standard Go idioms, the Ube
 ## 7. Testing
 
 * **Table-Driven Tests:** Enforce the use of table-driven tests (`[]struct{ name string ... }`) for repetitive test cases.
+
+## 8. Logging
+
+* **Use `slog` exclusively:** All log output must use Go's standard `log/slog` package. Never use `fmt.Print*`, `log.Print*`, `log.Fatal*`, or `log.Panic*` in production code.
+* **No debug prints:** Do not leave `fmt.Print*` calls in committed code, even temporarily. Use `slog.Debug` instead.
+* **Level discipline:** Use the appropriate level — `Debug` for tracing internals, `Info` for significant lifecycle events, `Warn` for recoverable anomalies, `Error` for failures.
+* **Structured fields:** Always pass context as key-value pairs, never interpolate into the message string (e.g., `slog.Debug("applying rule", "rule", id)` not `slog.Debug(fmt.Sprintf("applying rule %s", id))`).
