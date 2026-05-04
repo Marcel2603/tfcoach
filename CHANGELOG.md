@@ -1,6 +1,33 @@
 # Changelog
 
-## [0.14.0](https://github.com/Marcel2603/tfcoach/compare/v0.13.0..0.14.0) - 2026-03-25
+## [0.15.0](https://github.com/Marcel2603/tfcoach/compare/v0.14.0..0.15.0) - 2026-05-04
+
+### Features
+
+- *(logging)* Implement slog as logging framework ([#85](https://github.com/marcel2603/tfcoach/issues/85)) - ([9f35388](https://github.com/Marcel2603/tfcoach/commit/9f3538857004dbb126ebf88c57051f9338b1a2ec))  by @Marcel2603
+- *(rule)* Add new rule for using cloud backends ([#67](https://github.com/marcel2603/tfcoach/issues/67)) - ([672584b](https://github.com/Marcel2603/tfcoach/commit/672584bcba9c03b5489e7537d14ea4c142e46fd7))  by @Marcel2603
+
+### Bug Fixes
+
+- *(ci)* Resolve deprecation archives.format ([#78](https://github.com/marcel2603/tfcoach/issues/78)) - ([a8ab918](https://github.com/Marcel2603/tfcoach/commit/a8ab918c68d62a926135930ce960c9bf6d75255d))  by @Marcel2603
+- *(deps)* Update module github.com/codeglyph/go-dotignore/v2 to v2.2.0 ([#86](https://github.com/marcel2603/tfcoach/issues/86)) - ([4639891](https://github.com/Marcel2603/tfcoach/commit/4639891ec49f1fefb2ed78b73cbe15a00f7b5c1e))  by @renovate[bot]
+- *(mkdocs)* Pin requirements.txt versions ([#79](https://github.com/marcel2603/tfcoach/issues/79)) - ([a98da26](https://github.com/Marcel2603/tfcoach/commit/a98da26c411e03daf64752efd843ed793d5e508b))  by @Marcel2603
+
+### Documentation
+
+- *(zensical)* Drop mkdocs and use zensical ([#81](https://github.com/marcel2603/tfcoach/issues/81)) - ([08c7cfd](https://github.com/Marcel2603/tfcoach/commit/08c7cfdf62be2bcfc6e09fa27448375a80471e00))  by @Marcel2603
+
+### Miscellaneous Tasks
+
+- *(linting)* Make lint fail on issue ([#84](https://github.com/marcel2603/tfcoach/issues/84)) - ([bf6c020](https://github.com/Marcel2603/tfcoach/commit/bf6c02045e1869fbf0848fad732a912a87c26244))  by @Marcel2603
+
+### Dependencies
+
+- *(deps)* Update dependency zensical to v0.0.40 ([#87](https://github.com/marcel2603/tfcoach/issues/87)) - ([f755e6a](https://github.com/Marcel2603/tfcoach/commit/f755e6a763c491b359ba4f1cdddded8c3faeaf75))  by @renovate[bot]
+- *(deps)* Update cycjimmy/semantic-release-action action to v6 ([#82](https://github.com/marcel2603/tfcoach/issues/82)) - ([a4dac7d](https://github.com/Marcel2603/tfcoach/commit/a4dac7deb9bbf01f113fb57031e69888faf67355))  by @renovate[bot]
+- *(deps)* Update davidanson/markdownlint-cli2-action action to v23 ([#80](https://github.com/marcel2603/tfcoach/issues/80)) - ([3eeee2a](https://github.com/Marcel2603/tfcoach/commit/3eeee2a9e2f211e46c2e92728e7c35909187bd77))  by @renovate[bot]
+
+## [0.14.0](https://github.com/Marcel2603/tfcoach/compare/v0.13.0..v0.14.0) - 2026-03-25
 
 ### Features
 
