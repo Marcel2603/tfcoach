@@ -1,6 +1,9 @@
 package processor
 
 import (
+	"fmt"
+	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/Marcel2603/tfcoach/internal/types"
@@ -30,29 +33,67 @@ type ignoreIssuesProcessorImpl struct {
 	ignoredRulesAtBlockLevel *types.Set[ruleIgnore]
 	ignoredRulesAtFileLevel  *types.Set[ruleIgnore]
 	ignoredFiles             *types.Set[string]
-	fileIgnorer              *dotignore.RepositoryMatcher
+	fileMatchers             map[string]*dotignore.PatternMatcher // dir -> matcher
 }
 
-func NewIgnoreIssuesProcessor(rootPath string) (IgnoreIssuesProcessor, error) {
-	ignorer, err := dotignore.NewRepositoryMatcherWithConfig(
-		rootPath,
-		&dotignore.RepositoryConfig{IgnoreFileName: ".tfcoachignore"},
-	)
-	if err != nil {
-		return nil, err
+func NewIgnoreIssuesProcessor(ignoreFiles []string) (IgnoreIssuesProcessor, error) {
+	matchers := make(map[string]*dotignore.PatternMatcher, len(ignoreFiles))
+	for _, f := range ignoreFiles {
+		abs, err := filepath.Abs(f)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve ignore file path: %w", err)
+		}
+		m, err := dotignore.NewPatternMatcherFromFile(abs)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse ignore file %s: %w", abs, err)
+		}
+		matchers[filepath.Dir(abs)] = m
 	}
 
 	return &ignoreIssuesProcessorImpl{
 		ignoredRulesAtBlockLevel: &types.Set[ruleIgnore]{},
 		ignoredRulesAtFileLevel:  &types.Set[ruleIgnore]{},
 		ignoredFiles:             &types.Set[string]{},
-		fileIgnorer:              ignorer,
+		fileMatchers:             matchers,
 	}, nil
 }
 
+func (p *ignoreIssuesProcessorImpl) matchesIgnoreFile(path string) bool {
+	if len(p.fileMatchers) == 0 {
+		return false
+	}
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return false
+	}
+
+	var dirs []string
+	for dir := filepath.Dir(absPath); filepath.Dir(dir) != dir; dir = filepath.Dir(dir) {
+		dirs = append(dirs, dir)
+	}
+	slices.Reverse(dirs)
+
+	matched := false
+	for _, dir := range dirs {
+		matcher, ok := p.fileMatchers[dir]
+		if !ok {
+			continue
+		}
+		rel, err := filepath.Rel(dir, absPath)
+		if err != nil {
+			continue
+		}
+		isMatch, anyMatched, err := matcher.MatchesWithTracking(rel)
+		if err != nil || !anyMatched {
+			continue
+		}
+		matched = isMatch
+	}
+	return matched
+}
+
 func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, path string) {
-	shouldIgnore, _ := p.fileIgnorer.Matches(path)
-	if shouldIgnore {
+	if p.matchesIgnoreFile(path) {
 		p.ignoredFiles.Add(path)
 		return
 	}
@@ -66,11 +107,9 @@ func (p *ignoreIssuesProcessorImpl) ScanFile(bytes []byte, hclFile *hcl.File, pa
 			if strings.HasPrefix(comment, ignoreFileWord) {
 				ignoredRulesForFile := computeIgnoredRulesForFile(comment, path)
 				p.appendUniqueRuleIgnoresAtFileLevel(ignoredRulesForFile)
-			} else {
-				if strings.HasPrefix(comment, ignoreRuleWord) {
-					ignoredRulesForBlock := computeIgnoredRulesForBlock(comment, path, tok.Range, body)
-					p.appendUniqueRuleIgnoresAtBlockLevel(ignoredRulesForBlock)
-				}
+			} else if strings.HasPrefix(comment, ignoreRuleWord) {
+				ignoredRulesForBlock := computeIgnoredRulesForBlock(comment, path, tok.Range, body)
+				p.appendUniqueRuleIgnoresAtBlockLevel(ignoredRulesForBlock)
 			}
 		}
 	}

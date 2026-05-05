@@ -38,12 +38,12 @@ func (e *Engine) Run(root string) ([]types.Issue, error) {
 		return nil, err
 	}
 
-	ignoreIssuesProcessor, err := processor.NewIgnoreIssuesProcessor(root)
+	ignoreIssuesProcessor, err := processor.NewIgnoreIssuesProcessor(files.TFCoachIgnoreFiles)
 	if err != nil {
 		return nil, err
 	}
 
-	issuesAfterApply := utils.FlatMapChan(files, func(path string, issuesChan chan<- types.Issue) {
+	issuesAfterApply := utils.FlatMapChan(files.TerraformFiles, func(path string, issuesChan chan<- types.Issue) {
 		e.processFile(path, issuesChan, ignoreIssuesProcessor)
 	})
 
