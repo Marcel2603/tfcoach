@@ -67,12 +67,16 @@ func (p *ignoreIssuesProcessorImpl) matchesIgnoreFile(path string) bool {
 		return false
 	}
 
+	// consider all parent directories, from most generic (up to root) to most specific (same level as the
+	// file to check)
 	var dirs []string
 	for dir := filepath.Dir(absPath); filepath.Dir(dir) != dir; dir = filepath.Dir(dir) {
 		dirs = append(dirs, dir)
 	}
 	slices.Reverse(dirs)
 
+	// consider those directories to apply all matchers, allowing specific .tfcoachignore files to override those
+	// further up the tree.
 	matched := false
 	for _, dir := range dirs {
 		matcher, ok := p.fileMatchers[dir]

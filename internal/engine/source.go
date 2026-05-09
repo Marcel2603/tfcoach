@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+const dotIgnoreFileName = ".tfcoachignore"
+
 type Source interface {
 	List(root string) (*FileList, error)
 	ReadFile(path string) ([]byte, error)
@@ -45,7 +47,7 @@ func (f FileSystem) List(root string) (*FileList, error) {
 		if strings.HasSuffix(p, ".tf") {
 			foundTerraformFiles = append(foundTerraformFiles, p)
 		}
-		if d.Name() == ".tfcoachignore" {
+		if d.Name() == dotIgnoreFileName {
 			foundIgnoreFiles = append(foundIgnoreFiles, p)
 		}
 		return nil
@@ -61,7 +63,7 @@ func (f FileSystem) List(root string) (*FileList, error) {
 		return nil, fmt.Errorf("failed to resolve root path: %w", err)
 	}
 	for d := filepath.Dir(absRoot); d != filepath.Dir(d); d = filepath.Dir(d) {
-		p := filepath.Join(d, ".tfcoachignore")
+		p := filepath.Join(d, dotIgnoreFileName)
 		if _, err := os.Stat(p); err == nil {
 			foundIgnoreFiles = append(foundIgnoreFiles, p)
 		}
