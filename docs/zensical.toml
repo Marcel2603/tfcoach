@@ -34,6 +34,7 @@ nav = [
     { "Development" = [
         { "Contributing" = "development/index.md" },
         { "Rule Conventions" = "development/rule-conventions.md" },
+        { "Logging" = "development/logging.md" },
         { "Release" = "development/release.md" },
         { "Tools" = [
             { "Generate Doc Pages" = "development/tools/gen-docs.md" },
