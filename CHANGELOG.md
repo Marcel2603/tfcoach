@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.15.0](https://github.com/Marcel2603/tfcoach/compare/v0.14.0..0.15.0) - 2026-05-04
+## [0.15.1](https://github.com/Marcel2603/tfcoach/compare/v0.15.0..0.15.1) - 2026-05-10
+
+### Performance
+
+- *(tfcoach-ignore)* Refactor .tfcoachignore scan to read same list as engine ([#83](https://github.com/marcel2603/tfcoach/issues/83)) - ([e3c2a02](https://github.com/Marcel2603/tfcoach/commit/e3c2a022d19769ecde9f9a779f1f056e89546f37))  by @Marcel2603
+
+### Dependencies
+
+- *(deps)* Update dependency zensical to v0.0.41 ([#88](https://github.com/marcel2603/tfcoach/issues/88)) - ([4aa7934](https://github.com/Marcel2603/tfcoach/commit/4aa7934a931f7f7a55ad5d19a3c899db521fca1a))  by @renovate[bot]
+
+## [0.15.0](https://github.com/Marcel2603/tfcoach/compare/v0.14.0..v0.15.0) - 2026-05-04
 
 ### Features
 
