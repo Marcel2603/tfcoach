@@ -1,6 +1,31 @@
 # Changelog
 
-## [0.15.1](https://github.com/Marcel2603/tfcoach/compare/v0.15.0..0.15.1) - 2026-05-10
+## [0.15.2](https://github.com/Marcel2603/tfcoach/compare/v0.15.1..0.15.2) - 2026-07-21
+
+### Bug Fixes
+
+- *(deps)* Update module golang.org/x/sync to v0.22.0 ([#101](https://github.com/marcel2603/tfcoach/issues/101)) - ([ddbfe7a](https://github.com/Marcel2603/tfcoach/commit/ddbfe7abd9728efe6150915fa2ae30561dfec1a2))  by @renovate[bot]
+- *(deps)* Update module golang.org/x/sync to v0.21.0 ([#94](https://github.com/marcel2603/tfcoach/issues/94)) - ([0733fb5](https://github.com/Marcel2603/tfcoach/commit/0733fb53d5a81ad5c5dd6d884276312c8cee4393))  by @renovate[bot]
+
+### Dependencies
+
+- *(deps)* Update go module dependencies - ([dd9e7ee](https://github.com/Marcel2603/tfcoach/commit/dd9e7ee92002bc7682c641768b7c49afa225d22a))  by @Marcel2603
+- *(deps)* Update actions/setup-go action to v7 ([#102](https://github.com/marcel2603/tfcoach/issues/102)) - ([4fa90e3](https://github.com/Marcel2603/tfcoach/commit/4fa90e3ea858e38882deb844a82c76e424317062))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.51 ([#103](https://github.com/marcel2603/tfcoach/issues/103)) - ([5cb8350](https://github.com/Marcel2603/tfcoach/commit/5cb8350de96d0e164a9d85f0635f0169e2834c45))  by @renovate[bot]
+- *(deps)* Update actions/setup-python action to v7 ([#104](https://github.com/marcel2603/tfcoach/issues/104)) - ([6c782c2](https://github.com/Marcel2603/tfcoach/commit/6c782c2b170be55c2b5f9f32c2acc08d9019925e))  by @renovate[bot]
+- *(deps)* Update davidanson/markdownlint-cli2-action action to v24 ([#99](https://github.com/marcel2603/tfcoach/issues/99)) - ([c74c565](https://github.com/Marcel2603/tfcoach/commit/c74c565d79791db0931a6d9c808bce98c65f3a95))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.50 ([#100](https://github.com/marcel2603/tfcoach/issues/100)) - ([d2318db](https://github.com/Marcel2603/tfcoach/commit/d2318db3a005c1ce441de338abbfac1579c7ecca))  by @renovate[bot]
+- *(deps)* Update actions/cache action to v6 ([#98](https://github.com/marcel2603/tfcoach/issues/98)) - ([1f36262](https://github.com/Marcel2603/tfcoach/commit/1f362620f8ba0b1be0aca03fb6437d6f4cd2cc0a))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.46 ([#97](https://github.com/marcel2603/tfcoach/issues/97)) - ([24ac760](https://github.com/Marcel2603/tfcoach/commit/24ac760ee2f52c4f9bf201b96005421ee136163f))  by @renovate[bot]
+- *(deps)* Update actions/checkout action to v7 ([#96](https://github.com/marcel2603/tfcoach/issues/96)) - ([9e14211](https://github.com/Marcel2603/tfcoach/commit/9e142113aadf88c10485fb639b597211dd7e7fba))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.45 ([#95](https://github.com/marcel2603/tfcoach/issues/95)) - ([4002af2](https://github.com/Marcel2603/tfcoach/commit/4002af29f02dc71d4a623c43ab921603a354bcfb))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.44 ([#93](https://github.com/marcel2603/tfcoach/issues/93)) - ([8ae9057](https://github.com/Marcel2603/tfcoach/commit/8ae9057ad068af63e27bcee0928938d1f46f7979))  by @renovate[bot]
+- *(deps)* Update dependency mkdocs-git-revision-date-localized-plugin to v1.5.3 ([#92](https://github.com/marcel2603/tfcoach/issues/92)) - ([eed0d81](https://github.com/Marcel2603/tfcoach/commit/eed0d81fda55340a41dd0953d463d9b667e29d5c))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.43 ([#91](https://github.com/marcel2603/tfcoach/issues/91)) - ([0b46b46](https://github.com/Marcel2603/tfcoach/commit/0b46b469878e873d795c1f7816400a2eabddeb32))  by @renovate[bot]
+- *(deps)* Update dependency mkdocs-git-revision-date-localized-plugin to v1.5.2 ([#89](https://github.com/marcel2603/tfcoach/issues/89)) - ([babbff4](https://github.com/Marcel2603/tfcoach/commit/babbff443c111b7907bd73924062900500ae47cf))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.42 ([#90](https://github.com/marcel2603/tfcoach/issues/90)) - ([3f42e89](https://github.com/Marcel2603/tfcoach/commit/3f42e896cdbe28de69643f6627844f5fad903906))  by @renovate[bot]
+
+## [0.15.1](https://github.com/Marcel2603/tfcoach/compare/v0.15.0..v0.15.1) - 2026-05-10
 
 ### Performance
 
