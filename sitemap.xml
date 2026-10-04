@@ -4,19 +4,46 @@
         <loc>https://marcel2603.github.io/tfcoach/</loc>
       </url>
       <url>
-        <loc>https://marcel2603.github.io/tfcoach/getting-started/</loc>
+        <loc>https://marcel2603.github.io/tfcoach/about/license/</loc>
       </url>
       <url>
-        <loc>https://marcel2603.github.io/tfcoach/getting-started/usage/</loc>
+        <loc>https://marcel2603.github.io/tfcoach/about/security/</loc>
+      </url>
+      <url>
+        <loc>https://marcel2603.github.io/tfcoach/development/</loc>
+      </url>
+      <url>
+        <loc>https://marcel2603.github.io/tfcoach/development/logging/</loc>
+      </url>
+      <url>
+        <loc>https://marcel2603.github.io/tfcoach/development/release/</loc>
+      </url>
+      <url>
+        <loc>https://marcel2603.github.io/tfcoach/development/rule-conventions/</loc>
+      </url>
+      <url>
+        <loc>https://marcel2603.github.io/tfcoach/development/tools/</loc>
+      </url>
+      <url>
+        <loc>https://marcel2603.github.io/tfcoach/development/tools/gen-docs/</loc>
+      </url>
+      <url>
+        <loc>https://marcel2603.github.io/tfcoach/development/tools/hcl-test/</loc>
+      </url>
+      <url>
+        <loc>https://marcel2603.github.io/tfcoach/getting-started/</loc>
       </url>
       <url>
         <loc>https://marcel2603.github.io/tfcoach/getting-started/configuration/</loc>
       </url>
       <url>
+        <loc>https://marcel2603.github.io/tfcoach/getting-started/configuration/what/</loc>
+      </url>
+      <url>
         <loc>https://marcel2603.github.io/tfcoach/getting-started/configuration/where/</loc>
       </url>
       <url>
-        <loc>https://marcel2603.github.io/tfcoach/getting-started/configuration/what/</loc>
+        <loc>https://marcel2603.github.io/tfcoach/getting-started/usage/</loc>
       </url>
       <url>
         <loc>https://marcel2603.github.io/tfcoach/rule-ideas/</loc>
@@ -47,32 +74,5 @@
       </url>
       <url>
         <loc>https://marcel2603.github.io/tfcoach/rules/core/use_cloud_backend/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/development/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/development/rule-conventions/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/development/logging/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/development/release/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/development/tools/gen-docs/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/development/tools/hcl-test/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/development/tools/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/about/security/</loc>
-      </url>
-      <url>
-        <loc>https://marcel2603.github.io/tfcoach/about/license/</loc>
       </url>
 </urlset>
