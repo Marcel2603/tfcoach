@@ -1,6 +1,22 @@
 # Changelog
 
-## [0.15.2](https://github.com/Marcel2603/tfcoach/compare/v0.15.1..0.15.2) - 2026-07-21
+## [0.15.3](https://github.com/Marcel2603/tfcoach/compare/v0.15.2..0.15.3) - 2026-10-04
+
+### Bug Fixes
+
+- *(deps)* Update module github.com/codeglyph/go-dotignore/v2 to v2.3.0 ([#111](https://github.com/marcel2603/tfcoach/issues/111)) - ([75f8be2](https://github.com/Marcel2603/tfcoach/commit/75f8be225b82de06bd6916ad4d6432444437b7c8))  by @renovate[bot]
+- *(deps)* Update module golang.org/x/sync to v0.23.0 ([#112](https://github.com/marcel2603/tfcoach/issues/112)) - ([265d066](https://github.com/Marcel2603/tfcoach/commit/265d0669107caf041c77ae4558f3ffabeaa8ea03))  by @renovate[bot]
+- *(deps)* Update module github.com/hashicorp/hcl/v2 to v2.25.0 ([#113](https://github.com/marcel2603/tfcoach/issues/113)) - ([07d527f](https://github.com/Marcel2603/tfcoach/commit/07d527f7b2823dc7b544e661d124e2b0c1723214))  by @renovate[bot]
+
+### Dependencies
+
+- *(deps)* Update dependency mkdocs-git-revision-date-localized-plugin to v1.6.0 ([#109](https://github.com/marcel2603/tfcoach/issues/109)) - ([63bd7f9](https://github.com/Marcel2603/tfcoach/commit/63bd7f93e6143d675f534256c16d252111769845))  by @renovate[bot]
+- *(deps)* Update dependency go to 1.27.x ([#108](https://github.com/marcel2603/tfcoach/issues/108)) - ([c38aa32](https://github.com/Marcel2603/tfcoach/commit/c38aa32e4a31d43d13121a0b9ff2da169baf1b89))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.67 ([#107](https://github.com/marcel2603/tfcoach/issues/107)) - ([4d4dede](https://github.com/Marcel2603/tfcoach/commit/4d4dede7b0121d343ed1556e81fa718d630e8b43))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.54 ([#106](https://github.com/marcel2603/tfcoach/issues/106)) - ([584dfa3](https://github.com/Marcel2603/tfcoach/commit/584dfa3e8b27bc95446c65903a49687043b002c1))  by @renovate[bot]
+- *(deps)* Update dependency zensical to v0.0.53 ([#105](https://github.com/marcel2603/tfcoach/issues/105)) - ([d3fd1db](https://github.com/Marcel2603/tfcoach/commit/d3fd1dbb7558b462a45b3d2da88d64040bf3469c))  by @renovate[bot]
+
+## [0.15.2](https://github.com/Marcel2603/tfcoach/compare/v0.15.1..v0.15.2) - 2026-07-21
 
 ### Bug Fixes
 
