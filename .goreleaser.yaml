@@ -79,9 +79,9 @@ homebrew_casks:
 
     binaries:
       - tfcoach
-    hooks:
-      post:
-        install_steps: |
-          on_macos do
-            run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ .StagedPath }}/tfcoach"]
-          end
+    custom_block: |
+      postflight_steps do
+        on_macos do
+          run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ "{{staged_path}}" }}/tfcoach"]
+        end
+      end
