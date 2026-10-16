@@ -1,6 +1,16 @@
 # Changelog
 
-## [0.15.3](https://github.com/Marcel2603/tfcoach/compare/v0.15.2..0.15.3) - 2026-10-04
+## [0.15.4](https://github.com/Marcel2603/tfcoach/compare/v0.15.3..0.15.4) - 2026-10-16
+
+### Bug Fixes
+
+- *(homebrew)* Fix macos deprecation warning ([#120](https://github.com/marcel2603/tfcoach/issues/120)) - ([adf42fe](https://github.com/Marcel2603/tfcoach/commit/adf42fe70e9531ae900f1b912cfd8bafdda451fa))  by @Marcel2603
+
+### Dependencies
+
+- *(deps)* Update dependency zensical to v0.0.71 ([#115](https://github.com/marcel2603/tfcoach/issues/115)) - ([1a8cb26](https://github.com/Marcel2603/tfcoach/commit/1a8cb267385102559725031930e86068227d1d9e))  by @renovate[bot]
+
+## [0.15.3](https://github.com/Marcel2603/tfcoach/compare/v0.15.2..v0.15.3) - 2026-10-04
 
 ### Bug Fixes
 
