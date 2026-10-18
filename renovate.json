@@ -4,5 +4,8 @@
     "config:recommended"
   ],
   "prConcurrentLimit": 10,
-  "dependencyDashboard": true
+  "dependencyDashboard": true,
+  "postUpdateOptions": [
+    "gomodTidy"
+  ]
 }
