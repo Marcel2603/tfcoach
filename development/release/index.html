@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="zensical-0.0.72">
+      <meta name="generator" content="zensical-0.1.1">
     
     
       
@@ -33,7 +33,7 @@
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.4ab2de0c.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.ebb7f775.min.css">
       
         
           
@@ -1523,16 +1523,16 @@
   
 
 
-<h1 id="release">Release<a class="headerlink" href="#release" title="Permanent link">&para;</a></h1>
+<h1 id="release">Release<a class="headerlink" href="#release" title="Permanent link">⚓︎</a></h1>
 <p>We use Github Action to release using <a href="https://github.com/semantic-release/semantic-release">semantic-release</a>
 and <a href="https://goreleaser.com/">goreleaser</a>.</p>
-<h2 id="strategy">Strategy<a class="headerlink" href="#strategy" title="Permanent link">&para;</a></h2>
+<h2 id="strategy">Strategy<a class="headerlink" href="#strategy" title="Permanent link">⚓︎</a></h2>
 <p>We release as needed, for example if we have added some rules or fixes any bug.</p>
 <p>The release is currently manually and gets triggered by admins.</p>
 <p>If you need to get a release, simply create an <a href="https://github.com/Marcel2603/tfcoach/issues">Issue</a> or
 mention it in your pr.</p>
-<h2 id="releaseflow">ReleaseFlow<a class="headerlink" href="#releaseflow" title="Permanent link">&para;</a></h2>
-<pre class="mermaid"><code>sequenceDiagram
+<h2 id="releaseflow">ReleaseFlow<a class="headerlink" href="#releaseflow" title="Permanent link">⚓︎</a></h2>
+<div class="highlight"><pre><span></span><code>sequenceDiagram
     autonumber
     participant Dev as Developer
     participant DeployWF as release.yml (orchestrator)
@@ -1559,8 +1559,9 @@ mention it in your pr.</p>
     else No release
         ReleaseGate--&gt;&gt;DeployWF: outputs {released:false}
         DeployWF--x GH: skip build &amp; push
-    end</code></pre>
-<h2 id="artifacts">Artifacts<a class="headerlink" href="#artifacts" title="Permanent link">&para;</a></h2>
+    end
+</code></pre></div>
+<h2 id="artifacts">Artifacts<a class="headerlink" href="#artifacts" title="Permanent link">⚓︎</a></h2>
 <p>We release multiple artifacts:</p>
 <table>
 <thead>
@@ -1640,10 +1641,10 @@ mention it in your pr.</p>
       
         
         
-      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["navigation.indexes","navigation.instant","navigation.tracking","navigation.path","search.suggest","search.highlight","content.code.copy","content.code.annotate","content.tabs.link"],"redirect":null,"search":"../../assets/javascripts/workers/search.c47bb847.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["navigation.indexes","navigation.instant","navigation.tracking","navigation.path","search.suggest","search.highlight","content.code.copy","content.code.annotate","content.tabs.link"],"redirect":null,"search":"../../assets/javascripts/workers/search.719e0d91.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.10ee5ab6.min.js"></script>
+      <script src="../../assets/javascripts/bundle.3cb411a8.min.js"></script>
       
     
   </body>
