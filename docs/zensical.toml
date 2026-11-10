@@ -83,16 +83,12 @@ primary = "black"
 accent = "indigo"
 toggle = { icon = "material/brightness-4", name = "Switch to system preference" }
 
-[project.markdown]
-extensions = [
-    "admonition",
-    "codehilite",
-    "footnotes",
-    "tables"
-]
-
-[project.markdown.toc]
-permalink = true
+[project.markdown_extensions]
+admonition = {}
+codehilite = {}
+footnotes = {}
+tables = {}
+toc.permalink = "⚓︎"
 
 [project.plugins]
 search = {}
